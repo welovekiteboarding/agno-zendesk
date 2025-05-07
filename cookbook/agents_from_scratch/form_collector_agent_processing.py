@@ -1,4 +1,4 @@
-from form_collector_agent_validation import SchemaValidator
+from cookbook.agents_from_scratch.form_collector_agent_validation import SchemaValidator
 
 class UserInputProcessor:
     def __init__(self, schema):

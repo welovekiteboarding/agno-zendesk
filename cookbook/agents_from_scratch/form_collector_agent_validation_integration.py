@@ -1,7 +1,7 @@
-from form_collector_agent import FormCollectorAgent
-from form_collector_agent_validation import SchemaValidator
-from form_collector_agent_conversation import ConversationState
-from form_collector_agent_followup import FollowUpHandler
+from cookbook.agents_from_scratch.form_collector_agent import FormCollectorAgent
+from cookbook.agents_from_scratch.form_collector_agent_validation import SchemaValidator
+from cookbook.agents_from_scratch.form_collector_agent_conversation import ConversationState
+from cookbook.agents_from_scratch.form_collector_agent_followup import FollowUpHandler
 
 class FormCollectorAgentWithValidation(FormCollectorAgent):
     def __init__(self, llm_client, schema):

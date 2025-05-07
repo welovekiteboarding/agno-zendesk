@@ -1,6 +1,6 @@
 # Task ID: 1
 # Title: Create Guardrails Schema for Form Collection
-# Status: pending
+# Status: done
 # Dependencies: None
 # Priority: high
 # Description: Develop the JSON schema with guardrails that will enforce the collection of all required bug report fields with proper validation rules.
@@ -9,3 +9,35 @@ Create a comprehensive JSON schema that enforces all field validations specified
 
 # Test Strategy:
 Validate schema against sample inputs with both valid and invalid data for each field. Test edge cases like minimum line counts and regex pattern matching. Ensure schema correctly identifies and reports all validation errors.
+
+# Subtasks:
+## 1. Define Basic Schema Structure and Required Fields [done]
+### Dependencies: None
+### Description: Create the foundational JSON schema structure with all required bug report fields and their basic types.
+### Details:
+Create a JSON schema file with the root object structure. Define all required fields including: reporter name, email, app version, device/OS, steps to reproduce, expected result, actual result, severity/impact, and GDPR consent. Mark appropriate fields as required and set their basic data types (string, boolean, etc.).
+
+## 2. Implement Regex Pattern Validations [done]
+### Dependencies: 1.1
+### Description: Add regex pattern validations for fields that require specific formats.
+### Details:
+Implement RFC-5322 compliant regex for email validation. Create regex pattern for app version format (^\d+\.\d+\.\d+\s\(\d+\)$). Add any other necessary pattern validations for fields like device/OS information. Document each regex pattern with comments explaining the validation logic.
+
+## 3. Add Length and Content Validations [done]
+### Dependencies: 1.1
+### Description: Implement minimum length requirements and content validations for descriptive fields.
+### Details:
+Add minLength constraints to enforce minimum line requirements: steps to reproduce (≥3 lines), expected result (≥1 line), and actual result (≥1 line). Implement appropriate string length calculations and validation logic. Consider using newline characters as line separators for validation purposes.
+
+## 4. Implement Enumeration Constraints for Categorical Fields [done]
+### Dependencies: 1.1
+### Description: Define enumeration constraints for fields with predefined options.
+### Details:
+Create enum constraints for the severity/impact field with appropriate options (e.g., 'Critical', 'High', 'Medium', 'Low'). Add any other categorical fields that require predefined options. Include descriptions for each option to guide users in selecting the appropriate value.
+
+## 5. Add Support for Optional Fields and Final Integration [done]
+### Dependencies: 1.2, 1.3, 1.4
+### Description: Implement optional fields like attachments and integrate all schema components.
+### Details:
+Add schema support for optional attachments with appropriate file type and size validations if needed. Ensure the GDPR consent checkbox is properly implemented as a required boolean field. Integrate all previous schema components into a cohesive whole. Finalize the schema with appropriate metadata, descriptions, and documentation.
+

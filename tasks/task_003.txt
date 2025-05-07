@@ -9,3 +9,35 @@ Develop a microservice that generates presigned URLs for S3/R2 storage with 15-m
 
 # Test Strategy:
 Test URL generation with various file types and sizes. Verify upload functionality with real files. Confirm virus scanning works correctly. Test URL expiration after 15 minutes. Validate that files are correctly stored and accessible after upload.
+
+# Subtasks:
+## 1. Set up S3/R2 bucket configuration and permissions [pending]
+### Dependencies: None
+### Description: Configure the 'bug-uploads-prod' bucket with appropriate permissions, CORS settings, and lifecycle rules for 90-day deletion.
+### Details:
+Create the S3/R2 bucket 'bug-uploads-prod' if it doesn't exist. Configure bucket policy to restrict access to the application role only. Set up CORS to allow uploads from the application domain. Implement a lifecycle rule to delete objects after 90 days. Create separate folders for temporary uploads and permanent storage.
+
+## 2. Implement presigned URL generation endpoint [pending]
+### Dependencies: 3.1
+### Description: Create an API endpoint that accepts file metadata and returns a presigned URL with 15-minute validity for direct client uploads.
+### Details:
+Develop a REST endpoint that accepts POST requests with file metadata (name, type, size). Validate the file size is ≤100MB and the file type is allowed. Generate a presigned URL using the S3/R2 SDK with 15-minute expiration. Return the URL and any required headers to the client. Store the file metadata and generated URL in a temporary database record for tracking.
+
+## 3. Implement upload completion notification and virus scanning [pending]
+### Dependencies: 3.2
+### Description: Create a mechanism to detect when uploads are complete and implement virus scanning for all uploaded files.
+### Details:
+Set up S3/R2 event notifications for object creation events. Create a handler function that triggers when uploads complete. Integrate with a virus scanning service (like ClamAV) to scan uploaded files. Implement a queue system to manage scanning jobs. Update the file metadata record with scan results. Quarantine or delete infected files.
+
+## 4. Implement permanent storage transfer mechanism [pending]
+### Dependencies: 3.3
+### Description: Create a process to move validated files from temporary upload location to permanent storage or prepare them for Zendesk attachment.
+### Details:
+Develop a service that processes files that passed virus scanning. Move clean files from the temporary upload location to a permanent storage folder with appropriate metadata. For files destined for Zendesk, prepare them according to Zendesk's attachment requirements. Update database records with new file locations and status. Implement error handling and retries for failed transfers.
+
+## 5. Create monitoring, logging, and cleanup processes [pending]
+### Dependencies: 3.4
+### Description: Implement comprehensive monitoring, logging, and cleanup processes for the attachment upload service.
+### Details:
+Set up detailed logging for all service operations. Implement metrics collection for upload counts, sizes, success/failure rates, and scanning results. Create alerts for critical failures or security issues. Develop a scheduled cleanup process for abandoned uploads (files uploaded but not processed). Create an admin API to query upload status and manually trigger actions. Document the entire system with API specifications and operational procedures.
+

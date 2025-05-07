@@ -1,6 +1,6 @@
 # Task ID: 2
 # Title: Implement Form-Collector AGNO Agent
-# Status: pending
+# Status: done
 # Dependencies: 1
 # Priority: high
 # Description: Build the first agent in the pipeline that uses the guardrails schema to collect all required bug report information through an LLM-driven conversation.
@@ -9,3 +9,71 @@ Develop the Form-Collector agent that implements the conversation flow described
 
 # Test Strategy:
 Test with simulated user conversations, including scenarios with missing fields, invalid inputs, and complete submissions. Verify the agent correctly identifies all validation issues and guides the user to provide valid information. Confirm the final JSON output matches the expected format.
+
+# Subtasks:
+## 1. Set up Form-Collector agent framework [done]
+### Dependencies: None
+### Description: Create the basic structure for the Form-Collector agent including the necessary components for LLM integration, conversation management, and schema validation.
+### Details:
+Initialize the agent class with appropriate methods for handling conversations. Set up the connection to the LLM service. Implement the basic conversation flow structure with placeholders for schema validation and field collection. Create a mechanism to maintain conversation state and track collected fields.
+<info added on 2025-05-07T06:17:38.026Z>
+The Form-Collector agent framework implementation will follow these steps:
+
+1. Create a FormCollectorAgent class with the following methods:
+   - __init__(): Initialize agent with configuration parameters
+   - start_conversation(): Begin a new form collection session
+   - process_message(user_input): Handle user input and generate appropriate responses
+   - get_collected_fields(): Return currently collected form fields
+   - is_form_complete(): Check if all required fields have been collected
+
+2. Implement LLM service connection:
+   - Set up API client for the chosen LLM provider
+   - Create a message formatting utility to structure prompts properly
+   - Implement error handling for API failures
+   - Add configurable parameters for model selection and temperature
+
+3. Design conversation flow structure:
+   - Create a state machine to track conversation progress
+   - Implement placeholder for schema validation integration
+   - Add logic for field extraction from user responses
+   - Design prompting strategy for collecting missing fields
+   - Implement conversation memory to reference previous exchanges
+
+4. Build conversation state management:
+   - Create a ConversationState class to store collected fields
+   - Implement methods to update and retrieve field values
+   - Add validation status tracking for each field
+   - Create persistence mechanism for conversation history
+   - Implement session timeout and resumption capabilities
+
+5. Prepare testing infrastructure:
+   - Create mock LLM response generator
+   - Set up test fixtures for different conversation scenarios
+   - Implement assertion helpers for validating field collection
+   - Design test cases for happy path and error handling scenarios
+</info added on 2025-05-07T06:17:38.026Z>
+
+## 2. Integrate guardrails schema validation [done]
+### Dependencies: None
+### Description: Connect the Form-Collector agent to the guardrails schema developed in Task 1 to validate user inputs and identify missing fields.
+### Details:
+Import and initialize the guardrails schema. Implement validation functions that check user inputs against schema requirements. Create logic to identify missing required fields and invalid inputs. Develop a mechanism to track validation status for each field in the schema.
+
+## 3. Design and implement conversation prompts [done]
+### Dependencies: None
+### Description: Create the prompt templates for guiding users through the bug report information collection process, including initial questions and follow-up prompts.
+### Details:
+Design the initial prompt that explains the bug reporting process to users. Create templates for asking about each required field in the schema. Develop follow-up question templates for clarification when information is missing or invalid. Implement prompt selection logic based on the current state of the form completion.
+
+## 4. Implement follow-up question loops [done]
+### Dependencies: None
+### Description: Build the logic for detecting incomplete or invalid responses and generating appropriate follow-up questions until all required information is collected.
+### Details:
+Create a mechanism to identify which fields need follow-up questions. Implement logic to generate contextual follow-up questions based on the specific missing or invalid data. Design the loop structure that continues asking for information until all fields are valid. Add handling for user corrections and updates to previously provided information.
+
+## 5. Implement JSON output and attachment handling [done]
+### Dependencies: None
+### Description: Finalize the agent by implementing the JSON output generation and handling for file attachment descriptions.
+### Details:
+Create the function to compile all collected information into a validated JSON object. Implement special handling for attachment descriptions, including generating placeholders for the upload process. Add final validation to ensure the output JSON contains all required fields according to the schema. Implement error handling for edge cases in the JSON generation process.
+

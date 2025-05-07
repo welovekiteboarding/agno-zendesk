@@ -4,7 +4,7 @@
       "id": 1,
       "title": "Create Guardrails Schema for Form Collection",
       "description": "Develop the JSON schema with guardrails that will enforce the collection of all required bug report fields with proper validation rules.",
-      "status": "pending",
+      "status": "done",
       "dependencies": [],
       "priority": "high",
       "details": "Create a comprehensive JSON schema that enforces all field validations specified in section 4.1. Include regex patterns for email (RFC-5322), app version (^\\d+\\.\\d+\\.\\d+\\s\\(\\d+\\)$), and other validation rules. Schema should enforce minimum line requirements for steps to reproduce (≥3), expected result (≥1), and actual result (≥1). Include enums for severity/impact options. The schema should support optional attachments and require the GDPR consent checkbox.",
@@ -71,7 +71,7 @@
       "id": 2,
       "title": "Implement Form-Collector AGNO Agent",
       "description": "Build the first agent in the pipeline that uses the guardrails schema to collect all required bug report information through an LLM-driven conversation.",
-      "status": "pending",
+      "status": "done",
       "dependencies": [
         1
       ],
@@ -84,8 +84,8 @@
           "title": "Set up Form-Collector agent framework",
           "description": "Create the basic structure for the Form-Collector agent including the necessary components for LLM integration, conversation management, and schema validation.",
           "dependencies": [],
-          "details": "Initialize the agent class with appropriate methods for handling conversations. Set up the connection to the LLM service. Implement the basic conversation flow structure with placeholders for schema validation and field collection. Create a mechanism to maintain conversation state and track collected fields.",
-          "status": "pending",
+          "details": "Initialize the agent class with appropriate methods for handling conversations. Set up the connection to the LLM service. Implement the basic conversation flow structure with placeholders for schema validation and field collection. Create a mechanism to maintain conversation state and track collected fields.\n<info added on 2025-05-07T06:17:38.026Z>\nThe Form-Collector agent framework implementation will follow these steps:\n\n1. Create a FormCollectorAgent class with the following methods:\n   - __init__(): Initialize agent with configuration parameters\n   - start_conversation(): Begin a new form collection session\n   - process_message(user_input): Handle user input and generate appropriate responses\n   - get_collected_fields(): Return currently collected form fields\n   - is_form_complete(): Check if all required fields have been collected\n\n2. Implement LLM service connection:\n   - Set up API client for the chosen LLM provider\n   - Create a message formatting utility to structure prompts properly\n   - Implement error handling for API failures\n   - Add configurable parameters for model selection and temperature\n\n3. Design conversation flow structure:\n   - Create a state machine to track conversation progress\n   - Implement placeholder for schema validation integration\n   - Add logic for field extraction from user responses\n   - Design prompting strategy for collecting missing fields\n   - Implement conversation memory to reference previous exchanges\n\n4. Build conversation state management:\n   - Create a ConversationState class to store collected fields\n   - Implement methods to update and retrieve field values\n   - Add validation status tracking for each field\n   - Create persistence mechanism for conversation history\n   - Implement session timeout and resumption capabilities\n\n5. Prepare testing infrastructure:\n   - Create mock LLM response generator\n   - Set up test fixtures for different conversation scenarios\n   - Implement assertion helpers for validating field collection\n   - Design test cases for happy path and error handling scenarios\n</info added on 2025-05-07T06:17:38.026Z>",
+          "status": "done",
           "testStrategy": "Write unit tests for the agent initialization and basic conversation flow. Mock LLM responses to test the conversation structure."
         },
         {
@@ -94,7 +94,7 @@
           "description": "Connect the Form-Collector agent to the guardrails schema developed in Task 1 to validate user inputs and identify missing fields.",
           "dependencies": [],
           "details": "Import and initialize the guardrails schema. Implement validation functions that check user inputs against schema requirements. Create logic to identify missing required fields and invalid inputs. Develop a mechanism to track validation status for each field in the schema.",
-          "status": "pending",
+          "status": "done",
           "testStrategy": "Test validation against sample inputs, including valid and invalid data. Verify that all required fields are properly identified when missing."
         },
         {
@@ -103,7 +103,7 @@
           "description": "Create the prompt templates for guiding users through the bug report information collection process, including initial questions and follow-up prompts.",
           "dependencies": [],
           "details": "Design the initial prompt that explains the bug reporting process to users. Create templates for asking about each required field in the schema. Develop follow-up question templates for clarification when information is missing or invalid. Implement prompt selection logic based on the current state of the form completion.",
-          "status": "pending",
+          "status": "done",
           "testStrategy": "Review prompts with sample users to ensure clarity. Test that appropriate prompts are selected based on conversation context."
         },
         {
@@ -112,7 +112,7 @@
           "description": "Build the logic for detecting incomplete or invalid responses and generating appropriate follow-up questions until all required information is collected.",
           "dependencies": [],
           "details": "Create a mechanism to identify which fields need follow-up questions. Implement logic to generate contextual follow-up questions based on the specific missing or invalid data. Design the loop structure that continues asking for information until all fields are valid. Add handling for user corrections and updates to previously provided information.",
-          "status": "pending",
+          "status": "done",
           "testStrategy": "Test with simulated conversations containing incomplete responses. Verify that the agent correctly identifies missing information and asks appropriate follow-up questions."
         },
         {
@@ -121,7 +121,7 @@
           "description": "Finalize the agent by implementing the JSON output generation and handling for file attachment descriptions.",
           "dependencies": [],
           "details": "Create the function to compile all collected information into a validated JSON object. Implement special handling for attachment descriptions, including generating placeholders for the upload process. Add final validation to ensure the output JSON contains all required fields according to the schema. Implement error handling for edge cases in the JSON generation process.",
-          "status": "pending",
+          "status": "done",
           "testStrategy": "Test the JSON output with various input combinations. Verify that attachment placeholders are correctly generated. Validate the final JSON against the schema requirements."
         }
       ]
@@ -134,7 +134,62 @@
       "dependencies": [],
       "priority": "high",
       "details": "Develop a microservice that generates presigned URLs for S3/R2 storage with 15-minute validity. Implement file size validation (≤100MB) and configure the S3 bucket 'bug-uploads-prod' with appropriate permissions and a 90-day lifecycle deletion rule. Add virus scanning for uploaded files. The service should accept file metadata (name, type, size) and return a presigned URL for upload. After successful upload, files should be moved to permanent storage or prepared for Zendesk attachment.",
-      "testStrategy": "Test URL generation with various file types and sizes. Verify upload functionality with real files. Confirm virus scanning works correctly. Test URL expiration after 15 minutes. Validate that files are correctly stored and accessible after upload."
+      "testStrategy": "Test URL generation with various file types and sizes. Verify upload functionality with real files. Confirm virus scanning works correctly. Test URL expiration after 15 minutes. Validate that files are correctly stored and accessible after upload.",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Set up S3/R2 bucket configuration and permissions",
+          "description": "Configure the 'bug-uploads-prod' bucket with appropriate permissions, CORS settings, and lifecycle rules for 90-day deletion.",
+          "dependencies": [],
+          "details": "Create the S3/R2 bucket 'bug-uploads-prod' if it doesn't exist. Configure bucket policy to restrict access to the application role only. Set up CORS to allow uploads from the application domain. Implement a lifecycle rule to delete objects after 90 days. Create separate folders for temporary uploads and permanent storage.",
+          "status": "pending",
+          "testStrategy": "Verify bucket creation, confirm lifecycle rules are active, test CORS configuration with a sample request, and validate permissions by attempting access with and without proper credentials."
+        },
+        {
+          "id": 2,
+          "title": "Implement presigned URL generation endpoint",
+          "description": "Create an API endpoint that accepts file metadata and returns a presigned URL with 15-minute validity for direct client uploads.",
+          "dependencies": [
+            1
+          ],
+          "details": "Develop a REST endpoint that accepts POST requests with file metadata (name, type, size). Validate the file size is ≤100MB and the file type is allowed. Generate a presigned URL using the S3/R2 SDK with 15-minute expiration. Return the URL and any required headers to the client. Store the file metadata and generated URL in a temporary database record for tracking.",
+          "status": "pending",
+          "testStrategy": "Unit test the validation logic, integration test the URL generation with mock S3 service, and end-to-end test by generating a URL and confirming a file can be uploaded to it."
+        },
+        {
+          "id": 3,
+          "title": "Implement upload completion notification and virus scanning",
+          "description": "Create a mechanism to detect when uploads are complete and implement virus scanning for all uploaded files.",
+          "dependencies": [
+            2
+          ],
+          "details": "Set up S3/R2 event notifications for object creation events. Create a handler function that triggers when uploads complete. Integrate with a virus scanning service (like ClamAV) to scan uploaded files. Implement a queue system to manage scanning jobs. Update the file metadata record with scan results. Quarantine or delete infected files.",
+          "status": "pending",
+          "testStrategy": "Test with sample clean files and EICAR test virus files. Verify quarantine process works correctly. Test the event notification system with mock uploads."
+        },
+        {
+          "id": 4,
+          "title": "Implement permanent storage transfer mechanism",
+          "description": "Create a process to move validated files from temporary upload location to permanent storage or prepare them for Zendesk attachment.",
+          "dependencies": [
+            3
+          ],
+          "details": "Develop a service that processes files that passed virus scanning. Move clean files from the temporary upload location to a permanent storage folder with appropriate metadata. For files destined for Zendesk, prepare them according to Zendesk's attachment requirements. Update database records with new file locations and status. Implement error handling and retries for failed transfers.",
+          "status": "pending",
+          "testStrategy": "Test the transfer process with various file types and sizes. Verify metadata is preserved. Test error scenarios and recovery mechanisms. Confirm Zendesk-bound files meet the required format."
+        },
+        {
+          "id": 5,
+          "title": "Create monitoring, logging, and cleanup processes",
+          "description": "Implement comprehensive monitoring, logging, and cleanup processes for the attachment upload service.",
+          "dependencies": [
+            4
+          ],
+          "details": "Set up detailed logging for all service operations. Implement metrics collection for upload counts, sizes, success/failure rates, and scanning results. Create alerts for critical failures or security issues. Develop a scheduled cleanup process for abandoned uploads (files uploaded but not processed). Create an admin API to query upload status and manually trigger actions. Document the entire system with API specifications and operational procedures.",
+          "status": "pending",
+          "testStrategy": "Verify logs capture all relevant information. Test alerts by simulating failure conditions. Confirm cleanup process correctly identifies and removes abandoned uploads. Test admin API functionality with various scenarios."
+        }
+      ]
     },
     {
       "id": 4,
@@ -306,6 +361,17 @@
         11
       ],
       "priority": "medium"
+    },
+    {
+      "id": 17,
+      "title": "Task #17: Standardize Python Imports to Absolute Package Paths",
+      "description": "Update all Python imports across the project to use absolute package imports instead of file-relative imports to ensure compatibility with various execution environments including tests, scripts, and containerized deployments.",
+      "details": "This task involves systematically refactoring all Python import statements throughout the codebase to follow a consistent absolute import pattern. The developer should:\n\n1. Identify all Python files in the project, with special focus on the cookbook/agents_from_scratch directory and other package folders.\n2. Convert relative imports (e.g., from ..utils import helper) to absolute imports (e.g., from cookbook.utils import helper).\n3. Ensure imports follow the pattern: from [root_package].[sub_package].[module] import [object].\n4. Pay special attention to circular import dependencies that might be revealed during this refactoring.\n5. Update any import-related configurations in pyproject.toml, setup.py, or other package definition files if necessary.\n6. Verify that imports work correctly when running code from different entry points (main script, test runner, etc.).\n7. Document any special cases or exceptions where absolute imports cannot be applied.\n8. Consider using tools like isort to standardize import formatting after the conversion.\n9. Update any documentation or examples that reference the import style.\n\nThis standardization will resolve issues where code works in one context (e.g., local development) but fails in others (e.g., Docker containers or CI/CD pipelines) due to Python's module resolution behavior.",
+      "testStrategy": "To verify the successful completion of this task:\n\n1. Run a static analysis check to confirm all imports follow the absolute pattern:\n   - Use a custom script or grep to identify any remaining relative imports (e.g., `grep -r \"from \\.\\.\" --include=\"*.py\" .`)\n   - Verify no imports use leading dots (.) which indicate relative imports\n\n2. Execute comprehensive test coverage across different environments:\n   - Run the full test suite locally using pytest to verify tests pass with the new import style\n   - Execute tests in a Docker container to confirm imports work in containerized environments\n   - Verify functionality in any CI/CD pipeline environments (GitHub Actions, etc.)\n   - Test running scripts from different directories to ensure imports resolve correctly regardless of working directory\n\n3. Perform integration testing:\n   - Test any entry points defined in setup.py or pyproject.toml\n   - Verify that imported modules can be accessed when package is installed via pip\n   - Check that imports work correctly when running the application through any deployment scripts\n\n4. Code review:\n   - Have another developer review the changes to ensure consistency\n   - Verify that import statements follow the team's style guidelines\n   - Confirm that any circular import issues have been properly addressed\n\n5. Document any exceptions or special cases where absolute imports couldn't be applied and the workarounds implemented.",
+      "status": "pending",
+      "dependencies": [],
+      "priority": "medium",
+      "subtasks": []
     }
   ],
   "metadata": {

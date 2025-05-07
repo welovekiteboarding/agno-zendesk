@@ -1,4 +1,4 @@
-from form_collector_agent_prompts import PromptTemplates
+from cookbook.agents_from_scratch.form_collector_agent_prompts import PromptTemplates
 
 class ConversationFlow:
     def __init__(self, state, llm_agent, input_processor):

@@ -1,0 +1,11 @@
+# Task ID: 6
+# Title: Implement Ticket-Poster AGNO Agent
+# Status: pending
+# Dependencies: 4, 5
+# Priority: high
+# Description: Create the agent that formats the collected information and creates tickets in Zendesk with proper formatting and attachments.
+# Details:
+Develop the Ticket-Poster agent that formats the collected bug report information into the markdown format specified in section 4.4. Implement the assignment logic from section 4.5 to set the correct assignee_id (rotating 'Bug-Intake' agent) or fallback to group_id (Mobile-QA). Use the Zendesk POST /tickets or /requests endpoint to create tickets with the requester_id from the Email-Verifier, the formatted markdown body, and any attachments from the Attachment-Uploader. The agent should return the created ticket ID and URL for confirmation to the user.
+
+# Test Strategy:
+Test ticket creation with various combinations of fields and attachments. Verify markdown formatting matches the specification. Confirm assignment logic works correctly. Test error handling for API failures. Verify attachments are correctly included in the created tickets.
