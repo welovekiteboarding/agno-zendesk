@@ -70,7 +70,7 @@ Contributions are welcome! Please open issues or pull requests.
 
 MIT
 
-<!-- Yet another trivial edit for context summary CI test -->
+<!-- One more trivial edit for context summary CI test -->
 
 ---
 
