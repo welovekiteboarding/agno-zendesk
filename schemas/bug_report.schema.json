@@ -1,0 +1,67 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Bug Report",
+  "type": "object",
+  "required": [
+    "reporterName",
+    "reporterEmail",
+    "appVersion",
+    "deviceOS",
+    "stepsToReproduce",
+    "expectedResult",
+    "actualResult",
+    "severity",
+    "gdprConsent"
+  ],
+  "properties": {
+    "reporterName": {
+      "type": "string",
+      "description": "Name of the person reporting the bug"
+    },
+    "reporterEmail": {
+      "type": "string",
+      "description": "Email address of the reporter",
+      "pattern": "^(?:[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-zA-Z0-9-]*[a-zA-Z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])$"
+    },
+    "appVersion": {
+      "type": "string",
+      "description": "App version/build (e.g., 1.2.3 (1234))",
+      "pattern": "^\\d+\\.\\d+\\.\\d+\\s\\(\\d+\\)$"
+    },
+    "deviceOS": {
+      "type": "string",
+      "description": "Device model and OS version (e.g., iPad Pro 11\" M2, iPadOS 17.4)"
+    },
+    "stepsToReproduce": {
+      "type": "string",
+      "description": "Steps to reproduce the bug (multi-line string)",
+      "pattern": "^(.*\\n){2,}.*$"
+    },
+    "expectedResult": {
+      "type": "string",
+      "description": "Expected result (multi-line string)",
+      "pattern": "^(.*\\n){0,}.*$"
+    },
+    "actualResult": {
+      "type": "string",
+      "description": "Actual result (multi-line string)",
+      "pattern": "^(.*\\n){0,}.*$"
+    },
+    "severity": {
+      "type": "string",
+      "description": "Severity/impact of the bug",
+      "enum": ["Critical", "High", "Medium", "Low"]
+    },
+    "gdprConsent": {
+      "type": "boolean",
+      "description": "GDPR consent to store diagnostic data"
+    },
+    "attachments": {
+      "type": "array",
+      "description": "Optional attachments (screenshots, logs, etc.)",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

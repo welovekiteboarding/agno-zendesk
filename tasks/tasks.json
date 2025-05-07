@@ -16,7 +16,7 @@
           "description": "Create the foundational JSON schema structure with all required bug report fields and their basic types.",
           "dependencies": [],
           "details": "Create a JSON schema file with the root object structure. Define all required fields including: reporter name, email, app version, device/OS, steps to reproduce, expected result, actual result, severity/impact, and GDPR consent. Mark appropriate fields as required and set their basic data types (string, boolean, etc.).",
-          "status": "in-progress",
+          "status": "done",
           "testStrategy": "Validate the schema structure using a JSON schema validator. Test with a minimal valid payload to ensure the basic structure works."
         },
         {
@@ -27,7 +27,7 @@
             1
           ],
           "details": "Implement RFC-5322 compliant regex for email validation. Create regex pattern for app version format (^\\d+\\.\\d+\\.\\d+\\s\\(\\d+\\)$). Add any other necessary pattern validations for fields like device/OS information. Document each regex pattern with comments explaining the validation logic.",
-          "status": "pending",
+          "status": "done",
           "testStrategy": "Test each regex pattern individually with valid and invalid inputs. Ensure the email validation follows RFC-5322 standards and app version follows the specified format."
         },
         {
@@ -38,7 +38,7 @@
             1
           ],
           "details": "Add minLength constraints to enforce minimum line requirements: steps to reproduce (≥3 lines), expected result (≥1 line), and actual result (≥1 line). Implement appropriate string length calculations and validation logic. Consider using newline characters as line separators for validation purposes.",
-          "status": "pending",
+          "status": "done",
           "testStrategy": "Test with inputs containing various numbers of lines to verify the minimum line requirements are enforced correctly."
         },
         {
@@ -49,7 +49,7 @@
             1
           ],
           "details": "Create enum constraints for the severity/impact field with appropriate options (e.g., 'Critical', 'High', 'Medium', 'Low'). Add any other categorical fields that require predefined options. Include descriptions for each option to guide users in selecting the appropriate value.",
-          "status": "pending",
+          "status": "done",
           "testStrategy": "Test with both valid enum values and invalid values to ensure the schema correctly validates against the defined options."
         },
         {
@@ -62,7 +62,7 @@
             4
           ],
           "details": "Add schema support for optional attachments with appropriate file type and size validations if needed. Ensure the GDPR consent checkbox is properly implemented as a required boolean field. Integrate all previous schema components into a cohesive whole. Finalize the schema with appropriate metadata, descriptions, and documentation.",
-          "status": "pending",
+          "status": "done",
           "testStrategy": "Perform comprehensive testing with complete valid and invalid bug reports. Test edge cases for all validation rules. Validate the final schema against section 4.1 requirements to ensure all specifications are met."
         }
       ]
@@ -77,7 +77,54 @@
       ],
       "priority": "high",
       "details": "Develop the Form-Collector agent that implements the conversation flow described in section 4.2. Configure the agent to use the guardrails schema from Task 1. Implement follow-up question loops for missing or invalid fields. Design prompts that guide users through providing all required information. The agent should output a validated JSON object containing all collected fields. Include logic for handling attachment descriptions and generating placeholders for the upload process.",
-      "testStrategy": "Test with simulated user conversations, including scenarios with missing fields, invalid inputs, and complete submissions. Verify the agent correctly identifies all validation issues and guides the user to provide valid information. Confirm the final JSON output matches the expected format."
+      "testStrategy": "Test with simulated user conversations, including scenarios with missing fields, invalid inputs, and complete submissions. Verify the agent correctly identifies all validation issues and guides the user to provide valid information. Confirm the final JSON output matches the expected format.",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Set up Form-Collector agent framework",
+          "description": "Create the basic structure for the Form-Collector agent including the necessary components for LLM integration, conversation management, and schema validation.",
+          "dependencies": [],
+          "details": "Initialize the agent class with appropriate methods for handling conversations. Set up the connection to the LLM service. Implement the basic conversation flow structure with placeholders for schema validation and field collection. Create a mechanism to maintain conversation state and track collected fields.",
+          "status": "pending",
+          "testStrategy": "Write unit tests for the agent initialization and basic conversation flow. Mock LLM responses to test the conversation structure."
+        },
+        {
+          "id": 2,
+          "title": "Integrate guardrails schema validation",
+          "description": "Connect the Form-Collector agent to the guardrails schema developed in Task 1 to validate user inputs and identify missing fields.",
+          "dependencies": [],
+          "details": "Import and initialize the guardrails schema. Implement validation functions that check user inputs against schema requirements. Create logic to identify missing required fields and invalid inputs. Develop a mechanism to track validation status for each field in the schema.",
+          "status": "pending",
+          "testStrategy": "Test validation against sample inputs, including valid and invalid data. Verify that all required fields are properly identified when missing."
+        },
+        {
+          "id": 3,
+          "title": "Design and implement conversation prompts",
+          "description": "Create the prompt templates for guiding users through the bug report information collection process, including initial questions and follow-up prompts.",
+          "dependencies": [],
+          "details": "Design the initial prompt that explains the bug reporting process to users. Create templates for asking about each required field in the schema. Develop follow-up question templates for clarification when information is missing or invalid. Implement prompt selection logic based on the current state of the form completion.",
+          "status": "pending",
+          "testStrategy": "Review prompts with sample users to ensure clarity. Test that appropriate prompts are selected based on conversation context."
+        },
+        {
+          "id": 4,
+          "title": "Implement follow-up question loops",
+          "description": "Build the logic for detecting incomplete or invalid responses and generating appropriate follow-up questions until all required information is collected.",
+          "dependencies": [],
+          "details": "Create a mechanism to identify which fields need follow-up questions. Implement logic to generate contextual follow-up questions based on the specific missing or invalid data. Design the loop structure that continues asking for information until all fields are valid. Add handling for user corrections and updates to previously provided information.",
+          "status": "pending",
+          "testStrategy": "Test with simulated conversations containing incomplete responses. Verify that the agent correctly identifies missing information and asks appropriate follow-up questions."
+        },
+        {
+          "id": 5,
+          "title": "Implement JSON output and attachment handling",
+          "description": "Finalize the agent by implementing the JSON output generation and handling for file attachment descriptions.",
+          "dependencies": [],
+          "details": "Create the function to compile all collected information into a validated JSON object. Implement special handling for attachment descriptions, including generating placeholders for the upload process. Add final validation to ensure the output JSON contains all required fields according to the schema. Implement error handling for edge cases in the JSON generation process.",
+          "status": "pending",
+          "testStrategy": "Test the JSON output with various input combinations. Verify that attachment placeholders are correctly generated. Validate the final JSON against the schema requirements."
+        }
+      ]
     },
     {
       "id": 3,
@@ -193,7 +240,9 @@
       "title": "Establish Context‑Management Workflow",
       "description": "Set up project-wide context management before further coding. Create project brief, rolling summary, auto-summary CI, and update task dependencies.",
       "status": "pending",
-      "dependencies": [1],
+      "dependencies": [
+        1
+      ],
       "priority": "high",
       "details": "1. Create docs/PROJECT_BRIEF.md with project vision, impact, and scope. 2. Create docs/CONTEXT_SUMMARY.md as a rolling summary. 3. Add GitHub Action to auto-update context summary on PR merge. 4. Create scripts/summarize_pr.py for PR summarization. 5. Update README.md with context management section. 6. Patch tasks.json and update dependencies.",
       "testStrategy": "Open a dummy PR, merge it, and confirm the GitHub Action appends a new entry to docs/CONTEXT_SUMMARY.md."
