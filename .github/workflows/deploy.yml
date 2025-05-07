@@ -18,7 +18,19 @@ jobs:
         with:
           node-version: 18
       - name: Set environment variables
-        run: echo "AGNO_PROJECT_ID=your_project_id" >> $GITHUB_ENV
+        run: |
+          echo "AGNO_PROJECT_ID=your_project_id" >> $GITHUB_ENV
+          echo "ZENDESK_CLIENT_ID=placeholder" >> $GITHUB_ENV
+          echo "ZENDESK_CLIENT_SECRET=placeholder" >> $GITHUB_ENV
+          echo "ZENDESK_REDIRECT_URI=https://example.com/callback" >> $GITHUB_ENV
+          echo "STORAGE_BUCKET_NAME=placeholder" >> $GITHUB_ENV
+          echo "STORAGE_REGION=us-east-1" >> $GITHUB_ENV
+          echo "STORAGE_ACCESS_KEY=placeholder" >> $GITHUB_ENV
+          echo "STORAGE_SECRET_KEY=placeholder" >> $GITHUB_ENV
+          echo "AGNO_API_KEY=placeholder" >> $GITHUB_ENV
+          echo "ANALYTICS_KEY=placeholder" >> $GITHUB_ENV
+          echo "NODE_ENV=development" >> $GITHUB_ENV
+          echo "PORT=3000" >> $GITHUB_ENV
       - name: Install dependencies
         run: npm install
       - name: Run tests
