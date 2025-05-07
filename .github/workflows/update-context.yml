@@ -14,10 +14,14 @@ jobs:
       - name: Detect substantive changes
         id: diffcheck
         run: |
-          if git diff --name-only HEAD~1 | grep -qv docs/CONTEXT_SUMMARY.md; then
-            echo "run=true" >> $GITHUB_OUTPUT
+          if git rev-parse HEAD~1 >/dev/null 2>&1; then
+            if git diff --name-only HEAD~1 | grep -qv docs/CONTEXT_SUMMARY.md; then
+              echo "run=true" >> $GITHUB_OUTPUT
+            else
+              echo "run=false" >> $GITHUB_OUTPUT
+            fi
           else
-            echo "run=false" >> $GITHUB_OUTPUT
+            echo "run=true" >> $GITHUB_OUTPUT
           fi
 
       - name: Set up Python
