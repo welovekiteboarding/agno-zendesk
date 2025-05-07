@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Form Collector Agent Test</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    label { display: block; margin-top: 10px; font-weight: bold; }
+    textarea, input { width: 100%; padding: 8px; margin-top: 5px; }
+    button { margin-top: 15px; padding: 10px 20px; }
+    #response { margin-top: 20px; white-space: pre-wrap; background: #f0f0f0; padding: 10px; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <h1>Form Collector Agent Test</h1>
+  <form id="bugReportForm">
+    <label for="reporterName">Reporter Name</label>
+    <input type="text" id="reporterName" name="reporterName" required />
+
+    <label for="reporterEmail">Reporter Email</label>
+    <input type="email" id="reporterEmail" name="reporterEmail" required />
+
+    <label for="appVersion">App Version (e.g., 8.0.0 (1234))</label>
+    <input type="text" id="appVersion" name="appVersion" required />
+
+    <label for="deviceOS">Device OS</label>
+    <input type="text" id="deviceOS" name="deviceOS" required />
+
+    <label for="stepsToReproduce">Steps to Reproduce (multi-line, at least 3 lines)</label>
+    <textarea id="stepsToReproduce" name="stepsToReproduce" rows="5" required></textarea>
+
+    <label for="expectedResult">Expected Result</label>
+    <textarea id="expectedResult" name="expectedResult" rows="3" required></textarea>
+
+    <label for="actualResult">Actual Result</label>
+    <textarea id="actualResult" name="actualResult" rows="3" required></textarea>
+
+    <label for="severity">Severity</label>
+    <select id="severity" name="severity" required>
+      <option value="">Select severity</option>
+      <option value="Critical">Critical</option>
+      <option value="High">High</option>
+      <option value="Medium">Medium</option>
+      <option value="Low">Low</option>
+    </select>
+
+    <label>
+      <input type="checkbox" id="gdprConsent" name="gdprConsent" required />
+      I consent to store diagnostic data (GDPR)
+    </label>
+
+    <button type="submit">Submit Bug Report</button>
+  </form>
+
+  <div id="response"></div>
+
+  <script>
+    const form = document.getElementById('bugReportForm');
+    const responseDiv = document.getElementById('response');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      responseDiv.textContent = 'Submitting bug report...';
+
+      const formData = new FormData(form);
+      const data = {};
+      formData.forEach((value, key) => {
+        if (key === 'gdprConsent') {
+          data[key] = form.elements[key].checked;
+        } else {
+          data[key] = value;
+        }
+      });
+
+      // Here you would send 'data' to your backend agent API for processing
+      // For this test page, we just display the collected data
+      responseDiv.textContent = 'Collected Bug Report Data:\n' + JSON.stringify(data, null, 2);
+    });
+  </script>
+</body>
+</html>

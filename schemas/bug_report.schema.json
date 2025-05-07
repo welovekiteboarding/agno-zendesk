@@ -35,7 +35,7 @@
     "stepsToReproduce": {
       "type": "string",
       "description": "Steps to reproduce the bug (multi-line string)",
-      "pattern": "^(.*\\n){2,}.*$"
+      "pattern": "^(.*\\n){2,}.*\\n?$"
     },
     "expectedResult": {
       "type": "string",
