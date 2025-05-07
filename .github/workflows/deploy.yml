@@ -17,6 +17,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
+      - name: Set environment variables
+        run: echo "AGNO_PROJECT_ID=your_project_id" >> $GITHUB_ENV
       - name: Install dependencies
         run: npm install
       - name: Run tests
