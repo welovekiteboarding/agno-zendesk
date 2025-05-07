@@ -1,0 +1,54 @@
+# Task ID: 11
+# Title: Deployment Descriptors & CI/CD Bootstrap
+# Status: pending
+# Dependencies: 1
+# Priority: high
+# Description: Create deployment configuration files and CI/CD workflows to enable automatic deployment of preview environments for both frontend and backend components of the application.
+# Details:
+This task involves setting up several configuration files to enable automated deployments:
+
+1. **Frontend Configuration**:
+   - Create `frontend/vercel.json` with edge rewrites configuration to handle frontend routing properly
+   - Configure path rewrites to ensure SPA routing works correctly
+   - Set up environment variable handling
+
+2. **Backend Configuration**:
+   - Create `backend/Dockerfile` that properly packages the FastAPI+AGNO application
+   - Include all necessary dependencies and set up proper entry points
+   - Configure environment variables and health check endpoints
+   - Optimize the Docker image for production use (multi-stage builds if appropriate)
+
+3. **Cloud Hosting Configuration**:
+   - Create either `render.yaml` or `fly.toml` in the project root to define backend service deployment
+   - Configure auto-deployment settings, environment variables, and resource allocations
+   - Set up database connections and other service dependencies
+
+4. **CI/CD Workflow**:
+   - Create `.github/workflows/deploy.yml` to automate the deployment process
+   - Configure the workflow to run tests before deployment
+   - Set up branch-based preview deployments
+   - Ensure proper secrets and environment variables are used
+   - Configure notifications for deployment success/failure
+
+Ensure all configuration files follow best practices for security and performance.
+
+# Test Strategy:
+1. **Local Testing**:
+   - Validate Dockerfile locally by building and running the container
+   - Test vercel.json configuration with Vercel CLI if possible
+
+2. **Integration Testing**:
+   - Push changes to a feature branch to trigger the GitHub Actions workflow
+   - Verify that the workflow runs successfully and completes all steps
+   - Confirm that preview environments are automatically created on both Vercel (frontend) and Render/Fly.io (backend)
+
+3. **Validation**:
+   - Access the generated preview URLs for both frontend and backend
+   - Verify that the frontend application loads correctly and routing works
+   - Check that the backend API endpoints are accessible and return expected responses
+   - Run health checks against the deployed services
+   - Test the integration between frontend and backend in the preview environment
+
+4. **Documentation**:
+   - Document the URLs and patterns for preview environments
+   - Verify that the deployment process is properly documented for the team

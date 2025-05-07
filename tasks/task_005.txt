@@ -1,0 +1,11 @@
+# Task ID: 5
+# Title: Implement Attachment-Uploader AGNO Agent
+# Status: pending
+# Dependencies: 3
+# Priority: medium
+# Description: Build the agent that processes uploaded files and prepares them for inclusion in Zendesk tickets.
+# Details:
+Develop the Attachment-Uploader agent that processes files uploaded via the presigned URLs. The agent should verify successful uploads, process the files as needed (format conversion, metadata extraction), and prepare them for attachment to Zendesk tickets. Implement logic to either move files to permanent storage or prepare them for direct Zendesk upload. The agent should return file metadata including URLs or attachment tokens for the Ticket-Poster agent.
+
+# Test Strategy:
+Test with various file types including screenshots, screen recordings, .skyset files, and log files. Verify files are correctly processed and prepared for Zendesk. Test error handling for failed uploads or processing errors.

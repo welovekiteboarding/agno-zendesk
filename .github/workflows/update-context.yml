@@ -1,0 +1,22 @@
+name: Update Context Summary
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+jobs:
+  summarize:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate summary
+        id: gen
+        run: |
+          pip install openai>=1.15 --quiet
+          python scripts/summarize_pr.py \
+            "${{ github.event.pull_request.number }}" \
+            >> docs/CONTEXT_SUMMARY.md
+      - name: Commit & push summary
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(context): auto‑update summary"

@@ -1,0 +1,46 @@
+# Task ID: 13
+# Title: S3/R2 Bucket Provisioning & IAM Configuration for Attachment-Uploader
+# Status: pending
+# Dependencies: 11
+# Priority: high
+# Description: Provision cloud storage (S3 or R2 bucket) and configure appropriate IAM permissions for the Attachment-Uploader microservice to securely handle file uploads.
+# Details:
+1. Create a new bucket named 'bug-uploads-prod' in either AWS S3 or Cloudflare R2 based on the project's cloud provider.
+2. Configure bucket settings:
+   - Set appropriate region for optimal performance
+   - Enable versioning for data integrity
+   - Configure CORS settings to allow uploads from authorized domains
+   - Implement server-side encryption for data at rest
+3. Set up lifecycle rules:
+   - Transition objects to infrequent access storage after 30 days
+   - Archive objects older than 90 days
+   - Delete objects older than 1 year or as per compliance requirements
+4. Create IAM credentials with least-privilege permissions:
+   - Generate dedicated access keys for the Attachment-Uploader service
+   - Restrict permissions to only necessary operations (GET, PUT, DELETE)
+   - Limit access to only the 'bug-uploads-prod' bucket
+5. Document the entire setup process including:
+   - Bucket configuration details
+   - IAM policy JSON
+   - Access key management procedures (rotation policy)
+   - Encryption settings
+6. Update the Attachment-Uploader service configuration to use the new bucket and credentials.
+
+# Test Strategy:
+1. Functional Testing:
+   - Upload a test file to the bucket using the configured IAM credentials
+   - Verify successful retrieval of the uploaded file
+   - Confirm deletion works as expected
+2. Security Testing:
+   - Attempt to access the bucket with invalid credentials (should fail)
+   - Try to perform unauthorized operations with the service credentials (should fail)
+   - Verify encryption is working by examining object metadata
+3. Lifecycle Testing:
+   - Use the provider's tools to simulate lifecycle transitions
+   - Verify objects transition to different storage classes as configured
+4. Performance Testing:
+   - Measure upload/download speeds from different regions
+   - Test with various file sizes to ensure consistent performance
+5. Documentation Verification:
+   - Have another team member follow the documentation to validate it's complete
+   - Ensure all credentials and configuration details are properly documented in the secure team password manager

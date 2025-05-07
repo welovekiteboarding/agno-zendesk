@@ -1,0 +1,185 @@
+<context>
+# Overview  
+Project: AGNO‑powered “Bug‑Report LLM” with automatic Zendesk ticket creation  
+Version: MVP‑1.0  
+Author: (you)  
+Date: 6 May 2025
+
+## Vision
+
+Deliver a zero‑friction “Report a Bug” experience that transforms unstructured customer frustration into fully structured, reproducible Zendesk tickets—within seconds and without human intervention.
+
+## Strategic Impact
+
+Cuts average bug‑resolution time by ≥25 %, reduces support back‑and‑forth emails by ≥70 %, and unlocks downstream analytics for product quality.
+
+## Purpose & Goals
+
+Build a single‑button workflow inside our support portal that opens an LLM‑driven chat.
+The LLM must:
+1. Collect a complete, high‑quality bug report by forcing users to supply every critical field.
+2. Verify / create the reporter in Zendesk.
+3. Create a Zendesk ticket with correct requester + assignee metadata, attached files, and a well‑formatted markdown body.
+4. Provide the user a ticket‑number confirmation and store an internal log for analytics.
+
+Success = 95 %+ of submissions reach Zendesk without manual re‑write.
+
+## Scope
+
+Included: Chat‑based form collection, file upload, ticket creation, success UI, basic error handling  
+Excluded: Auto‑triage / prioritisation, duplicate detection, AI ticket‑reply suggestions, analytics dashboards
+
+## User Experience
+
+### User Stories
+
+| ID | As a…           | I want to…                                         | So that…                        |
+|----|-----------------|----------------------------------------------------|---------------------------------|
+| U1 | End‑user        | Click “Report a bug”, chat with the LLM, and get a ticket number | I know support has my issue     |
+| U2 | QA/Support agent| Receive tickets with mandatory details & attachments| I can reproduce & fix faster    |
+| U3 | Product owner   | Track submission metrics (success/fail counts)      | I can prove ROI of the LLM      |
+
+</context>
+<PRD>
+# Technical Architecture
+
+## Functional Requirements
+
+### 4.1 Field Collection (Hard‑required unless noted)
+
+| Field             | Validation rules                                                                 |
+|-------------------|---------------------------------------------------------------------------------|
+| Reporter email    | RFC‑5322; verified via GET /users/search?query=email: – create user if none      |
+| App version/build | Regex ^\d+\.\d+\.\d+\s\(\d+\)$                                                   |
+| Platform / OS     | Select list; include version (e.g. iPadOS 17.4)                                 |
+| Device model      | Free text (iPad Pro 11” M2)                                                     |
+| Severity/impact   | Enum: Crash / Data loss / Functional bug / Minor UI                             |
+| Steps to reproduce| ≥ 3 lines                                                                       |
+| Expected result   | ≥ 1 line                                                                        |
+| Actual result     | ≥ 1 line                                                                        |
+| Time first observed| ISO‑8601 or “about 3 h ago” (parse to UTC)                                     |
+| Attachments       | Optional – screenshots, screen recordings (≤ 100 MB), .skyset files, log files  |
+| Consent checkbox  | GDPR consent to store diagnostic data                                           |
+
+### 4.2 LLM Conversation Flow
+1. Guardrails / JSON schema forces completion.
+2. Missing or invalid fields trigger a follow‑up question loop.
+3. Attachment uploads generate presigned S3/R2 URLs; LLM instructs user to drop files.
+4. Final validated JSON handed to downstream agents.
+
+### 4.3 AGNO Agent Pipeline
+
+| Order | Agent              | Role                                                        |
+|-------|--------------------|-------------------------------------------------------------|
+| A1    | Form‑Collector     | Runs Guardrails loop; outputs JSON                          |
+| A2    | Email‑Verifier     | Hits Zendesk users search; creates user if needed           |
+| A3    | Attachment‑Uploader| Moves presigned files into permanent storage or Zendesk      |
+| A4    | Ticket‑Poster      | Calls POST /tickets or /requests with requester_id, assignee_id/group_id, body & uploads |
+
+### 4.4 Ticket Body Format (Markdown)
+**Summary:** Crash when tapping “Observe”  
+**App / Version:** SkySafari 7 Plus – 7.5.3 (1023)  
+**OS / Device:** iPadOS 17.4 – iPad Pro 11" (M2)  
+
+**Steps to Reproduce**  
+1. …  
+2. …  
+3. …  
+
+**Expected Result**  
+Star chart opens.
+
+**Actual Result**  
+App quits to Home screen.
+
+**Attachments**  
+• screenshot.png  
+• screenrec.mov  
+• test.skyset
+
+### 4.5 Assignment Logic
+- assignee_id = rotating “Bug‑Intake” agent (configurable).
+- Fallback: group_id = Mobile‑QA.
+- Zendesk triggers can re‑route later.
+
+# Development Roadmap
+
+## Milestones
+
+| Date         | Deliverable                                               |
+|--------------|----------------------------------------------------------|
+| W‑1 (May 16) | Guardrails schema + Form‑Collector agent prototype       |
+| W‑2 (May 23) | Attachment upload microservice + Email‑Verifier agent    |
+| W‑3 (May 30) | Ticket‑Poster agent, Zendesk OAuth wiring, end‑to‑end happy path |
+| W‑4 (Jun 6)  | UX polish, logging, metrics, security review             |
+| W‑5 (Jun 13) | Closed‑beta with internal QA team                        |
+| W‑6 (Jun 20) | Public launch within support portal                      |
+
+## MVP requirements
+- All functional requirements above
+- All non-functional requirements below
+
+## Future enhancements
+- Auto‑triage / prioritisation
+- Duplicate detection
+- AI ticket‑reply suggestions
+- Analytics dashboards
+
+# Logical Dependency Chain
+
+- Foundation: Form‑Collector agent and Guardrails schema
+- Next: Email‑Verifier and Attachment‑Uploader agents
+- Then: Ticket‑Poster agent and Zendesk integration
+- Then: UX polish, logging, metrics, security, accessibility
+- Finally: Analytics, dashboards, future enhancements
+
+# Risks and Mitigations
+
+- Technical challenges: Zendesk API integration, file upload reliability
+- MVP scoping: Focus on required fields and happy path first
+- Resource constraints: Prioritize agent pipeline and core flows
+
+# Appendix
+
+## Non‑Functional Requirements
+
+| Area         | Requirement                                                                 |
+|--------------|-----------------------------------------------------------------------------|
+| Performance  | Ticket created < 4 s (p95) after last user message                          |
+| Reliability  | 99 % uptime, retries with exponential back‑off for Zendesk 5xx              |
+| Security     | OAuth token stored in secret manager; presigned URLs valid 15 min; attachments virus‑scanned |
+| Privacy      | GDPR consent captured; deletion API wired for “Right to be Forgotten”       |
+| Scalability  | 20 concurrent sessions at launch; horizontal agent scaling                  |
+| Accessibility| WCAG 2.1 AA for chat modal & uploads                                        |
+| Localization | English only MVP; string table ready for i18n                               |
+
+## UX / UI
+
+1. “Report a Bug” button – visible in Help widget & app settings page.
+2. Opens modal chat (re‑uses existing Vercel chat UI styles).
+3. Progress indicator (“3 / 9 fields complete”).
+4. Drag‑and‑drop area for files (mobile tap‑to‑select).
+5. Confirmation screen with ticket link and “View my tickets” button.
+
+## API Integration Details
+
+- Zendesk – OAuth client (tickets:write, uploads:write, users:read write).
+- Storage – S3 bucket bug‑uploads‑prod, lifecycle rule 90 days delete.
+- Logging – CloudWatch (AGNO‑bug‑report‑logs) or Vercel Analytics event on success/failure.
+
+## Open Questions
+
+1. Auto‑assign severity based on LLM analysis vs. user selection?
+2. Do we restrict file types (e.g., .skyset, .log, images/video) at upload time?
+3. Slack/Teams notification of new tickets for QA team?
+4. Rate‑limit anonymous reporters? (spam prevention)
+5. Should attachments live in Zendesk or our own bucket long‑term?
+
+## Success Metrics
+
+- Submission success rate ≥ 95 % (ticket created).
+- Avg. agent follow‑up emails ≤ 0.3 per ticket (proxy for report completeness).
+- Median time to first response drops by 25 %.
+- User CSAT on bug‑report flow ≥ 4.5 / 5.
+
+</PRD>

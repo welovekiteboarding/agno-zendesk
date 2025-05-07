@@ -1,0 +1,11 @@
+# Task ID: 4
+# Title: Implement Email-Verifier AGNO Agent
+# Status: pending
+# Dependencies: 2
+# Priority: medium
+# Description: Create the agent responsible for verifying user emails against Zendesk and creating new users when necessary.
+# Details:
+Develop the Email-Verifier agent that takes the reporter email from the Form-Collector output and verifies it against Zendesk using the GET /users/search?query=email: endpoint. Implement logic to create a new user in Zendesk if the email doesn't exist. The agent should return the verified user's requester_id for use in ticket creation. Implement proper error handling for API failures with exponential backoff for 5xx errors.
+
+# Test Strategy:
+Test with existing and non-existing email addresses. Verify user creation works correctly. Test error handling with simulated API failures. Confirm the agent correctly returns user IDs for both existing and newly created users.

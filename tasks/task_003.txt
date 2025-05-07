@@ -1,0 +1,11 @@
+# Task ID: 3
+# Title: Build Attachment Upload Microservice
+# Status: pending
+# Dependencies: None
+# Priority: high
+# Description: Create a microservice that generates presigned S3/R2 URLs for file uploads and handles the secure storage of user-submitted attachments.
+# Details:
+Develop a microservice that generates presigned URLs for S3/R2 storage with 15-minute validity. Implement file size validation (≤100MB) and configure the S3 bucket 'bug-uploads-prod' with appropriate permissions and a 90-day lifecycle deletion rule. Add virus scanning for uploaded files. The service should accept file metadata (name, type, size) and return a presigned URL for upload. After successful upload, files should be moved to permanent storage or prepared for Zendesk attachment.
+
+# Test Strategy:
+Test URL generation with various file types and sizes. Verify upload functionality with real files. Confirm virus scanning works correctly. Test URL expiration after 15 minutes. Validate that files are correctly stored and accessible after upload.

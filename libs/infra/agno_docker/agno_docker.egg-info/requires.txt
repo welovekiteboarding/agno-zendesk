@@ -1,0 +1,6 @@
+docker
+
+[dev]
+mypy
+pytest
+ruff

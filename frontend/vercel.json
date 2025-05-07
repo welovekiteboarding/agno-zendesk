@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/api/chat", "destination": "https://bug-backend.onrender.com/chat/stream" },
+    { "source": "/api/upload", "destination": "https://bug-backend.onrender.com/upload/presign" }
+  ]
+}

@@ -1,0 +1,11 @@
+# Task ID: 2
+# Title: Implement Form-Collector AGNO Agent
+# Status: pending
+# Dependencies: 1
+# Priority: high
+# Description: Build the first agent in the pipeline that uses the guardrails schema to collect all required bug report information through an LLM-driven conversation.
+# Details:
+Develop the Form-Collector agent that implements the conversation flow described in section 4.2. Configure the agent to use the guardrails schema from Task 1. Implement follow-up question loops for missing or invalid fields. Design prompts that guide users through providing all required information. The agent should output a validated JSON object containing all collected fields. Include logic for handling attachment descriptions and generating placeholders for the upload process.
+
+# Test Strategy:
+Test with simulated user conversations, including scenarios with missing fields, invalid inputs, and complete submissions. Verify the agent correctly identifies all validation issues and guides the user to provide valid information. Confirm the final JSON output matches the expected format.
