@@ -1,22 +1,42 @@
-name: Update Context Summary
-on:
-  pull_request:
-    types: [closed]
-    branches: [main]
+name: Update Context Summary (branch‑local)
+
+on: [push]                       # run on every push to any branch
+
 jobs:
   summarize:
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+    permissions:
+      contents: write            # allow Action to commit back
     steps:
       - uses: actions/checkout@v4
-      - name: Generate summary
-        id: gen
+
+      # Guard: skip if only CONTEXT_SUMMARY changed
+      - name: Detect substantive changes
+        id: diffcheck
         run: |
-          pip install openai>=1.15 --quiet
-          python scripts/summarize_pr.py \
-            "${{ github.event.pull_request.number }}" \
-            >> docs/CONTEXT_SUMMARY.md
-      - name: Commit & push summary
+          if git diff --name-only HEAD~1 | grep -qv docs/CONTEXT_SUMMARY.md; then
+            echo "run=true" >> $GITHUB_OUTPUT
+          else
+            echo "run=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Set up Python
+        if: steps.diffcheck.outputs.run == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install deps
+        if: steps.diffcheck.outputs.run == 'true'
+        run: pip install openai --quiet
+
+      - name: Generate summary
+        if: steps.diffcheck.outputs.run == 'true'
+        run: |
+          python scripts/summarize_pr.py HEAD >> docs/CONTEXT_SUMMARY.md
+
+      - name: Auto‑commit summary
+        if: steps.diffcheck.outputs.run == 'true'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "chore(context): auto‑update summary"
+          commit_message: "chore(context): auto‑summary"
