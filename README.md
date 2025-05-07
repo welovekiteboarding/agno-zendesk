@@ -69,3 +69,17 @@ Contributions are welcome! Please open issues or pull requests.
 ## License
 
 MIT
+
+---
+
+## Context Management
+
+This project uses a context-management workflow to ensure all key decisions and project context are captured and accessible:
+
+- **docs/PROJECT_BRIEF.md**: Contains the project vision, impact, and scope. Read this for a high-level understanding of the project's goals and benefits.
+- **docs/CONTEXT_SUMMARY.md**: A rolling summary file. Each merged PR appends 5–10 bullet decisions here, providing a concise history of important changes and decisions.
+
+A GitHub Action (.github/workflows/update-context.yml) automatically updates the context summary after each merged PR by summarizing the diff using GPT-4o.
+
+**Cost-control tactic:**  
+Developers should reference these docs in their prompts and reviews instead of pasting long chat or code history, reducing token usage and improving efficiency.
