@@ -1,0 +1,129 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Create Guardrails Schema for Form Collection",
+      "description": "Develop the JSON schema with guardrails that will enforce the collection of all required bug report fields with proper validation rules.",
+      "status": "pending",
+      "dependencies": [],
+      "priority": "high",
+      "details": "Create a comprehensive JSON schema that enforces all field validations specified in section 4.1. Include regex patterns for email (RFC-5322), app version (^\\d+\\.\\d+\\.\\d+\\s\\(\\d+\\)$), and other validation rules. Schema should enforce minimum line requirements for steps to reproduce (≥3), expected result (≥1), and actual result (≥1). Include enums for severity/impact options. The schema should support optional attachments and require the GDPR consent checkbox.",
+      "testStrategy": "Validate schema against sample inputs with both valid and invalid data for each field. Test edge cases like minimum line counts and regex pattern matching. Ensure schema correctly identifies and reports all validation errors."
+    },
+    {
+      "id": 2,
+      "title": "Implement Form-Collector AGNO Agent",
+      "description": "Build the first agent in the pipeline that uses the guardrails schema to collect all required bug report information through an LLM-driven conversation.",
+      "status": "pending",
+      "dependencies": [
+        1
+      ],
+      "priority": "high",
+      "details": "Develop the Form-Collector agent that implements the conversation flow described in section 4.2. Configure the agent to use the guardrails schema from Task 1. Implement follow-up question loops for missing or invalid fields. Design prompts that guide users through providing all required information. The agent should output a validated JSON object containing all collected fields. Include logic for handling attachment descriptions and generating placeholders for the upload process.",
+      "testStrategy": "Test with simulated user conversations, including scenarios with missing fields, invalid inputs, and complete submissions. Verify the agent correctly identifies all validation issues and guides the user to provide valid information. Confirm the final JSON output matches the expected format."
+    },
+    {
+      "id": 3,
+      "title": "Build Attachment Upload Microservice",
+      "description": "Create a microservice that generates presigned S3/R2 URLs for file uploads and handles the secure storage of user-submitted attachments.",
+      "status": "pending",
+      "dependencies": [],
+      "priority": "high",
+      "details": "Develop a microservice that generates presigned URLs for S3/R2 storage with 15-minute validity. Implement file size validation (≤100MB) and configure the S3 bucket 'bug-uploads-prod' with appropriate permissions and a 90-day lifecycle deletion rule. Add virus scanning for uploaded files. The service should accept file metadata (name, type, size) and return a presigned URL for upload. After successful upload, files should be moved to permanent storage or prepared for Zendesk attachment.",
+      "testStrategy": "Test URL generation with various file types and sizes. Verify upload functionality with real files. Confirm virus scanning works correctly. Test URL expiration after 15 minutes. Validate that files are correctly stored and accessible after upload."
+    },
+    {
+      "id": 4,
+      "title": "Implement Email-Verifier AGNO Agent",
+      "description": "Create the agent responsible for verifying user emails against Zendesk and creating new users when necessary.",
+      "status": "pending",
+      "dependencies": [
+        2
+      ],
+      "priority": "medium",
+      "details": "Develop the Email-Verifier agent that takes the reporter email from the Form-Collector output and verifies it against Zendesk using the GET /users/search?query=email: endpoint. Implement logic to create a new user in Zendesk if the email doesn't exist. The agent should return the verified user's requester_id for use in ticket creation. Implement proper error handling for API failures with exponential backoff for 5xx errors.",
+      "testStrategy": "Test with existing and non-existing email addresses. Verify user creation works correctly. Test error handling with simulated API failures. Confirm the agent correctly returns user IDs for both existing and newly created users."
+    },
+    {
+      "id": 5,
+      "title": "Implement Attachment-Uploader AGNO Agent",
+      "description": "Build the agent that processes uploaded files and prepares them for inclusion in Zendesk tickets.",
+      "status": "pending",
+      "dependencies": [
+        3
+      ],
+      "priority": "medium",
+      "details": "Develop the Attachment-Uploader agent that processes files uploaded via the presigned URLs. The agent should verify successful uploads, process the files as needed (format conversion, metadata extraction), and prepare them for attachment to Zendesk tickets. Implement logic to either move files to permanent storage or prepare them for direct Zendesk upload. The agent should return file metadata including URLs or attachment tokens for the Ticket-Poster agent.",
+      "testStrategy": "Test with various file types including screenshots, screen recordings, .skyset files, and log files. Verify files are correctly processed and prepared for Zendesk. Test error handling for failed uploads or processing errors."
+    },
+    {
+      "id": 6,
+      "title": "Implement Ticket-Poster AGNO Agent",
+      "description": "Create the agent that formats the collected information and creates tickets in Zendesk with proper formatting and attachments.",
+      "status": "pending",
+      "dependencies": [
+        4,
+        5
+      ],
+      "priority": "high",
+      "details": "Develop the Ticket-Poster agent that formats the collected bug report information into the markdown format specified in section 4.4. Implement the assignment logic from section 4.5 to set the correct assignee_id (rotating 'Bug-Intake' agent) or fallback to group_id (Mobile-QA). Use the Zendesk POST /tickets or /requests endpoint to create tickets with the requester_id from the Email-Verifier, the formatted markdown body, and any attachments from the Attachment-Uploader. The agent should return the created ticket ID and URL for confirmation to the user.",
+      "testStrategy": "Test ticket creation with various combinations of fields and attachments. Verify markdown formatting matches the specification. Confirm assignment logic works correctly. Test error handling for API failures. Verify attachments are correctly included in the created tickets."
+    },
+    {
+      "id": 7,
+      "title": "Implement Chat UI with File Upload",
+      "description": "Build the user-facing chat interface that allows users to interact with the LLM and upload files.",
+      "status": "pending",
+      "dependencies": [
+        2,
+        3
+      ],
+      "priority": "high",
+      "details": "Develop a modal chat interface that reuses existing Vercel chat UI styles as specified in the UX/UI section. Implement a progress indicator showing '3/9 fields complete' to track form completion. Create a drag-and-drop area for file uploads with mobile tap-to-select functionality. Integrate with the Form-Collector agent for conversation flow and the Attachment Upload microservice for file handling. Ensure the UI meets WCAG 2.1 AA accessibility standards and prepare string tables for future localization.",
+      "testStrategy": "Test the UI on various devices and browsers. Verify accessibility compliance with automated tools and manual testing. Test file upload functionality with various file types and sizes. Confirm progress indicator accurately reflects form completion status."
+    },
+    {
+      "id": 8,
+      "title": "Implement End-to-End Integration and OAuth Flow",
+      "description": "Connect all components and implement the OAuth authentication flow for Zendesk API access.",
+      "status": "pending",
+      "dependencies": [
+        6,
+        7
+      ],
+      "priority": "medium",
+      "details": "Integrate all agents and services into a complete pipeline. Implement OAuth client for Zendesk with required scopes (tickets:write, uploads:write, users:read write). Store OAuth tokens securely in a secret manager. Implement the full user flow from clicking 'Report a Bug' through conversation to ticket creation and confirmation. Add a confirmation screen with ticket link and 'View my tickets' button. Ensure all components communicate correctly and handle errors appropriately.",
+      "testStrategy": "Perform end-to-end testing of the complete flow. Test OAuth authentication and token refresh. Verify all components interact correctly. Test error scenarios at each stage of the pipeline. Confirm the user receives appropriate feedback throughout the process."
+    },
+    {
+      "id": 9,
+      "title": "Implement Logging and Metrics",
+      "description": "Add comprehensive logging and metrics collection to track system performance and success rates.",
+      "status": "pending",
+      "dependencies": [
+        8
+      ],
+      "priority": "medium",
+      "details": "Implement logging to CloudWatch (AGNO-bug-report-logs) or Vercel Analytics for all key events. Log success/failure events for each step in the pipeline. Track metrics for submission success rate, time to ticket creation, and other success metrics defined in the PRD. Implement performance monitoring to ensure the system meets the requirement of ticket creation in <4s (p95) after the last user message. Add logging for security events such as authentication failures or suspicious upload attempts.",
+      "testStrategy": "Verify logs are correctly generated for all key events. Test metrics collection and reporting. Simulate various scenarios including successes and failures to ensure all events are properly logged. Validate that performance metrics are accurately captured."
+    },
+    {
+      "id": 10,
+      "title": "Implement Security and Privacy Features",
+      "description": "Add security features and privacy controls to ensure compliance with requirements.",
+      "status": "pending",
+      "dependencies": [
+        8
+      ],
+      "priority": "high",
+      "details": "Implement GDPR consent capture and storage. Create an API endpoint for 'Right to be Forgotten' requests to delete user data. Ensure OAuth tokens are securely stored in a secret manager. Verify presigned URLs are valid for exactly 15 minutes. Implement virus scanning for all uploaded attachments. Add rate limiting for anonymous reporters to prevent spam. Review and harden all API endpoints and data storage. Implement secure handling of user information throughout the pipeline.",
+      "testStrategy": "Conduct a security review of the entire system. Test GDPR consent flows and deletion API. Verify OAuth token security. Test presigned URL expiration. Confirm virus scanning catches malicious files. Test rate limiting functionality. Perform penetration testing on API endpoints and authentication mechanisms."
+    }
+  ],
+  "metadata": {
+    "projectName": "AGNO-powered Bug-Report LLM with Zendesk Integration",
+    "totalTasks": 10,
+    "sourceFile": "/Users/welovekiteboarding/Development/agno-zendesk/scripts/prd.txt",
+    "generatedAt": "2023-11-15"
+  }
+}

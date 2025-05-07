@@ -1,0 +1,40 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - main
+      - feature/*
+      - infra-bootstrap
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install dependencies
+        run: npm install
+      - name: Run tests
+        run: npm test
+
+  # Uncomment and configure these steps when secrets are set
+  # deploy-vercel:
+  #   needs: test
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Deploy to Vercel
+  #       run: npx vercel --prod --token ${{ secrets.VERCEL_TOKEN }}
+
+  # deploy-render:
+  #   needs: test
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Deploy to Render
+  #       run: render deploy --service bug-backend --api-key ${{ secrets.RENDER_API_KEY }}

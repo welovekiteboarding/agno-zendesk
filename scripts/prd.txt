@@ -5,6 +5,14 @@ Version: MVP‑1.0
 Author: (you)  
 Date: 6 May 2025
 
+## Vision
+
+Deliver a zero‑friction “Report a Bug” experience that transforms unstructured customer frustration into fully structured, reproducible Zendesk tickets—within seconds and without human intervention.
+
+## Strategic Impact
+
+Cuts average bug‑resolution time by ≥25 %, reduces support back‑and‑forth emails by ≥70 %, and unlocks downstream analytics for product quality.
+
 ## Purpose & Goals
 
 Build a single‑button workflow inside our support portal that opens an LLM‑driven chat.

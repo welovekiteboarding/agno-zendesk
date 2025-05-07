@@ -1,0 +1,57 @@
+# Task ID: 14
+# Title: DNS & TLS Configuration for Bug Widget and API Endpoints
+# Status: pending
+# Dependencies: 11
+# Priority: medium
+# Description: Configure DNS records and TLS certificates for bug-widget.yourdomain.com (Vercel) and api-bug.yourdomain.com (Render/Fly/Cloud-Run) to ensure secure communication.
+# Details:
+This task involves setting up proper DNS configuration and TLS certificates for two domains:
+
+1. For bug-widget.yourdomain.com (Vercel):
+   - Create a CNAME record pointing to Vercel's servers (typically cname.vercel-dns.com)
+   - Configure the domain in Vercel's dashboard
+   - Let Vercel handle the automatic TLS certificate provisioning
+
+2. For api-bug.yourdomain.com (Render/Fly/Cloud-Run):
+   - Create appropriate DNS records based on the hosting platform:
+     - For Render: CNAME to [app-name].render.com
+     - For Fly.io: CNAME to [app-name].fly.dev
+     - For Cloud Run: CNAME or ALIAS to ghs.googlehosted.com
+   - Configure the domain in the respective platform's dashboard
+   - Set up TLS certificates (either through the platform's automatic provisioning or manually with Let's Encrypt)
+
+3. Documentation:
+   - Create a markdown document in the project repository detailing:
+     - DNS provider used and configuration steps
+     - TLS certificate source and renewal process
+     - Any platform-specific settings applied
+     - Troubleshooting tips for common issues
+   - Include screenshots of the configuration panels where helpful
+
+4. Ensure both domains have proper HTTP to HTTPS redirects configured.
+
+# Test Strategy:
+1. DNS Verification:
+   - Use `dig` or `nslookup` to verify DNS records are correctly configured
+   - Example: `dig bug-widget.yourdomain.com` should show the correct CNAME
+   - Check DNS propagation using multiple DNS checkers (e.g., whatsmydns.net)
+
+2. TLS Certificate Validation:
+   - Access both endpoints via HTTPS in multiple browsers
+   - Verify certificate validity using browser developer tools
+   - Check certificate details (issuer, expiration date, domain coverage)
+   - Use SSL checking tools like SSL Labs (ssllabs.com/ssltest/) to verify proper configuration
+   - Verify TLS version (should be TLS 1.2 or 1.3) and cipher suites
+
+3. Security Headers:
+   - Use security header checking tools (securityheaders.com) to verify proper headers
+   - Ensure HSTS is enabled where appropriate
+
+4. Redirect Testing:
+   - Verify that HTTP requests redirect to HTTPS
+   - Test with curl: `curl -I http://bug-widget.yourdomain.com`
+   - Confirm 301/302 redirect to HTTPS version
+
+5. End-to-end Testing:
+   - Verify that API calls from the widget to the API endpoint work correctly over HTTPS
+   - Test with sample API requests to confirm secure communication

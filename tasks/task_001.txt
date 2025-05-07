@@ -1,0 +1,11 @@
+# Task ID: 1
+# Title: Create Guardrails Schema for Form Collection
+# Status: pending
+# Dependencies: None
+# Priority: high
+# Description: Develop the JSON schema with guardrails that will enforce the collection of all required bug report fields with proper validation rules.
+# Details:
+Create a comprehensive JSON schema that enforces all field validations specified in section 4.1. Include regex patterns for email (RFC-5322), app version (^\d+\.\d+\.\d+\s\(\d+\)$), and other validation rules. Schema should enforce minimum line requirements for steps to reproduce (≥3), expected result (≥1), and actual result (≥1). Include enums for severity/impact options. The schema should support optional attachments and require the GDPR consent checkbox.
+
+# Test Strategy:
+Validate schema against sample inputs with both valid and invalid data for each field. Test edge cases like minimum line counts and regex pattern matching. Ensure schema correctly identifies and reports all validation errors.

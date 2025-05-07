@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: bug-backend
+    env: docker
+    plan: free
+    autoDeploy: false   # enable when ready
