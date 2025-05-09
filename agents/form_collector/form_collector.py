@@ -16,6 +16,8 @@ class FormCollectorAgent:
             'expectedResult',
             'actualResult',
             'severity',
+            'hasAttachments',  # NEW: yes/no step
+            'attachments',     # NEW: only if hasAttachments is yes
             'gdprConsent'
         ]
 
@@ -87,6 +89,8 @@ class FormCollectorAgent:
             'expectedResult': "What was the expected result?",
             'actualResult': "What was the actual result?",
             'severity': "How severe is this bug? (Critical/High/Medium/Low)",
+            'hasAttachments': "Do you have any files to upload? (yes/no)",
+            'attachments': "Please upload your attachments now.",
             'gdprConsent': "Do you consent to storing diagnostic data? (yes/no)"
         }
         return prompts.get(field_name, f"Please provide {field_name}")
@@ -99,6 +103,26 @@ class FormCollectorAgent:
         # Special handling for initial greeting
         if current_field == 'reporterName' and message.lower() in ['hi', 'hello', 'hey']:
             return self.get_field_prompt('reporterName')
+
+        # Special handling for hasAttachments
+        if current_field == 'hasAttachments':
+            if message.strip().lower() in ['yes', 'y']:
+                self.collected_fields['hasAttachments'] = 'yes'
+                return self.get_field_prompt('attachments')
+            else:
+                self.collected_fields['hasAttachments'] = 'no'
+                # Skip attachments, go to next field
+                next_field = self.get_next_field()
+                return self.get_field_prompt(next_field) if next_field else "Thank you! All required fields are complete."
+
+        # Special handling for attachments
+        if current_field == 'attachments':
+            if attachments and attachments.get('attachments'):
+                self.collected_fields['attachments'] = attachments['attachments']
+                next_field = self.get_next_field()
+                return self.get_field_prompt(next_field) if next_field else "Thank you! All required fields are complete."
+            else:
+                return self.get_field_prompt('attachments')
 
         # Handle field validation
         if self.validate_field(current_field, message):

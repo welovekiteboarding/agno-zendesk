@@ -41,3 +41,9 @@ The code changes can be summarized in the following concise bullet points:
 - Created an `agents` package with an `__init__.py` file to mark it as a Python package.
 - Created a `form_collector` subpackage within `agents` with an `__init__.py` file and a `form_collector.py` module containing the `FormCollectorAgent` class.
 - Created an `api` package with `__init__.py`, `middleware`, and `routes` subpackages, along with a `form_collector_chat.py` module in the `routes` sub
+The code changes can be summarized in the following concise bullet points:
+
+- Added a new file `lambda_function.py` in the `scripts` directory, which contains a Lambda function to handle S3 events and scan uploaded files with ClamAV.
+- The Lambda function downloads the file from the S3 bucket, scans it with ClamAV, and then moves the clean file to a permanent storage location or deletes the infected file.
+- Added a `s3_event_lambda.zip` file in the `scripts` directory, which is the zipped version of the `lambda_function.py` file.
+- Updated the task list in `tasks/tasks.json
