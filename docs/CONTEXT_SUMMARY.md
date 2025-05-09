@@ -52,3 +52,12 @@ Here are the key points summarized in 1-3 concise bullet points:
 - A new file `aws.py` has been added to the `backend/storage` directory, which contains an `S3Storage` class for interacting with AWS S3 storage.
 - The `S3Storage` class provides methods to generate presigned POST URLs for uploading files to S3, and to move files from temporary to permanent storage locations.
 - The `frontend/.gitignore` and `frontend/README.md` files have been deleted, as they are no longer needed.
+Here are the key changes in 1-3 concise bullet points:
+
+- Added two new state variables: `allFilesReady` and `reportSubmitted` to track the status of file uploads and report submission.
+- Implemented new functionality to handle file uploads, including:
+  - Limiting the maximum number of files to 3
+  - Displaying a message when all files are ready for submission
+  - Allowing users to remove individual files
+  - Updating the upload status and permanent keys accordingly
+- Refactored the `submitReport` and `skipAttachments` functions to handle the new state and UI changes, including clearing the upload state after successful submission.

@@ -22,10 +22,12 @@ const ChatUI: React.FC = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [uploadStatus, setUploadStatus] = useState<string[]>([]);
   const [permanentKeys, setPermanentKeys] = useState<string[]>([]);
+  const [allFilesReady, setAllFilesReady] = useState(false);
+  const [reportSubmitted, setReportSubmitted] = useState(false);
   const pollingRefs = useRef<{ [key: string]: NodeJS.Timeout }>({});
   const listRef = useRef<HTMLDivElement>(null);
 
-  // Broader: looks for any combination of “upload/attach/file/attachment”
+  // Broader: looks for any combination of "upload/attach/file/attachment"
   const isAttachmentPrompt = (msg: string) =>
     /(upload|attach).*?(file|attachment|document)/i.test(msg);
 
@@ -62,7 +64,13 @@ const ChatUI: React.FC = () => {
           next[idx] = "Clean (ready)";
           return next;
         });
-        setPermanentKeys((prev) => [...prev, permKey]);
+        setPermanentKeys((prev) => {
+          const newKeys = [...prev];
+          if (!newKeys.includes(permKey)) {
+            newKeys.push(permKey);
+          }
+          return newKeys;
+        });
         clearInterval(pollingRefs.current[tempKey]);
         return;
       }
@@ -80,13 +88,32 @@ const ChatUI: React.FC = () => {
     check();
   };
 
+  // Check if all uploaded files are marked as "Clean (ready)"
+  useEffect(() => {
+    if (selectedFiles.length > 0 && uploadStatus.every(s => s === "Clean (ready)") && !allFilesReady) {
+      setAllFilesReady(true);
+      // Add a message when all files are ready
+      setMessages(msgs => [
+        ...msgs,
+        { 
+          sender: "agent", 
+          text: "Your files have uploaded. Would you like to add anything else? If not, click Submit to finalize your report." 
+        }
+      ]);
+    } else if (selectedFiles.length === 0 || !uploadStatus.every(s => s === "Clean (ready)")) {
+      setAllFilesReady(false);
+    }
+  }, [uploadStatus, selectedFiles.length, allFilesReady]);
+
   /* Unified handler so we can reuse for <input> and Dropzone */
   const handleFiles = async (files: File[]) => {
-    setSelectedFiles(files);
-    setUploadStatus(files.map(() => "Uploading…"));
-    setPermanentKeys([]);
+    setSelectedFiles((prevFiles) => [...prevFiles, ...files]);
+    setUploadStatus((prev) => [...prev, ...files.map(() => "Uploading…")]);
+    const startIdx = uploadStatus.length;
+    
     for (let i = 0; i < files.length; ++i) {
       const file = files[i];
+      const idx = startIdx + i;
       const safeName = file.name.replace(/\s+/g, "_");
       const meta = { name: safeName, type: file.type, size: file.size };
       console.log('[DEBUG] Requesting presigned URL:', meta, 'to', `${backendUrl}/generate-presigned-url`);
@@ -101,7 +128,7 @@ const ChatUI: React.FC = () => {
         console.log('[DEBUG] Presign error response:', txt);
         setUploadStatus((prev) => {
           const next = [...prev];
-          next[i] = `Presign error ${res.status}: ${txt || res.statusText}`;
+          next[idx] = `Presign error ${res.status}: ${txt || res.statusText}`;
           return next;
         });
         continue;
@@ -117,24 +144,32 @@ const ChatUI: React.FC = () => {
       if (!uploadRes.ok) {
         setUploadStatus((prev) => {
           const next = [...prev];
-          next[i] = "Failed to upload to S3";
+          next[idx] = "Failed to upload to S3";
           return next;
         });
         continue;
       }
       setUploadStatus((prev) => {
         const next = [...prev];
-        next[i] = "Uploaded, scanning…";
+        next[idx] = "Uploaded, scanning…";
         return next;
       });
-      pollForPermanent(key, i);
+      pollForPermanent(key, idx);
     }
   };
 
   const onDrop = useCallback((accepted: File[]) => {
     if (!accepted.length) return;
-    handleFiles(accepted.slice(0, 3)); // cap at 3 files
-  }, []);
+    // Only accept new files if the total count will be 3 or fewer
+    const availableSlots = 3 - selectedFiles.length;
+    if (availableSlots <= 0) {
+      alert("Maximum 3 files allowed. Please remove some files before adding more.");
+      return;
+    }
+    
+    const filesToAdd = accepted.slice(0, availableSlots);
+    handleFiles(filesToAdd);
+  }, [selectedFiles.length]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -143,8 +178,103 @@ const ChatUI: React.FC = () => {
   });
 
   /* Handle file‑picker fallback */
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    handleFiles(Array.from(e.target.files || []));
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const availableSlots = 3 - selectedFiles.length;
+    if (availableSlots <= 0) {
+      alert("Maximum 3 files allowed. Please remove some files before adding more.");
+      return;
+    }
+    
+    handleFiles(files.slice(0, availableSlots));
+  }
+
+  const removeFile = (idx: number) => {
+    setSelectedFiles(prev => {
+      const next = [...prev];
+      next.splice(idx, 1);
+      return next;
+    });
+    setUploadStatus(prev => {
+      const next = [...prev];
+      next.splice(idx, 1);
+      return next;
+    });
+    setPermanentKeys(prev => {
+      // Remove corresponding permanent key if it exists
+      if (idx < prev.length) {
+        const next = [...prev];
+        next.splice(idx, 1);
+        return next;
+      }
+      return prev;
+    });
+  };
+    
+  const submitReport = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${backendUrl}/api/form-collector/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          session_id: "frontend-session",
+          user_message: "Submit my report now",
+          meta: { attachments: permanentKeys, submit: true },
+        }),
+      });
+      if (!res.ok) throw new Error("Submit error");
+      const data = await res.json();
+      setMessages((m) => [
+        ...m,
+        { sender: "agent", text: data.assistant_message },
+      ]);
+      // Clear the upload state after successful submission
+      setReportSubmitted(true);
+      setAwaitingAttachments(false);
+      setSelectedFiles([]);
+      setUploadStatus([]);
+      setPermanentKeys([]);
+      setAllFilesReady(false);
+    } catch (err) {
+      setMessages((m) => [
+        ...m,
+        { sender: "agent", text: "Sorry, there was a problem submitting your report. Please try again." },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const skipAttachments = async () => {
+    setLoading(true);
+    try {
+      // Instead of sending "no" to the API, we'll simulate the behavior of submitting files
+      // and getting the error message, which is what we want to be consistent
+      setMessages((m) => [
+        ...m,
+        { 
+          sender: "agent", 
+          text: "Would you like to add anything else? If not, click Submit to finalize your report." 
+        }
+      ]);
+      
+      // Hide the attachments UI
+      setAwaitingAttachments(false);
+      setSelectedFiles([]);
+      setUploadStatus([]);
+      
+      // Add a fake permanentKey to ensure the Submit button shows
+      setPermanentKeys(["skipped-attachments"]);
+    } catch (err) {
+      setMessages((m) => [
+        ...m,
+        { sender: "agent", text: "Sorry, there was a problem. Please try again." },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -171,10 +301,19 @@ const ChatUI: React.FC = () => {
         ...msgs,
         { sender: "agent", text: data.assistant_message },
       ]);
-      setAwaitingAttachments(isAttachmentPrompt(data.assistant_message));
-      setSelectedFiles([]);
-      setUploadStatus([]);
-      setPermanentKeys([]);
+      
+      // Check if the new message is an attachment prompt
+      const isNewAttachmentPrompt = isAttachmentPrompt(data.assistant_message);
+      
+      // Always show attachment UI if it's a new attachment prompt
+      if (isNewAttachmentPrompt) {
+        setAwaitingAttachments(true);
+        // Reset file states when a new attachment prompt is received
+        setSelectedFiles([]);
+        setUploadStatus([]);
+        setPermanentKeys([]);
+        setAllFilesReady(false);
+      }
     } catch (err: any) {
       setMessages((msgs) => [
         ...msgs,
@@ -186,22 +325,34 @@ const ChatUI: React.FC = () => {
   };
 
   React.useEffect(() => {
-    const lastAgentMsg =
-      messages.length > 0 ? messages[messages.length - 1].text : "";
-    // Debug log for troubleshooting
-    console.log(
-      "Last agent message:",
-      lastAgentMsg,
-      "Attachment prompt:",
-      isAttachmentPrompt(lastAgentMsg)
-    );
-    setAwaitingAttachments(isAttachmentPrompt(lastAgentMsg));
-  }, [messages]);
+    if (!reportSubmitted) {
+      const lastAgentMsg =
+        messages.length > 0 ? messages[messages.length - 1].text : "";
+      // Debug log for troubleshooting
+      console.log(
+        "Last agent message:",
+        lastAgentMsg,
+        "Attachment prompt:",
+        isAttachmentPrompt(lastAgentMsg)
+      );
+      
+      // If it's an attachment prompt, set awaiting attachments
+      if (isAttachmentPrompt(lastAgentMsg)) {
+        setAwaitingAttachments(true);
+      }
+    }
+  }, [messages, reportSubmitted]);
 
   useEffect(() => {
     const el = listRef.current;
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages, loading]);
+
+  // Show uploads section if user has added files or we're awaiting attachments
+  const showUploadsSection = !reportSubmitted && awaitingAttachments; // Only show when explicitly awaiting attachments
+  
+  // Show submit button if there are files ready or skip was used
+  const showSubmitButton = !reportSubmitted && (permanentKeys.length > 0 || !awaitingAttachments);
 
   return (
     <div className="fixed inset-0 flex flex-col bg-white dark:bg-gray-900">
@@ -225,7 +376,9 @@ const ChatUI: React.FC = () => {
         ))}
         {loading && <div className="text-left text-gray-400">Agent is typing…</div>}
       </div>
-      {awaitingAttachments && (
+      
+      {/* File upload section - shown ONLY when awaiting attachments */}
+      {showUploadsSection && (
         <div className="border-t p-4">
           <label className="block font-semibold mb-2">
             Upload attachments (up to 3 files, 100&nbsp;MB each):
@@ -243,86 +396,49 @@ const ChatUI: React.FC = () => {
               <p>Drop the files here…</p>
             ) : (
               <p>
-                Drag &amp; drop files here, or click to select&nbsp;files
+                Drag &amp; drop files here, or click to select&nbsp;files {selectedFiles.length > 0 ? `(${3 - selectedFiles.length} slots remaining)` : ""}
               </p>
             )}
           </div>
           <input type="file" multiple className="hidden" onChange={handleFileChange} />
           <ul className="mt-2">
             {selectedFiles.map((file, i) => (
-              <li key={i}>
-                {file.name} — {uploadStatus[i]}
-                {uploadStatus[i]?.startsWith("Infected") && (
-                  <button
-                    className="ml-2 underline text-blue-600"
-                    onClick={() => handleFiles([file])}
-                  >
-                    Retry
-                  </button>
-                )}
-                {uploadStatus[i]?.startsWith("Clean") && <span> ✔️</span>}
+              <li key={i} className="flex items-center justify-between my-1">
+                <span className="flex-grow">
+                  {file.name} — {uploadStatus[i]}
+                  {uploadStatus[i]?.startsWith("I-N-F-E-C-T-E-D") && (
+                    <button
+                      className="ml-2 underline text-blue-600"
+                      onClick={() => handleFiles([file])}
+                    >
+                      Retry
+                    </button>
+                  )}
+                  {uploadStatus[i]?.startsWith("Clean") && <span> ✔️</span>}
+                </span>
+                <button 
+                  className="text-red-500 ml-2 px-2"
+                  onClick={() => removeFile(i)}
+                >
+                  ✕
+                </button>
               </li>
             ))}
           </ul>
-          <div className="mt-2">
-            <button
-              className="bg-blue-600 text-white rounded px-4 py-2"
-              disabled={permanentKeys.length === 0 || loading}
-              onClick={async () => {
-                setLoading(true);
-                const res = await fetch(`${backendUrl}/api/form-collector/chat`, {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    session_id: "frontend-session",
-                    user_message: "",
-                    meta: { attachments: permanentKeys },
-                  }),
-                });
-                const data = await res.json();
-                setMessages((m) => [
-                  ...m,
-                  { sender: "agent", text: data.assistant_message },
-                ]);
-                setAwaitingAttachments(isAttachmentPrompt(data.assistant_message));
-                setSelectedFiles([]);
-                setUploadStatus([]);
-                setPermanentKeys([]);
-                setLoading(false);
-              }}
-            >
-              Send Attachments
-            </button>
-            <button
-              className="ml-2 bg-gray-400 text-white rounded px-4 py-2"
-              disabled={loading}
-              onClick={async () => {
-                setLoading(true);
-                const res = await fetch(`${backendUrl}/api/form-collector/chat`, {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    session_id: "frontend-session",
-                    user_message: "no",
-                  }),
-                });
-                const data = await res.json();
-                setMessages((m) => [
-                  ...m,
-                  { sender: "agent", text: data.assistant_message },
-                ]);
-                setAwaitingAttachments(isAttachmentPrompt(data.assistant_message));
-                setSelectedFiles([]);
-                setUploadStatus([]);
-                setPermanentKeys([]);
-                setLoading(false);
-              }}
-            >
-              Skip
-            </button>
+          <div className="mt-4 flex justify-end">
+            {selectedFiles.length === 0 && (
+              <button
+                className="bg-gray-400 text-white rounded px-4 py-2 mr-auto"
+                disabled={loading}
+                onClick={skipAttachments}
+              >
+                Skip
+              </button>
+            )}
           </div>
         </div>
       )}
+      
       <form
         onSubmit={sendMessage}
         className="border-t p-4 flex gap-2 bg-white dark:bg-gray-900"
@@ -341,6 +457,17 @@ const ChatUI: React.FC = () => {
         >
           Send
         </button>
+        
+        {/* Submit button - ALWAYS here when it should be visible */}
+        {showSubmitButton && (
+          <button
+            className="bg-green-600 text-white rounded px-4 py-2 font-bold"
+            disabled={loading}
+            onClick={submitReport}
+          >
+            Submit Report
+          </button>
+        )}
       </form>
     </div>
   );
