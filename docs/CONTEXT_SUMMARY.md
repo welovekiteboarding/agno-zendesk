@@ -47,3 +47,8 @@ The code changes can be summarized in the following concise bullet points:
 - The Lambda function downloads the file from the S3 bucket, scans it with ClamAV, and then moves the clean file to a permanent storage location or deletes the infected file.
 - Added a `s3_event_lambda.zip` file in the `scripts` directory, which is the zipped version of the `lambda_function.py` file.
 - Updated the task list in `tasks/tasks.json
+Here are the key points summarized in 1-3 concise bullet points:
+
+- A new file `aws.py` has been added to the `backend/storage` directory, which contains an `S3Storage` class for interacting with AWS S3 storage.
+- The `S3Storage` class provides methods to generate presigned POST URLs for uploading files to S3, and to move files from temporary to permanent storage locations.
+- The `frontend/.gitignore` and `frontend/README.md` files have been deleted, as they are no longer needed.
