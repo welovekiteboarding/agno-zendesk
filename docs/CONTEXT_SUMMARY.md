@@ -61,3 +61,10 @@ Here are the key changes in 1-3 concise bullet points:
   - Allowing users to remove individual files
   - Updating the upload status and permanent keys accordingly
 - Refactored the `submitReport` and `skipAttachments` functions to handle the new state and UI changes, including clearing the upload state after successful submission.
+Here are the key changes in the code:
+
+- The background color of the main container has been changed from `bg-white dark:bg-gray-900` to `bg-[#0b1021] text-white`.
+- The message container's padding has been increased from `p-4` to `p-4 flex flex-col gap-3`.
+- The message styling has been updated, with user messages having a gradient background and recipient messages having a solid background color.
+- The "Agent is typing..." indicator has been updated to have a similar style to the messages.
+- The input field and submit button have been redesigned with a more modern and consistent look, including rounded corners, gradient

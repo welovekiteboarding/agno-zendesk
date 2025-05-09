@@ -355,40 +355,49 @@ const ChatUI: React.FC = () => {
   const showSubmitButton = !reportSubmitted && (permanentKeys.length > 0 || !awaitingAttachments);
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-white dark:bg-gray-900">
+    <div className="fixed inset-0 flex flex-col bg-[#0b1021] text-white">
       {/* Message list */}
       <div
         ref={listRef}
-        className="flex-1 overflow-y-auto p-4 flex flex-col gap-2"
+        className="flex-1 overflow-y-auto p-4 flex flex-col gap-3"
       >
         {messages.map((msg, i) => (
-          <div key={i} className={msg.sender === "user" ? "text-right" : "text-left"}>
-            <span
+          <div 
+            key={i} 
+            className={msg.sender === "user" ? "flex justify-end" : "flex justify-start"}
+          >
+            <div
               className={
                 msg.sender === "user"
-                  ? "bg-blue-100 text-blue-900 rounded px-2 py-1 inline-block"
-                  : "bg-gray-100 text-gray-900 rounded px-2 py-1 inline-block"
+                  ? "bg-gradient-to-r from-[#6d4aff] to-[#8c5eff] rounded-2xl px-4 py-3 max-w-[80%] shadow-md"
+                  : "bg-[#121833] rounded-2xl px-4 py-3 max-w-[80%] shadow-md"
               }
             >
               {msg.text}
-            </span>
+            </div>
           </div>
         ))}
-        {loading && <div className="text-left text-gray-400">Agent is typing…</div>}
+        {loading && (
+          <div className="flex justify-start">
+            <div className="bg-[#121833] rounded-2xl px-4 py-3 text-gray-400">
+              Typing...
+            </div>
+          </div>
+        )}
       </div>
       
       {/* File upload section - shown ONLY when awaiting attachments */}
       {showUploadsSection && (
-        <div className="border-t p-4">
-          <label className="block font-semibold mb-2">
+        <div className="border-t border-[#1e2642] p-4">
+          <label className="block font-semibold mb-2 text-white">
             Upload attachments (up to 3 files, 100&nbsp;MB each):
           </label>
           <div
             {...getRootProps()}
-            className={`border-2 border-dashed rounded p-4 text-center cursor-pointer transition ${
+            className={`border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition ${
               isDragActive
-                ? "border-blue-600 bg-blue-50 dark:bg-gray-800"
-                : "border-gray-400 dark:border-gray-600"
+                ? "border-[#6d4aff] bg-[#121833]"
+                : "border-[#1e2642]"
             }`}
           >
             <input {...getInputProps()} />
@@ -403,12 +412,12 @@ const ChatUI: React.FC = () => {
           <input type="file" multiple className="hidden" onChange={handleFileChange} />
           <ul className="mt-2">
             {selectedFiles.map((file, i) => (
-              <li key={i} className="flex items-center justify-between my-1">
+              <li key={i} className="flex items-center justify-between my-1 text-white">
                 <span className="flex-grow">
                   {file.name} — {uploadStatus[i]}
                   {uploadStatus[i]?.startsWith("I-N-F-E-C-T-E-D") && (
                     <button
-                      className="ml-2 underline text-blue-600"
+                      className="ml-2 underline text-[#8c5eff]"
                       onClick={() => handleFiles([file])}
                     >
                       Retry
@@ -417,7 +426,7 @@ const ChatUI: React.FC = () => {
                   {uploadStatus[i]?.startsWith("Clean") && <span> ✔️</span>}
                 </span>
                 <button 
-                  className="text-red-500 ml-2 px-2"
+                  className="text-red-400 ml-2 px-2"
                   onClick={() => removeFile(i)}
                 >
                   ✕
@@ -428,7 +437,7 @@ const ChatUI: React.FC = () => {
           <div className="mt-4 flex justify-end">
             {selectedFiles.length === 0 && (
               <button
-                className="bg-gray-400 text-white rounded px-4 py-2 mr-auto"
+                className="bg-[#242d4f] hover:bg-[#343e60] text-white rounded-full px-5 py-2 mr-auto transition-colors"
                 disabled={loading}
                 onClick={skipAttachments}
               >
@@ -439,36 +448,42 @@ const ChatUI: React.FC = () => {
         </div>
       )}
       
-      <form
-        onSubmit={sendMessage}
-        className="border-t p-4 flex gap-2 bg-white dark:bg-gray-900"
-      >
-        <input
-          className="flex-1 border rounded p-2"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Type your message…"
-          disabled={loading}
-        />
-        <button
-          type="submit"
-          className="bg-blue-600 text-white rounded px-4 py-2"
-          disabled={loading || !input.trim()}
+      {/* Message input - now centered with max width */}
+      <div className="border-t border-[#1e2642] p-4 flex justify-center">
+        <form
+          onSubmit={sendMessage}
+          className="flex gap-2 items-center w-full max-w-3xl"
         >
-          Send
-        </button>
-        
-        {/* Submit button - ALWAYS here when it should be visible */}
-        {showSubmitButton && (
-          <button
-            className="bg-green-600 text-white rounded px-4 py-2 font-bold"
+          <input
+            className="flex-1 rounded-full bg-[#121833] border border-[#1e2642] text-white p-3 focus:outline-none focus:ring-2 focus:ring-[#6d4aff] placeholder-gray-400"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Type your message…"
             disabled={loading}
-            onClick={submitReport}
+          />
+          <button
+            type="submit"
+            className="bg-[#6d4aff] hover:bg-[#5d3aef] transition-colors text-white rounded-full w-10 h-10 flex items-center justify-center disabled:opacity-50"
+            disabled={loading || !input.trim()}
+            aria-label="Send"
           >
-            Submit Report
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/>
+            </svg>
           </button>
-        )}
-      </form>
+          
+          {/* Submit button - ALWAYS here when it should be visible */}
+          {showSubmitButton && (
+            <button
+              className="bg-gradient-to-r from-[#6d4aff] to-[#8c5eff] hover:opacity-90 transition-opacity text-white rounded-full px-5 py-2 font-bold disabled:opacity-50"
+              disabled={loading}
+              onClick={submitReport}
+            >
+              Submit Report
+            </button>
+          )}
+        </form>
+      </div>
     </div>
   );
 };
