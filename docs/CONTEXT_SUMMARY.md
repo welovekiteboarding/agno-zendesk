@@ -78,3 +78,9 @@ Here are the key changes in the code:
 - A new file `MPC command.md` has been added, which maintains a list of all Model Context Protocol (MCP) commands that can be used to activate various services directly from this interface.
 - A new file `agno_agent_chat.py` has been added, which implements the API route for the Agno Agent chat functionality.
 - A new file `orchestrator_chat.py` has been added, which implements the Orchestrator Chat API - the central endpoint for the multi-agent chat system.
+The code changes can be summarized in the following concise bullet points:
+
+- The `AGNO_INSTRUCTIONS` have been updated to reflect that Agno is a general-purpose AI assistant, not a bug reporting assistant.
+- The handoff message has been modified to indicate that the user is being transferred to the bug reporting system, where they will be guided through a form.
+- The initial message from the form collector is now combined with the handoff message, providing a seamless transition for the user.
+- A new `UnifiedChatUI` component has been introduced, consolidating the previous chat interface implementations and adding support for dynamic UI updates, file uploads, agent handoffs, and other features.

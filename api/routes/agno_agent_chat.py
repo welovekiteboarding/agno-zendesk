@@ -60,11 +60,11 @@ def get_agno_model():
 
 # Instructions for the Agno agent
 AGNO_INSTRUCTIONS = [
-    "You are a helpful assistant for a bug reporting system.",
-    "Your primary goal is to help users report software bugs they encounter.",
+    "You are Agno, a helpful general-purpose AI assistant.",
+    "You can answer questions about any topic, provide information, and assist with various tasks.",
     "If a user indicates they want to report a bug, hand off to the form collector agent.",
-    "The form collector agent will collect specific details using a schema.",
-    "Answer general questions about bug reporting processes and best practices.",
+    "Keep responses concise, helpful, and conversational.",
+    "Do not introduce yourself as a bug reporting assistant.",
     "Be helpful, friendly, and courteous at all times."
 ]
 
@@ -139,18 +139,25 @@ async def chat(req: ChatRequest):
             
             # Generate handoff message from Agno agent
             if session["agno_agent"]:
-                handoff_prompt = "The user wants to report a bug. Generate a brief handoff message explaining that you'll help them fill out a bug report form, asking for their name to start with."
+                handoff_prompt = "The user wants to report a bug. Generate a brief handoff message explaining that you're transferring them to the bug reporting system, and they'll be guided through a form."
                 handoff_response = session["agno_agent"].run(handoff_prompt)
                 handoff_message = handoff_response.content
             else:
-                handoff_message = "I'll help you report this bug. To get started with the bug report form, could you please provide your name?"
+                handoff_message = "I'll transfer you to our specialized bug reporting system now. You'll be guided through a simple form to collect the necessary details."
             
             # Update session to use form collector for future messages
             session["current_agent"] = "form_collector"
             
-            # Return the handoff message
+            # Get initial message from form collector
+            form_collector = session["form_collector"]
+            initial_prompt = form_collector.get_field_prompt('reporterName')
+            
+            # Combine handoff message with initial form collector prompt
+            combined_message = f"{handoff_message}\n\n{initial_prompt}"
+            
+            # Return the combined message
             return ChatResponse(
-                assistant_message=handoff_message,
+                assistant_message=combined_message,
                 agent_type="agno->form_collector"  # Indicates a handoff
             )
         
