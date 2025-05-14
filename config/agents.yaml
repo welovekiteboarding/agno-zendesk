@@ -1,0 +1,33 @@
+# AGNO Multi-Agent System Configuration
+
+# Agent instances to create on startup
+agents:
+  - agent_id: agno_assistant
+    enabled: true
+    params:
+      model_name: "claude-3-5-sonnet"
+      temperature: 0.7
+      system_prompt: "You are Agno, a helpful AI assistant for Zendesk support. You can detect when users want to report a bug and hand off to specialized agents."
+
+  - agent_id: form_collector
+    enabled: true
+    params:
+      schema_path: "schemas/bug_report_schema.json"
+      max_retries: 3
+      
+  - agent_id: email_verifier
+    enabled: true
+    params:
+      zendesk_api_url: "https://your-subdomain.zendesk.com/api/v2"
+      
+  - agent_id: ticket_poster
+    enabled: true
+    params:
+      template_path: "templates/ticket_template.md"
+      zendesk_api_url: "https://your-subdomain.zendesk.com/api/v2"
+
+# Default agent to use when a session starts
+default_agent_id: agno_assistant
+
+# Whether to automatically reload when config changes
+hot_reload: true

@@ -130,7 +130,7 @@
       "id": 3,
       "title": "Build Attachment Upload Microservice",
       "description": "Create a microservice that generates presigned S3/R2 URLs for file uploads and handles the secure storage of user-submitted attachments.",
-      "status": "pending",
+      "status": "done",
       "dependencies": [],
       "priority": "high",
       "details": "Develop a microservice that generates presigned URLs for S3/R2 storage with 15-minute validity. Implement file size validation (≤100MB) and configure the S3 bucket 'bug-uploads-prod' with appropriate permissions and a 90-day lifecycle deletion rule. Add virus scanning for uploaded files. The service should accept file metadata (name, type, size) and return a presigned URL for upload. After successful upload, files should be moved to permanent storage or prepared for Zendesk attachment.",
@@ -142,7 +142,7 @@
           "description": "Configure the 'bug-uploads-prod' bucket with appropriate permissions, CORS settings, and lifecycle rules for 90-day deletion.",
           "dependencies": [],
           "details": "Create the S3/R2 bucket 'bug-uploads-prod' if it doesn't exist. Configure bucket policy to restrict access to the application role only. Set up CORS to allow uploads from the application domain. Implement a lifecycle rule to delete objects after 90 days. Create separate folders for temporary uploads and permanent storage.",
-          "status": "pending",
+          "status": "done",
           "testStrategy": "Verify bucket creation, confirm lifecycle rules are active, test CORS configuration with a sample request, and validate permissions by attempting access with and without proper credentials."
         },
         {
@@ -153,7 +153,7 @@
             1
           ],
           "details": "Develop a REST endpoint that accepts POST requests with file metadata (name, type, size). Validate the file size is ≤100MB and the file type is allowed. Generate a presigned URL using the S3/R2 SDK with 15-minute expiration. Return the URL and any required headers to the client. Store the file metadata and generated URL in a temporary database record for tracking.",
-          "status": "pending",
+          "status": "done",
           "testStrategy": "Unit test the validation logic, integration test the URL generation with mock S3 service, and end-to-end test by generating a URL and confirming a file can be uploaded to it."
         },
         {
@@ -164,7 +164,7 @@
             2
           ],
           "details": "Set up S3/R2 event notifications for object creation events. Create a handler function that triggers when uploads complete. Integrate with a virus scanning service (like ClamAV) to scan uploaded files. Implement a queue system to manage scanning jobs. Update the file metadata record with scan results. Quarantine or delete infected files.",
-          "status": "pending",
+          "status": "done",
           "testStrategy": "Test with sample clean files and EICAR test virus files. Verify quarantine process works correctly. Test the event notification system with mock uploads."
         },
         {
@@ -175,7 +175,7 @@
             3
           ],
           "details": "Develop a service that processes files that passed virus scanning. Move clean files from the temporary upload location to a permanent storage folder with appropriate metadata. For files destined for Zendesk, prepare them according to Zendesk's attachment requirements. Update database records with new file locations and status. Implement error handling and retries for failed transfers.",
-          "status": "pending",
+          "status": "done",
           "testStrategy": "Test the transfer process with various file types and sizes. Verify metadata is preserved. Test error scenarios and recovery mechanisms. Confirm Zendesk-bound files meet the required format."
         },
         {
@@ -186,7 +186,7 @@
             4
           ],
           "details": "Set up detailed logging for all service operations. Implement metrics collection for upload counts, sizes, success/failure rates, and scanning results. Create alerts for critical failures or security issues. Develop a scheduled cleanup process for abandoned uploads (files uploaded but not processed). Create an admin API to query upload status and manually trigger actions. Document the entire system with API specifications and operational procedures.",
-          "status": "pending",
+          "status": "done",
           "testStrategy": "Verify logs capture all relevant information. Test alerts by simulating failure conditions. Confirm cleanup process correctly identifies and removes abandoned uploads. Test admin API functionality with various scenarios."
         }
       ]
@@ -372,6 +372,131 @@
       "dependencies": [],
       "priority": "medium",
       "subtasks": []
+    },
+    {
+      "id": 19,
+      "title": "Implement Agent Registry with Handoff Protocol",
+      "description": "Design and implement a centralized agent registry system with a standardized process for agent registration, discovery, and handoff trigger definition to ensure the multi-agent system is extensible and maintainable.",
+      "details": "The implementation should include:\n\n1. **Registry Core Structure**:\n   - Create a centralized `AgentRegistry` class that maintains a collection of registered agents\n   - Implement methods for agent registration, deregistration, and lookup\n   - Design a schema for agent metadata including capabilities, input/output formats, and operational constraints\n\n2. **Agent Registration Process**:\n   - Develop a standardized registration API that new agents must implement\n   - Include validation of required agent interfaces and capabilities\n   - Create a decorator or factory pattern for simplified agent registration\n\n3. **Handoff Protocol**:\n   - Define a clear schema for handoff triggers (conditions when one agent should transfer control to another)\n   - Implement trigger evaluation logic that monitors agent state and determines when handoffs should occur\n   - Create a handoff mechanism that properly transfers context and state between agents\n\n4. **Configuration System**:\n   - Design a YAML/JSON configuration format for defining agents and their relationships\n   - Implement a configuration loader that can instantiate the agent ecosystem from configuration files\n   - Support hot-reloading of configurations without system restart\n\n5. **Documentation**:\n   - Create comprehensive documentation for adding new agents\n   - Document the handoff protocol and trigger definition process\n   - Provide examples of common agent integration patterns\n\nThe implementation should follow the project's existing architectural patterns and coding standards. Ensure backward compatibility with existing agents in the system. The registry should be designed as a singleton service that can be accessed throughout the application.",
+      "testStrategy": "Testing should be comprehensive and include:\n\n1. **Unit Tests**:\n   - Test the `AgentRegistry` class methods in isolation\n   - Verify agent registration, deregistration, and lookup functionality\n   - Test trigger evaluation logic with various conditions\n   - Validate configuration loading and parsing\n\n2. **Integration Tests**:\n   - Create mock agents that implement the registration interface\n   - Test the full registration flow with multiple agents\n   - Verify handoff scenarios between different agent types\n   - Test configuration-driven agent ecosystem initialization\n\n3. **System Tests**:\n   - Deploy a test environment with multiple agents using the registry\n   - Simulate complex workflows that require multiple agent handoffs\n   - Verify that the system correctly manages agent state during handoffs\n   - Test dynamic addition and removal of agents during runtime\n\n4. **Performance Tests**:\n   - Benchmark registry lookup performance with large numbers of agents\n   - Test handoff latency under various system loads\n   - Verify memory usage patterns during extended operation\n\n5. **Documentation Verification**:\n   - Have a developer unfamiliar with the system attempt to add a new agent using only the documentation\n   - Verify that all public interfaces are properly documented\n   - Ensure examples are accurate and functional\n\nThe test suite should include both positive tests (expected behavior) and negative tests (error handling, invalid inputs). All tests should be automated and integrated into the CI/CD pipeline.",
+      "status": "done",
+      "dependencies": [],
+      "priority": "medium",
+      "subtasks": []
+    },
+    {
+      "id": 20,
+      "title": "Define Backend-to-Frontend UI Instruction Protocol",
+      "description": "Design and document a standardized protocol for backend systems to send UI instructions to the frontend, enabling dynamic agent-driven interface updates in the universal chat component.",
+      "details": "This task involves creating a comprehensive protocol specification that allows backend systems (particularly AI agents) to dynamically control frontend UI elements. The protocol should:\n\n1. Define a structured JSON schema for UI instruction messages that includes:\n   - Instruction type (e.g., show_file_upload, request_email, display_form)\n   - Required parameters for each instruction type\n   - Optional parameters and their default values\n   - Validation rules for parameters\n   - Priority/sequence handling for multiple instructions\n\n2. Implement serialization/deserialization utilities in both backend (Python) and frontend (JavaScript/TypeScript) to ensure consistent handling of protocol messages.\n\n3. Create a registry of supported UI components that can be triggered via this protocol, including:\n   - File upload widget\n   - Email/contact form\n   - Authentication prompts\n   - Selection menus/dropdowns\n   - Progress indicators\n   - Confirmation dialogs\n\n4. Design state management approach to handle:\n   - Instruction queueing and prioritization\n   - Conflict resolution when multiple agents send competing instructions\n   - Timeout and error handling for incomplete UI interactions\n   - Resumption of interrupted flows\n\n5. Document security considerations:\n   - Input validation to prevent XSS or injection attacks\n   - Permissions model for which agents can trigger which UI elements\n   - Rate limiting to prevent UI flooding\n\n6. Integrate with the existing Agent Registry (Task #19) to register UI capabilities that each agent can utilize.\n\nThe implementation should be backward compatible with existing chat interfaces while enabling new dynamic UI capabilities.",
+      "testStrategy": "Testing this protocol implementation should follow these steps:\n\n1. Unit Testing:\n   - Validate JSON schema enforcement with valid and invalid message examples\n   - Test serialization/deserialization in both Python and JavaScript/TypeScript\n   - Verify error handling for malformed messages\n   - Test each individual UI instruction type with various parameter combinations\n\n2. Integration Testing:\n   - Create mock backend agents that generate UI instructions\n   - Implement test harnesses that simulate various instruction sequences\n   - Verify frontend correctly renders all supported UI components\n   - Test race conditions with multiple simultaneous instructions\n\n3. End-to-End Testing:\n   - Develop test scenarios that exercise complete user journeys involving dynamic UI changes\n   - Test with actual agent implementations to verify real-world compatibility\n   - Verify proper handling of network latency and disconnections\n   - Test across different browsers and devices to ensure consistent behavior\n\n4. Security Testing:\n   - Attempt to inject malicious content via the protocol\n   - Verify permissions enforcement prevents unauthorized UI manipulation\n   - Test rate limiting functionality\n\n5. Documentation Verification:\n   - Review protocol documentation with frontend and backend developers\n   - Conduct a walkthrough with the team to ensure understanding\n   - Create example implementations for each supported UI component\n   - Verify that documentation includes troubleshooting guidance\n\n6. Performance Testing:\n   - Measure impact on message processing time\n   - Test with high volumes of UI instructions\n   - Verify UI responsiveness under load\n\nAll tests should be automated where possible and integrated into the CI/CD pipeline.",
+      "status": "done",
+      "dependencies": [],
+      "priority": "high",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Define JSON Schema for UI Instruction Protocol",
+          "description": "Create a comprehensive JSON schema that defines the structure of UI instruction messages sent from backend to frontend",
+          "dependencies": [],
+          "details": "Design a JSON schema that includes: instruction type field (string enum), required parameters object, optional parameters object, metadata fields for priority/sequencing, validation rules, and response format. Document each instruction type (show_file_upload, request_email, display_form, etc.) with its specific parameter requirements. Include schema versioning to support future extensions. The schema should be strict enough to prevent misuse but flexible enough to accommodate various UI components.",
+          "status": "done",
+          "testStrategy": "Create sample JSON messages for each instruction type and validate them against the schema. Test edge cases like missing required fields, invalid values, and maximum field lengths."
+        },
+        {
+          "id": 2,
+          "title": "Implement Protocol Serialization/Deserialization Utilities",
+          "description": "Develop utility functions in both Python (backend) and TypeScript (frontend) to handle serialization, deserialization, and validation of protocol messages",
+          "dependencies": [],
+          "details": "Create a Python module with functions to generate valid instruction messages, validate outgoing messages against the schema, and handle serialization. Implement corresponding TypeScript utilities for the frontend to parse, validate, and process incoming instruction messages. Include type definitions for TypeScript and proper error handling in both implementations. Ensure consistent behavior between backend and frontend implementations.",
+          "status": "done",
+          "testStrategy": "Write unit tests for both Python and TypeScript utilities, testing serialization/deserialization of various message types, validation of malformed messages, and error handling."
+        },
+        {
+          "id": 3,
+          "title": "Create UI Component Registry and Handlers",
+          "description": "Develop a registry of supported UI components that can be triggered via the protocol, along with their corresponding frontend handlers",
+          "dependencies": [],
+          "details": "Implement a registry system that maps instruction types to specific UI components. For each component, define: component name, required/optional parameters, rendering logic, user interaction handling, and response formatting. Include implementations for file upload widget, email/contact form, authentication prompts, selection menus/dropdowns, progress indicators, and confirmation dialogs. Each component should have a consistent interface for rendering, state management, and sending responses back to the backend.",
+          "status": "done",
+          "testStrategy": "Create visual regression tests for each UI component, testing various parameter combinations. Test user interaction flows and verify that responses are correctly formatted."
+        },
+        {
+          "id": 4,
+          "title": "Implement State Management for UI Instructions",
+          "description": "Design and implement a state management system to handle instruction queueing, prioritization, conflict resolution, and error handling",
+          "dependencies": [],
+          "details": "Create a state manager that maintains the queue of pending UI instructions, handles instruction priorities, resolves conflicts between competing instructions, and manages timeouts for user interactions. Implement logic for instruction lifecycle: receipt, validation, queueing, execution, user interaction, completion/cancellation, and response handling. Design the system to handle error cases like timeout, invalid user input, and interrupted flows. Include mechanisms to persist state across page reloads if necessary.",
+          "status": "done",
+          "testStrategy": "Test queue management with multiple simultaneous instructions of varying priorities. Verify conflict resolution works correctly. Test timeout handling and error recovery scenarios."
+        },
+        {
+          "id": 5,
+          "title": "Document Security Considerations and Integration with Agent Registry",
+          "description": "Document security aspects of the protocol and integrate with the Agent Registry to control which agents can use specific UI capabilities",
+          "dependencies": [],
+          "details": "Create comprehensive documentation covering: input validation requirements to prevent XSS and injection attacks, permissions model for UI instruction authorization, rate limiting to prevent UI flooding, and best practices for secure implementation. Implement integration with the Agent Registry (from Task #19) to register and control which UI capabilities each agent can utilize. Include a verification system that checks incoming instructions against agent permissions before processing them. Document the integration API and provide examples of registering agent UI capabilities.",
+          "status": "done",
+          "testStrategy": "Perform security testing including attempts to inject malicious content via the protocol. Test permission enforcement by verifying unauthorized agents cannot trigger restricted UI components. Test rate limiting functionality."
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "title": "Unify Chat Interface Components",
+      "description": "Create a consolidated chat interface that integrates the Agent Registry and UI Instruction Protocol to provide a seamless experience with all required functionality.",
+      "details": "This task involves creating a unified chat interface that brings together all the different components and functionality that are currently spread across multiple implementations. The goal is to have a single, cohesive chat experience that incorporates:\n\n1. **Unified Component Architecture**:\n   - Create a new `UnifiedChatUI` component that combines the best features of existing implementations\n   - Ensure proper integration with the Agent Registry for agent management and handoffs\n   - Configure the component to work correctly with the UI Instruction Protocol\n   - Support all required UI components including file uploads, forms, and dynamic elements\n\n2. **Routing and Navigation**:\n   - Update the application routing to use the unified component as the primary interface\n   - Implement redirects from legacy test URLs to the main chat interface\n   - Ensure deep linking and URL parameter support for testing specific features\n\n3. **Integration Testing**:\n   - Test the complete conversation flow from initial greeting to form submission\n   - Verify agent handoffs function correctly within the unified interface\n   - Ensure file uploads, scanning, and submission work properly\n   - Test with various input scenarios to validate robustness\n\n4. **Documentation and Cleanup**:\n   - Document the unified architecture and component interaction\n   - Remove or deprecate redundant components and code\n   - Update any references or documentation to reflect the new unified approach\n\nThe implementation should provide a seamless user experience while maintaining all the functionality that was previously spread across different components. It should leverage the Agent Registry for conversation management and the UI Instruction Protocol for dynamic interface updates.",
+      "testStrategy": "Testing should be comprehensive to ensure the unified interface works correctly in all scenarios:\n\n1. **Component Integration Testing**:\n   - Verify the UnifiedChatUI correctly integrates with the Agent Registry\n   - Test UI Instruction handling for all supported component types\n   - Ensure state management correctly handles instruction sequences and priorities\n\n2. **Conversation Flow Testing**:\n   - Test complete conversation flows from initial greeting to submission\n   - Verify agent handoffs work correctly (Agno → Form Collector)\n   - Test error recovery and resumption of interrupted conversations\n\n3. **File Upload Testing**:\n   - Verify file upload UI appears at the appropriate time in the conversation\n   - Test file uploads with various file types and sizes\n   - Confirm scanning status updates correctly\n   - Verify submission with attachments works properly\n\n4. **Routing and Navigation Testing**:\n   - Test all routes to ensure they lead to the unified interface\n   - Verify redirects from legacy test URLs work correctly\n   - Test deep linking with URL parameters for specific features\n\n5. **Performance Testing**:\n   - Measure component render performance\n   - Test with long conversations to ensure responsiveness\n   - Verify memory usage remains stable during extended use\n\n6. **Cross-browser Testing**:\n   - Test on multiple browsers (Chrome, Firefox, Safari)\n   - Verify on mobile devices and responsive layouts\n\nDocument all testing with screenshots and validation steps to demonstrate the functionality works as expected across all scenarios.",
+      "status": "pending",
+      "dependencies": [19, 20],
+      "priority": "high",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Create UnifiedChatUI Component",
+          "description": "Develop a new chat component that consolidates functionality from existing implementations into a single, cohesive interface",
+          "dependencies": [],
+          "details": "Create a new React component in `frontend__backup2/components/features/UnifiedChatUI.tsx` that combines the best features from existing chat implementations. The component should:\n- Use ChatUIWithRegistry.tsx as the base implementation\n- Integrate with the Agent Registry for proper agent handoff management\n- Support the UI Instruction Protocol for dynamic UI updates\n- Include the file upload functionality with S3 integration\n- Implement proper state management for conversation flow\n- Support message history and context preservation\n- Add proper error handling and recovery",
+          "status": "pending",
+          "testStrategy": "- Perform unit tests on component initialization and state management\n- Verify proper integration with the Agent Registry\n- Test UI Instruction Protocol handling for all component types\n- Ensure proper rendering of dynamic UI elements"
+        },
+        {
+          "id": 2,
+          "title": "Implement API Integration for Agno Chat",
+          "description": "Connect the UnifiedChatUI component to the Agno chat backend API and ensure proper communication",
+          "dependencies": [1],
+          "details": "Implement the API integration layer for the UnifiedChatUI component, ensuring proper communication with the backend services:\n- Configure API endpoints for the Agno chat service\n- Implement proper session management and conversation state preservation\n- Handle authentication and security requirements\n- Add error handling for API failures with retry logic\n- Implement proper response parsing and state updates\n- Ensure file upload API integration works correctly\n- Add logging for debugging and monitoring",
+          "status": "pending",
+          "testStrategy": "- Test API communication with mock endpoints\n- Verify proper handling of successful and failed API calls\n- Test session persistence across page reloads\n- Confirm error handling and retry logic functions correctly"
+        },
+        {
+          "id": 3,
+          "title": "Update Routing and Navigation",
+          "description": "Update application routing to use the unified component as the primary interface and implement redirects",
+          "dependencies": [1],
+          "details": "Update the application's routing configuration to use the new UnifiedChatUI component as the primary interface:\n- Modify app/page.tsx to use the UnifiedChatUI component\n- Add redirects from /agno-chat and /chat-with-registry to the main route\n- Implement URL parameter support for debug mode and testing\n- Update any navigation components to point to the unified interface\n- Ensure proper handling of direct URL access\n- Add route guards if needed for authentication\n- Support deep linking for specific conversation states",
+          "status": "pending",
+          "testStrategy": "- Test all routes to verify they correctly lead to the unified interface\n- Verify redirects work as expected\n- Test URL parameter handling\n- Confirm direct URL access works properly\n- Verify route transitions preserve state appropriately"
+        },
+        {
+          "id": 4,
+          "title": "Implement Comprehensive Testing Suite",
+          "description": "Create a comprehensive testing suite for the unified chat interface to ensure functionality across various scenarios",
+          "dependencies": [1, 2, 3],
+          "details": "Develop a comprehensive testing suite to validate the unified chat interface:\n- Create test scenarios for complete conversation flows\n- Implement tests for agent handoffs and context preservation\n- Add tests for file upload functionality\n- Create tests for error conditions and recovery\n- Implement cross-browser testing setup\n- Add accessibility testing\n- Test performance under various conditions\n- Include security testing for inputs and API calls",
+          "status": "pending",
+          "testStrategy": "- Run automated test suite covering all functionality\n- Perform manual testing for complex user flows\n- Test across multiple browsers and devices\n- Conduct performance testing with large conversations\n- Verify accessibility compliance with WCAG standards"
+        },
+        {
+          "id": 5,
+          "title": "Documentation and Cleanup",
+          "description": "Document the unified architecture and clean up redundant code",
+          "dependencies": [1, 2, 3, 4],
+          "details": "Document the unified chat architecture and remove redundant code:\n- Create comprehensive documentation of the UnifiedChatUI architecture\n- Document the component hierarchy and interaction patterns\n- Create a guide for extending the unified interface\n- Remove or deprecate redundant components and code\n- Update import references to use the new unified component\n- Clean up any duplicate functionality\n- Add inline code documentation\n- Update existing documentation to reference the unified approach",
+          "status": "pending",
+          "testStrategy": "- Review documentation with team members\n- Verify documentation accuracy by having a developer follow the guides\n- Confirm that removal of redundant code doesn't break functionality\n- Ensure all references to old components are updated"
+        }
+      ]
     }
   ],
   "metadata": {

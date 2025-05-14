@@ -1,0 +1,167 @@
+# Task ID: 21
+# Title: Unify Chat Interface Components
+# Status: pending
+# Dependencies: [19, 20]
+# Priority: high
+# Description: Create a consolidated chat interface that integrates the Agent Registry and UI Instruction Protocol to provide a seamless experience with all required functionality.
+# Details:
+This task involves creating a unified chat interface that brings together all the different components and functionality that are currently spread across multiple implementations. The goal is to have a single, cohesive chat experience that incorporates:
+
+1. **Unified Component Architecture**:
+   - Create a new `UnifiedChatUI` component that combines the best features of existing implementations
+   - Ensure proper integration with the Agent Registry for agent management and handoffs
+   - Configure the component to work correctly with the UI Instruction Protocol
+   - Support all required UI components including file uploads, forms, and dynamic elements
+
+2. **Routing and Navigation**:
+   - Update the application routing to use the unified component as the primary interface
+   - Implement redirects from legacy test URLs to the main chat interface
+   - Ensure deep linking and URL parameter support for testing specific features
+
+3. **Integration Testing**:
+   - Test the complete conversation flow from initial greeting to form submission
+   - Verify agent handoffs function correctly within the unified interface
+   - Ensure file uploads, scanning, and submission work properly
+   - Test with various input scenarios to validate robustness
+
+4. **Documentation and Cleanup**:
+   - Document the unified architecture and component interaction
+   - Remove or deprecate redundant components and code
+   - Update any references or documentation to reflect the new unified approach
+
+The implementation should provide a seamless user experience while maintaining all the functionality that was previously spread across different components. It should leverage the Agent Registry for conversation management and the UI Instruction Protocol for dynamic interface updates.
+
+# Test Strategy:
+Testing should be comprehensive to ensure the unified interface works correctly in all scenarios:
+
+1. **Component Integration Testing**:
+   - Verify the UnifiedChatUI correctly integrates with the Agent Registry
+   - Test UI Instruction handling for all supported component types
+   - Ensure state management correctly handles instruction sequences and priorities
+
+2. **Conversation Flow Testing**:
+   - Test complete conversation flows from initial greeting to submission
+   - Verify agent handoffs work correctly (Agno → Form Collector)
+   - Test error recovery and resumption of interrupted conversations
+
+3. **File Upload Testing**:
+   - Verify file upload UI appears at the appropriate time in the conversation
+   - Test file uploads with various file types and sizes
+   - Confirm scanning status updates correctly
+   - Verify submission with attachments works properly
+
+4. **Routing and Navigation Testing**:
+   - Test all routes to ensure they lead to the unified interface
+   - Verify redirects from legacy test URLs work correctly
+   - Test deep linking with URL parameters for specific features
+
+5. **Performance Testing**:
+   - Measure component render performance
+   - Test with long conversations to ensure responsiveness
+   - Verify memory usage remains stable during extended use
+
+6. **Cross-browser Testing**:
+   - Test on multiple browsers (Chrome, Firefox, Safari)
+   - Verify on mobile devices and responsive layouts
+
+Document all testing with screenshots and validation steps to demonstrate the functionality works as expected across all scenarios.
+
+# Subtasks:
+## 1. Create UnifiedChatUI Component [pending]
+### Dependencies: None
+### Description: Develop a new chat component that consolidates functionality from existing implementations into a single, cohesive interface
+### Details:
+Create a new React component in `frontend__backup2/components/features/UnifiedChatUI.tsx` that combines the best features from existing chat implementations. The component should:
+- Use ChatUIWithRegistry.tsx as the base implementation
+- Integrate with the Agent Registry for proper agent handoff management
+- Support the UI Instruction Protocol for dynamic UI updates
+- Include the file upload functionality with S3 integration
+- Implement proper state management for conversation flow
+- Support message history and context preservation
+- Add proper error handling and recovery
+
+### Test Strategy:
+- Perform unit tests on component initialization and state management
+- Verify proper integration with the Agent Registry
+- Test UI Instruction Protocol handling for all component types
+- Ensure proper rendering of dynamic UI elements
+
+## 2. Implement API Integration for Agno Chat [pending]
+### Dependencies: [1]
+### Description: Connect the UnifiedChatUI component to the Agno chat backend API and ensure proper communication
+### Details:
+Implement the API integration layer for the UnifiedChatUI component, ensuring proper communication with the backend services:
+- Configure API endpoints for the Agno chat service
+- Implement proper session management and conversation state preservation
+- Handle authentication and security requirements
+- Add error handling for API failures with retry logic
+- Implement proper response parsing and state updates
+- Ensure file upload API integration works correctly
+- Add logging for debugging and monitoring
+
+### Test Strategy:
+- Test API communication with mock endpoints
+- Verify proper handling of successful and failed API calls
+- Test session persistence across page reloads
+- Confirm error handling and retry logic functions correctly
+
+## 3. Update Routing and Navigation [pending]
+### Dependencies: [1]
+### Description: Update application routing to use the unified component as the primary interface and implement redirects
+### Details:
+Update the application's routing configuration to use the new UnifiedChatUI component as the primary interface:
+- Modify app/page.tsx to use the UnifiedChatUI component
+- Add redirects from /agno-chat and /chat-with-registry to the main route
+- Implement URL parameter support for debug mode and testing
+- Update any navigation components to point to the unified interface
+- Ensure proper handling of direct URL access
+- Add route guards if needed for authentication
+- Support deep linking for specific conversation states
+
+### Test Strategy:
+- Test all routes to verify they correctly lead to the unified interface
+- Verify redirects work as expected
+- Test URL parameter handling
+- Confirm direct URL access works properly
+- Verify route transitions preserve state appropriately
+
+## 4. Implement Comprehensive Testing Suite [pending]
+### Dependencies: [1, 2, 3]
+### Description: Create a comprehensive testing suite for the unified chat interface to ensure functionality across various scenarios
+### Details:
+Develop a comprehensive testing suite to validate the unified chat interface:
+- Create test scenarios for complete conversation flows
+- Implement tests for agent handoffs and context preservation
+- Add tests for file upload functionality
+- Create tests for error conditions and recovery
+- Implement cross-browser testing setup
+- Add accessibility testing
+- Test performance under various conditions
+- Include security testing for inputs and API calls
+
+### Test Strategy:
+- Run automated test suite covering all functionality
+- Perform manual testing for complex user flows
+- Test across multiple browsers and devices
+- Conduct performance testing with large conversations
+- Verify accessibility compliance with WCAG standards
+
+## 5. Documentation and Cleanup [pending]
+### Dependencies: [1, 2, 3, 4]
+### Description: Document the unified architecture and clean up redundant code
+### Details:
+Document the unified chat architecture and remove redundant code:
+- Create comprehensive documentation of the UnifiedChatUI architecture
+- Document the component hierarchy and interaction patterns
+- Create a guide for extending the unified interface
+- Remove or deprecate redundant components and code
+- Update import references to use the new unified component
+- Clean up any duplicate functionality
+- Add inline code documentation
+- Update existing documentation to reference the unified approach
+
+### Test Strategy:
+- Review documentation with team members
+- Verify documentation accuracy by having a developer follow the guides
+- Confirm that removal of redundant code doesn't break functionality
+- Ensure all references to old components are updated

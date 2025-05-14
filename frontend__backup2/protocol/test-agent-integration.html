@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UI Instruction Protocol - Agent Registry Integration Test</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background-color: #0b1021;
+      color: white;
+      padding: 2rem;
+      line-height: 1.5;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      color: #6d4aff;
+    }
+    h2 {
+      font-size: 1.5rem;
+      margin: 1.5rem 0 1rem;
+      color: #8c5eff;
+    }
+    h3 {
+      color: #a583ff;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    .panel {
+      background-color: #121833;
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .full-width {
+      grid-column: 1 / -1;
+    }
+    .instruction-panel {
+      background-color: #1a243b;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    pre {
+      background-color: #0b1021;
+      border-radius: 0.25rem;
+      padding: 1rem;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      font-size: 0.8rem;
+    }
+    code {
+      font-family: 'Courier New', Courier, monospace;
+    }
+    button {
+      background-color: #6d4aff;
+      color: white;
+      border: none;
+      border-radius: 0.25rem;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      cursor: pointer;
+      margin: 0.5rem 0.5rem 0.5rem 0;
+      transition: background-color 0.2s;
+    }
+    button:hover {
+      background-color: #5d3aef;
+    }
+    button:disabled {
+      background-color: #4a3a8c;
+      cursor: not-allowed;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .result {
+      margin-top: 1rem;
+      padding: 1rem;
+      background-color: #1a243b;
+      border-radius: 0.25rem;
+    }
+    .success {
+      color: #4ade80;
+    }
+    .error {
+      color: #f87171;
+    }
+    .warning {
+      color: #facc15;
+    }
+    .agent-badge {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 1rem;
+      font-size: 0.75rem;
+      font-weight: bold;
+      margin-left: 0.5rem;
+    }
+    .agent-form-collector {
+      background-color: #818cf8;
+    }
+    .agent-email-verifier {
+      background-color: #34d399;
+    }
+    .agent-ticket-poster {
+      background-color: #fb923c;
+    }
+    .agent-unknown {
+      background-color: #94a3b8;
+    }
+    .queue-item {
+      background-color: #1e293b;
+      padding: 1rem;
+      border-radius: 0.25rem;
+      margin-bottom: 0.5rem;
+      position: relative;
+    }
+    .queue-item-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+    .queue-item-status {
+      font-weight: bold;
+    }
+    .status-active {
+      color: #60a5fa;
+    }
+    .status-pending {
+      color: #fbbf24;
+    }
+    .status-completed {
+      color: #4ade80;
+    }
+    .status-error, .status-cancelled, .status-timeout {
+      color: #f87171;
+    }
+    .status-superseded, .status-deferred {
+      color: #94a3b8;
+    }
+    .log-entry {
+      border-left: 3px solid #2d3748;
+      padding-left: 1rem;
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+    }
+    .log-time {
+      color: #94a3b8;
+      margin-right: 0.5rem;
+    }
+    .log-type-error {
+      border-left-color: #ef4444;
+    }
+    .log-type-warning, .log-type-conflict, .log-type-supersede {
+      border-left-color: #f59e0b;
+    }
+    .log-type-info, .log-type-enqueue, .log-type-activate {
+      border-left-color: #3b82f6;
+    }
+    .log-type-success, .log-type-complete {
+      border-left-color: #10b981;
+    }
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid #2d3748;
+      padding-bottom: 0.5rem;
+    }
+    .tab {
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      border-radius: 0.25rem 0.25rem 0 0;
+    }
+    .tab.active {
+      background-color: #3b82f6;
+      color: white;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="panel full-width">
+      <h1>UI Instruction Protocol - Agent Registry Integration Test</h1>
+      <p>This page demonstrates the integration between the UI Instruction Protocol and the Agent Registry (Task 20.5).</p>
+      <p>It shows how agent permissions are enforced, how conflicts are resolved based on agent priorities, and how rate limits are applied.</p>
+    </div>
+
+    <div class="panel">
+      <h2>Registered Agents</h2>
+      <div class="instruction-panel">
+        <h3>Form Collection Agent <span class="agent-badge agent-form-collector">Priority: 2</span></h3>
+        <p>Allowed instructions:</p>
+        <ul>
+          <li>show_file_upload</li>
+          <li>request_email</li>
+          <li>display_form</li>
+        </ul>
+        <p>Rate limit: 5 instructions per minute</p>
+      </div>
+
+      <div class="instruction-panel">
+        <h3>Email Verification Agent <span class="agent-badge agent-email-verifier">Priority: 1</span></h3>
+        <p>Allowed instructions:</p>
+        <ul>
+          <li>request_email</li>
+          <li>show_confirmation_dialog</li>
+        </ul>
+        <p>Rate limit: 3 instructions per minute</p>
+      </div>
+
+      <div class="instruction-panel">
+        <h3>Ticket Submission Agent <span class="agent-badge agent-ticket-poster">Priority: 3</span></h3>
+        <p>Allowed instructions:</p>
+        <ul>
+          <li>show_progress_indicator</li>
+          <li>show_confirmation_dialog</li>
+        </ul>
+        <p>Rate limit: 2 instructions per minute</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Instruction Queue</h2>
+      <p>Current queue state:</p>
+      <div id="queue-display">
+        <p>No instructions in queue.</p>
+      </div>
+
+      <h3>Active Instruction</h3>
+      <div id="active-instruction">
+        <p>No active instruction.</p>
+      </div>
+
+      <div class="action-buttons">
+        <button id="btn-clear">Clear Queue</button>
+        <button id="btn-cleanup">Cleanup Completed</button>
+      </div>
+    </div>
+
+    <div class="panel full-width">
+      <h2>Send Test Instructions</h2>
+      
+      <div class="tabs">
+        <div class="tab active" data-tab="authorized">Authorized Instructions</div>
+        <div class="tab" data-tab="unauthorized">Unauthorized Instructions</div>
+        <div class="tab" data-tab="conflicts">Conflict Resolution</div>
+        <div class="tab" data-tab="rate-limits">Rate Limits</div>
+      </div>
+
+      <div class="tab-content active" data-tab-content="authorized">
+        <p>These instructions are authorized for the specified agents.</p>
+        
+        <div class="action-buttons">
+          <button id="btn-file-upload">File Upload (Form Collector)</button>
+          <button id="btn-email-request-form">Email Request (Form Collector)</button>
+          <button id="btn-email-request-email">Email Request (Email Verifier)</button>
+          <button id="btn-confirmation-email">Confirmation (Email Verifier)</button>
+          <button id="btn-confirmation-ticket">Confirmation (Ticket Poster)</button>
+          <button id="btn-progress">Progress Indicator (Ticket Poster)</button>
+        </div>
+      </div>
+
+      <div class="tab-content" data-tab-content="unauthorized">
+        <p>These instructions are <strong>not</strong> authorized for the specified agents and should be rejected.</p>
+        
+        <div class="action-buttons">
+          <button id="btn-unauthorized-1">Auth Prompt (Form Collector)</button>
+          <button id="btn-unauthorized-2">File Upload (Email Verifier)</button>
+          <button id="btn-unauthorized-3">Form Display (Ticket Poster)</button>
+          <button id="btn-unauthorized-4">Unknown Agent</button>
+          <button id="btn-unauthorized-5">Missing Agent ID</button>
+        </div>
+      </div>
+
+      <div class="tab-content" data-tab-content="conflicts">
+        <p>These tests demonstrate conflict resolution based on agent priorities.</p>
+        
+        <div class="action-buttons">
+          <button id="btn-conflict-1">Email Request Conflict (Form vs Email)</button>
+          <button id="btn-conflict-2">Confirmation Dialog Conflict (Email vs Ticket)</button>
+          <button id="btn-conflict-3">Same Agent Conflict (Form Collector)</button>
+        </div>
+      </div>
+
+      <div class="tab-content" data-tab-content="rate-limits">
+        <p>These tests demonstrate rate limiting based on agent configurations.</p>
+        
+        <div class="action-buttons">
+          <button id="btn-rate-form">Flood Form Collector (>5/min)</button>
+          <button id="btn-rate-email">Flood Email Verifier (>3/min)</button>
+          <button id="btn-rate-ticket">Flood Ticket Poster (>2/min)</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel full-width">
+      <h2>Event Log</h2>
+      <div id="event-log" style="max-height: 400px; overflow-y: auto;">
+        <p>Events will appear here...</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Mock implementations of the TypeScript classes for demonstration
+    
+    // Agent Registry
+    class MockAgentRegistry {
+      constructor() {
+        this.agents = {
+          "form_collector": {
+            id: "form_collector",
+            name: "Form Collection Agent",
+            description: "Collects form information for ticket submission",
+            priority: 2,
+            capabilities: {
+              ui_instructions: [
+                "show_file_upload",
+                "request_email",
+                "display_form"
+              ]
+            },
+            rateLimits: {
+              uiInstructionsPerMinute: 5
+            }
+          },
+          "email_verifier": {
+            id: "email_verifier",
+            name: "Email Verification Agent",
+            description: "Verifies email addresses and sends confirmation links",
+            priority: 1,
+            capabilities: {
+              ui_instructions: [
+                "request_email",
+                "show_confirmation_dialog"
+              ]
+            },
+            rateLimits: {
+              uiInstructionsPerMinute: 3
+            }
+          },
+          "ticket_poster": {
+            id: "ticket_poster",
+            name: "Ticket Submission Agent",
+            description: "Posts completed tickets to Zendesk",
+            priority: 3,
+            capabilities: {
+              ui_instructions: [
+                "show_progress_indicator",
+                "show_confirmation_dialog"
+              ]
+            },
+            rateLimits: {
+              uiInstructionsPerMinute: 2
+            }
+          }
+        };
+      }
+
+      getAgent(agentId) {
+        return this.agents[agentId] || null;
+      }
+
+      hasAgent(agentId) {
+        return !!this.agents[agentId];
+      }
+
+      getAllAgents() {
+        return Object.values(this.agents);
+      }
+
+      isAuthorized(agentId, instructionType) {
+        const agent = this.agents[agentId];
+        if (!agent) return false;
+        
+        const allowedInstructions = agent.capabilities.ui_instructions || [];
+        return allowedInstructions.includes(instructionType);
+      }
+
+      getAgentPriority(agentId) {
+        const agent = this.agents[agentId];
+        return agent ? agent.priority : 0;
+      }
+    }
+
+    // UI Instruction Verifier
+    class UIInstructionVerifier {
+      constructor(agentRegistry) {
+        this.agentRegistry = agentRegistry;
+      }
+
+      verify(instruction) {
+        // Basic validation
+        if (!instruction || 
+            typeof instruction !== 'object' || 
+            !instruction.instruction_type ||
+            !instruction.metadata ||
+            !instruction.parameters) {
+          throw new Error("Invalid instruction structure");
+        }
+
+        // Get agent ID from instruction
+        const agentId = instruction.metadata.agent_id;
+        if (!agentId) {
+          throw new Error("Missing agent_id in instruction metadata");
+        }
+
+        // Verify agent is registered
+        if (!this.agentRegistry.hasAgent(agentId)) {
+          throw new Error(`Unknown agent: ${agentId}`);
+        }
+
+        // Verify agent is authorized for this instruction type
+        if (!this.agentRegistry.isAuthorized(agentId, instruction.instruction_type)) {
+          throw new Error(
+            `Agent ${agentId} not authorized to use ${instruction.instruction_type}`
+          );
+        }
+
+        return true;
+      }
+
+      getAgentName(agentId) {
+        const agent = this.agentRegistry.getAgent(agentId);
+        return agent ? agent.name : agentId;
+      }
+
+      getAgentPriority(agentId) {
+        return this.agentRegistry.getAgentPriority(agentId);
+      }
+
+      compareAgentPriorities(agentIdA, agentIdB) {
+        const priorityA = this.getAgentPriority(agentIdA);
+        const priorityB = this.getAgentPriority(agentIdB);
+        return priorityA - priorityB;
+      }
+    }
+
+    // UI Instruction State Manager
+    class UIInstructionStateManager {
+      constructor() {
+        this.queue = [];
+        this.active = null;
+        this.onChange = [];
+        this.onQueueChange = [];
+        this.eventLog = [];
+        this.timeoutHandlers = {};
+        this.instructionCounter = 0;
+        this.instructionTimestamps = [];
+        this.instructionCountByAgent = {};
+        this.agentRegistry = new MockAgentRegistry();
+        this.verifier = new UIInstructionVerifier(this.agentRegistry);
+        
+        // Default configuration
+        this.config = {
+          defaultTimeout: 10000, // 10 seconds for demo
+          maxQueueLength: 10,
+          conflictRules: {
+            'show_file_upload': {
+              conflicts: ['show_file_upload', 'display_form'],
+              supersedes: []
+            },
+            'request_email': {
+              conflicts: ['request_email'],
+              supersedes: []
+            },
+            'display_form': {
+              conflicts: ['display_form', 'show_file_upload'],
+              supersedes: []
+            },
+            'show_auth_prompt': {
+              conflicts: ['show_auth_prompt'],
+              supersedes: ['request_email']
+            },
+            'show_selection_menu': {
+              conflicts: ['show_selection_menu'],
+              supersedes: []
+            },
+            'show_progress_indicator': {
+              conflicts: [],
+              supersedes: []
+            },
+            'show_confirmation_dialog': {
+              conflicts: ['show_confirmation_dialog'],
+              supersedes: ['show_confirmation_dialog']
+            }
+          },
+          rateLimits: {
+            maxInstructionsPerMinute: 10,
+            maxInstructionsPerAgent: {
+              'form_collector': 5,
+              'email_verifier': 3,
+              'ticket_poster': 2
+            }
+          }
+        };
+        
+        this.initializeRateLimits();
+      }
+      
+      initializeRateLimits() {
+        const agents = this.agentRegistry.getAllAgents();
+        const rateLimits = {};
+        
+        agents.forEach(agent => {
+          rateLimits[agent.id] = agent.rateLimits?.uiInstructionsPerMinute || 
+                               this.config.rateLimits.maxInstructionsPerMinute;
+        });
+        
+        this.config.rateLimits.maxInstructionsPerAgent = {
+          ...this.config.rateLimits.maxInstructionsPerAgent,
+          ...rateLimits
+        };
+      }
+
+      subscribe(cb) {
+        this.onChange.push(cb);
+        return () => {
+          this.onChange = this.onChange.filter((fn) => fn !== cb);
+        };
+      }
+
+      subscribeToQueue(cb) {
+        this.onQueueChange.push(cb);
+        return () => {
+          this.onQueueChange = this.onQueueChange.filter((fn) => fn !== cb);
+        };
+      }
+
+      notifyStateChange() {
+        this.onChange.forEach((cb) => cb(this.active));
+      }
+
+      notifyQueueChange() {
+        this.onQueueChange.forEach((cb) => cb(this.getQueue()));
+      }
+
+      generateInstructionId() {
+        this.instructionCounter++;
+        return `${Date.now()}-${this.instructionCounter}`;
+      }
+
+      logEvent(event, message, details, instructionId, instructionType) {
+        const logEvent = {
+          type: event,
+          timestamp: Date.now(),
+          message,
+          details,
+          instructionId,
+          instructionType
+        };
+        
+        this.eventLog.push(logEvent);
+        
+        // Trim event log if it gets too large
+        if (this.eventLog.length > 100) {
+          this.eventLog = this.eventLog.slice(-100);
+        }
+        
+        // For demo purposes, we'll add to the event log display
+        addLogEntry(event, message, details);
+      }
+
+      checkRateLimits(agentId) {
+        // Check global rate limit
+        const now = Date.now();
+        const oneMinuteAgo = now - 60000;
+        
+        // Remove timestamps older than 1 minute
+        this.instructionTimestamps = this.instructionTimestamps.filter(ts => ts > oneMinuteAgo);
+        
+        // Check if we're over the global limit
+        if (this.instructionTimestamps.length >= this.config.rateLimits.maxInstructionsPerMinute) {
+          this.logEvent('error', 'Global rate limit exceeded', { 
+            limit: this.config.rateLimits.maxInstructionsPerMinute,
+            current: this.instructionTimestamps.length 
+          });
+          return false;
+        }
+        
+        // Check agent-specific rate limit if agent ID is provided
+        if (agentId) {
+          const agentLimit = this.config.rateLimits.maxInstructionsPerAgent[agentId];
+          
+          if (agentLimit) {
+            // Initialize agent counter if not exists
+            if (!this.instructionCountByAgent[agentId]) {
+              this.instructionCountByAgent[agentId] = { count: 0, resetTime: now + 60000 };
+            }
+            
+            const agentCounter = this.instructionCountByAgent[agentId];
+            
+            // Reset counter if time has passed
+            if (now > agentCounter.resetTime) {
+              agentCounter.count = 0;
+              agentCounter.resetTime = now + 60000;
+            }
+            
+            // Check if agent is over their limit
+            if (agentCounter.count >= agentLimit) {
+              this.logEvent('error', `Agent rate limit exceeded for ${agentId}`, { 
+                limit: agentLimit, 
+                current: agentCounter.count 
+              });
+              return false;
+            }
+            
+            // Increment agent counter
+            agentCounter.count++;
+          }
+        }
+        
+        // Add current timestamp to the list
+        this.instructionTimestamps.push(now);
+        
+        return true;
+      }
+
+      handleConflicts(newState) {
+        const conflicts = [];
+        const superseded = [];
+        
+        const instructionType = newState.instruction.instruction_type;
+        const agentId = newState.instruction.metadata.agent_id;
+        
+        // Skip conflict checking if no conflict rules exist
+        if (!this.config.conflictRules[instructionType]) {
+          return conflicts;
+        }
+        
+        // Get conflict and supersede rules for this instruction type
+        const { conflicts: conflictTypes, supersedes: supersedeTypes } = this.config.conflictRules[instructionType];
+        
+        // Check each instruction in the queue for conflicts
+        this.queue.forEach(queuedState => {
+          // Skip if this is the same instruction
+          if (queuedState.id === newState.id) return;
+          
+          const queuedType = queuedState.instruction.instruction_type;
+          const queuedAgentId = queuedState.agent_id;
+          
+          // Check if this instruction conflicts with the queued instruction
+          if (conflictTypes.includes(queuedType)) {
+            // If from same agent, newer one takes precedence
+            if (agentId && queuedAgentId === agentId) {
+              // Mark the older instruction as superseded
+              queuedState.status = 'superseded';
+              queuedState.supersededBy = newState.id;
+              superseded.push(queuedState.id);
+              
+              this.logEvent('supersede', 
+                `Instruction ${queuedState.id} (${queuedType}) superseded by ${newState.id} (${instructionType})`,
+                { oldInstruction: queuedState, newInstruction: newState },
+                queuedState.id,
+                queuedType
+              );
+            } else if (agentId && queuedAgentId) {
+              // Different agents - use priority to determine precedence
+              const comparison = this.verifier.compareAgentPriorities(agentId, queuedAgentId);
+              
+              // Higher priority agent's instruction supersedes lower priority agent's instruction
+              if (comparison > 0) {
+                // New instruction is from higher priority agent
+                queuedState.status = 'superseded';
+                queuedState.supersededBy = newState.id;
+                superseded.push(queuedState.id);
+                
+                const newAgentName = this.verifier.getAgentName(agentId);
+                const queuedAgentName = this.verifier.getAgentName(queuedAgentId);
+                
+                this.logEvent('supersede', 
+                  `Instruction ${queuedState.id} from ${queuedAgentName} superseded by ${newState.id} from ${newAgentName} (higher priority)`,
+                  { oldInstruction: queuedState, newInstruction: newState, priorityDiff: comparison },
+                  queuedState.id,
+                  queuedType
+                );
+              } else if (comparison < 0) {
+                // Queued instruction is from higher priority agent - record conflict
+                conflicts.push(queuedState.id);
+                
+                const newAgentName = this.verifier.getAgentName(agentId);
+                const queuedAgentName = this.verifier.getAgentName(queuedAgentId);
+                
+                this.logEvent('conflict', 
+                  `Instruction ${newState.id} from ${newAgentName} conflicts with ${queuedState.id} from ${queuedAgentName} (higher priority)`,
+                  { instruction: newState, conflict: queuedState, priorityDiff: comparison },
+                  newState.id,
+                  instructionType
+                );
+              } else {
+                // Equal priority - use instruction priority as tiebreaker
+                const newPriority = this.priorityValue(newState);
+                const queuedPriority = this.priorityValue(queuedState);
+                
+                if (newPriority > queuedPriority) {
+                  queuedState.status = 'superseded';
+                  queuedState.supersededBy = newState.id;
+                  superseded.push(queuedState.id);
+                  
+                  this.logEvent('supersede', 
+                    `Instruction ${queuedState.id} (${queuedType}) superseded by ${newState.id} (${instructionType}) (higher instruction priority)`,
+                    { oldInstruction: queuedState, newInstruction: newState },
+                    queuedState.id,
+                    queuedType
+                  );
+                } else {
+                  // Record as conflict
+                  conflicts.push(queuedState.id);
+                }
+              }
+            } else {
+              // Missing agent ID on one or both instructions - fall back to default behavior
+              conflicts.push(queuedState.id);
+            }
+          }
+          
+          // Check if this instruction supersedes the queued instruction by type
+          if (supersedeTypes.includes(queuedType)) {
+            // Mark the queued instruction as superseded
+            queuedState.status = 'superseded';
+            queuedState.supersededBy = newState.id;
+            superseded.push(queuedState.id);
+            
+            this.logEvent('supersede', 
+              `Instruction ${queuedState.id} (${queuedType}) superseded by ${newState.id} (${instructionType}) (rule-based)`,
+              { oldInstruction: queuedState, newInstruction: newState },
+              queuedState.id,
+              queuedType
+            );
+          }
+        });
+        
+        // If we have active instruction, also check for conflicts/supersedes
+        if (this.active) {
+          const activeType = this.active.instruction.instruction_type;
+          const activeAgentId = this.active.agent_id;
+          
+          // Check for conflict with active instruction
+          if (conflictTypes.includes(activeType)) {
+            // If from same agent, newer one takes precedence
+            if (agentId && activeAgentId === agentId) {
+              // Cancel the active instruction
+              this.cancelActive(`Superseded by new instruction ${newState.id}`);
+              superseded.push(this.active.id);
+            } else if (agentId && activeAgentId) {
+              // Different agents - use priority to determine precedence
+              const comparison = this.verifier.compareAgentPriorities(agentId, activeAgentId);
+              
+              if (comparison > 0) {
+                // New instruction is from higher priority agent
+                this.cancelActive(`Superseded by higher priority agent instruction ${newState.id}`);
+                superseded.push(this.active.id);
+              } else if (comparison < 0) {
+                // Active instruction is from higher priority agent
+                conflicts.push(this.active.id);
+              } else {
+                // Equal priority - use instruction priority as tiebreaker
+                const newPriority = this.priorityValue(newState);
+                const activePriority = this.priorityValue(this.active);
+                
+                if (newPriority > activePriority) {
+                  this.deferActive(`Deferred for higher priority instruction ${newState.id}`);
+                } else {
+                  conflicts.push(this.active.id);
+                }
+              }
+            } else {
+              // Missing agent ID on one or both instructions - fall back to instruction priority
+              if (newState.instruction.metadata.priority === 'high' && 
+                  this.active.instruction.metadata.priority !== 'high') {
+                this.deferActive(`Deferred for higher priority instruction ${newState.id}`);
+              } else {
+                conflicts.push(this.active.id);
+              }
+            }
+          }
+          
+          // Check if this instruction supersedes the active instruction by type
+          if (supersedeTypes.includes(activeType)) {
+            // Cancel the active instruction
+            this.cancelActive(`Superseded by new instruction ${newState.id} (rule-based)`);
+            superseded.push(this.active.id);
+          }
+        }
+        
+        // Record any conflicts
+        if (conflicts.length > 0) {
+          newState.conflictsWith = conflicts;
+          
+          this.logEvent('conflict', 
+            `Instruction ${newState.id} (${instructionType}) conflicts with ${conflicts.join(', ')}`,
+            { instruction: newState, conflicts },
+            newState.id,
+            instructionType
+          );
+        }
+        
+        return conflicts;
+      }
+
+      enqueue(instruction, timeoutMs) {
+        try {
+          // Verify the instruction against the agent registry
+          this.verifier.verify(instruction);
+          
+          // Check if we're over the queue length limit
+          if (this.queue.length >= this.config.maxQueueLength) {
+            this.logEvent('error', 'Queue length limit exceeded, dropping instruction', { 
+              limit: this.config.maxQueueLength,
+              instruction 
+            });
+            return null;
+          }
+          
+          // Check rate limits
+          const agentId = instruction.metadata.agent_id;
+          if (!this.checkRateLimits(agentId)) {
+            return null;
+          }
+          
+          // Create a unique ID for this instruction
+          const id = this.generateInstructionId();
+          
+          // Create the instruction state
+          const state = {
+            id,
+            instruction,
+            status: "pending",
+            timeoutMs: timeoutMs ?? this.config.defaultTimeout,
+            agent_id: agentId,
+            retryCount: 0
+          };
+          
+          // Check for conflicts and superseded instructions
+          this.handleConflicts(state);
+          
+          // Add to the queue
+          this.queue.push(state);
+          
+          // Re-sort the queue by priority
+          this.sortQueue();
+          
+          // Log with agent name for better traceability
+          const agentName = this.verifier.getAgentName(agentId || "");
+          this.logEvent('enqueue', 
+            `Instruction ${id} (${instruction.instruction_type}) queued from agent ${agentName}`, 
+            { instruction, timeoutMs, agentName }, 
+            id, 
+            instruction.instruction_type
+          );
+          
+          // Try to activate the next instruction
+          this.tryActivateNext();
+          
+          // Notify subscribers
+          this.notifyQueueChange();
+          
+          return id;
+        } catch (error) {
+          // Log verification errors
+          this.logEvent('error', 
+            `Instruction validation failed: ${error instanceof Error ? error.message : String(error)}`, 
+            { instruction, error }
+          );
+          return null;
+        }
+      }
+
+      sortQueue() {
+        this.queue.sort((a, b) => {
+          // First sort by status - pending items come first
+          if (a.status === 'pending' && b.status !== 'pending') return -1;
+          if (a.status !== 'pending' && b.status === 'pending') return 1;
+          
+          // Then sort by priority
+          const priorityDiff = this.priorityValue(b) - this.priorityValue(a);
+          if (priorityDiff !== 0) return priorityDiff;
+          
+          // Then sort by agent priority
+          if (a.agent_id && b.agent_id) {
+            const agentPriorityDiff = this.verifier.compareAgentPriorities(a.agent_id, b.agent_id);
+            if (agentPriorityDiff !== 0) return agentPriorityDiff;
+          }
+          
+          // Then sort by sequence number if present
+          const aSeq = a.instruction.metadata.sequence;
+          const bSeq = b.instruction.metadata.sequence;
+          
+          if (aSeq !== undefined && bSeq !== undefined) {
+            return aSeq - bSeq;
+          }
+          
+          // Finally sort by ID (timestamp) for consistent ordering
+          return a.id.localeCompare(b.id);
+        });
+      }
+
+      priorityValue(state) {
+        const p = state.instruction.metadata.priority;
+        if (p === "high") return 2;
+        if (p === "low") return 0;
+        return 1;
+      }
+
+      tryActivateNext() {
+        // Don't try to activate if there's already an active instruction
+        if (this.active && this.active.status === "active") return;
+        
+        // Find the next pending instruction
+        const next = this.queue.find((s) => s.status === "pending");
+        
+        if (next) {
+          // Mark as active
+          next.status = "active";
+          next.startedAt = Date.now();
+          this.active = next;
+          
+          this.logEvent('activate', 
+            `Instruction ${next.id} (${next.instruction.instruction_type}) activated`, 
+            { instruction: next }, 
+            next.id, 
+            next.instruction.instruction_type
+          );
+          
+          // Start the timeout
+          this.startTimeout(next);
+          
+          // Notify subscribers
+          this.notifyStateChange();
+          this.notifyQueueChange();
+          
+          // For demo, we'll auto-complete after some time
+          setTimeout(() => {
+            if (this.active && this.active.id === next.id) {
+              this.completeActive();
+            }
+          }, 8000);
+        }
+      }
+
+      startTimeout(state) {
+        if (!state.timeoutMs) return;
+        
+        // Clear any existing timeout for this instruction
+        if (this.timeoutHandlers[state.id]) {
+          clearTimeout(this.timeoutHandlers[state.id]);
+        }
+        
+        // Set the new timeout
+        this.timeoutHandlers[state.id] = setTimeout(() => {
+          // Only proceed if the instruction is still active
+          if (state.status === "active" && state.startedAt && Date.now() - state.startedAt >= state.timeoutMs) {
+            state.status = "timeout";
+            state.error = "User did not respond in time.";
+            this.active = null;
+            
+            this.logEvent('timeout', 
+              `Instruction ${state.id} (${state.instruction.instruction_type}) timed out after ${state.timeoutMs}ms`, 
+              { instruction: state }, 
+              state.id, 
+              state.instruction.instruction_type
+            );
+            
+            // Try to activate the next instruction
+            this.tryActivateNext();
+            
+            // Notify subscribers
+            this.notifyStateChange();
+            this.notifyQueueChange();
+          }
+        }, state.timeoutMs);
+      }
+
+      completeActive(response) {
+        if (this.active) {
+          const id = this.active.id;
+          const type = this.active.instruction.instruction_type;
+          
+          this.active.status = "completed";
+          this.active.completedAt = Date.now();
+          
+          this.logEvent('complete', 
+            `Instruction ${id} (${type}) completed`, 
+            { instruction: this.active, response }, 
+            id, 
+            type
+          );
+          
+          // Clean up timeout
+          if (this.timeoutHandlers[id]) {
+            clearTimeout(this.timeoutHandlers[id]);
+            delete this.timeoutHandlers[id];
+          }
+          
+          // Clear active instruction
+          this.active = null;
+          
+          // Try to activate the next instruction
+          this.tryActivateNext();
+          
+          // Notify subscribers
+          this.notifyStateChange();
+          this.notifyQueueChange();
+        }
+      }
+
+      cancelActive(reason) {
+        if (this.active) {
+          const id = this.active.id;
+          const type = this.active.instruction.instruction_type;
+          
+          this.active.status = "cancelled";
+          this.active.error = reason || "Cancelled by user/system.";
+          this.active.completedAt = Date.now();
+          
+          this.logEvent('cancel', 
+            `Instruction ${id} (${type}) cancelled: ${reason || 'No reason provided'}`, 
+            { instruction: this.active }, 
+            id, 
+            type
+          );
+          
+          // Clean up timeout
+          if (this.timeoutHandlers[id]) {
+            clearTimeout(this.timeoutHandlers[id]);
+            delete this.timeoutHandlers[id];
+          }
+          
+          // Clear active instruction
+          this.active = null;
+          
+          // Try to activate the next instruction
+          this.tryActivateNext();
+          
+          // Notify subscribers
+          this.notifyStateChange();
+          this.notifyQueueChange();
+        }
+      }
+
+      deferActive(reason) {
+        if (this.active) {
+          const id = this.active.id;
+          const type = this.active.instruction.instruction_type;
+          
+          this.active.status = "deferred";
+          this.active.error = reason || "Deferred for higher priority instruction.";
+          
+          this.logEvent('cancel', 
+            `Instruction ${id} (${type}) deferred: ${reason || 'No reason provided'}`, 
+            { instruction: this.active }, 
+            id, 
+            type
+          );
+          
+          // Clean up timeout
+          if (this.timeoutHandlers[id]) {
+            clearTimeout(this.timeoutHandlers[id]);
+            delete this.timeoutHandlers[id];
+          }
+          
+          // Move the instruction back to the queue with pending status
+          const deferredInstruction = {...this.active, status: 'pending'};
+          this.queue = this.queue.filter(item => item.id !== id);
+          this.queue.unshift(deferredInstruction);
+          
+          // Clear active instruction
+          this.active = null;
+          
+          // Try to activate the next instruction
+          this.tryActivateNext();
+          
+          // Notify subscribers
+          this.notifyStateChange();
+          this.notifyQueueChange();
+        }
+      }
+
+      getActive() {
+        return this.active;
+      }
+
+      getQueue() {
+        return this.queue.slice();
+      }
+
+      getInstructionById(id) {
+        if (this.active && this.active.id === id) {
+          return this.active;
+        }
+        return this.queue.find(s => s.id === id) || null;
+      }
+
+      getEventLog() {
+        return this.eventLog.slice();
+      }
+
+      clear() {
+        // Clean up all timeouts
+        Object.keys(this.timeoutHandlers).forEach(id => {
+          clearTimeout(this.timeoutHandlers[id]);
+          delete this.timeoutHandlers[id];
+        });
+        
+        this.queue = [];
+        this.active = null;
+        
+        this.logEvent('cancel', 'Instruction queue cleared');
+        
+        // Notify subscribers
+        this.notifyStateChange();
+        this.notifyQueueChange();
+      }
+
+      cleanup() {
+        // Filter out instructions that are done
+        this.queue = this.queue.filter(s => 
+          !['completed', 'cancelled', 'error', 'superseded', 'timeout'].includes(s.status)
+        );
+        
+        this.logEvent('cancel', 'Completed instructions cleaned up from queue');
+        
+        // Notify subscribers
+        this.notifyQueueChange();
+      }
+    }
+
+    // Create a singleton instance
+    const stateManager = new UIInstructionStateManager();
+
+    // Helper function to create instructions
+    function createInstruction(type, agentId, priority = 'normal') {
+      let parameters = {};
+      
+      // Set appropriate parameters based on instruction type
+      switch (type) {
+        case 'show_file_upload':
+          parameters = {
+            max_files: 3,
+            max_size_mb: 10,
+            accepted_types: ['image/png', 'image/jpeg'],
+            upload_url: 'https://example.com/upload'
+          };
+          break;
+        case 'request_email':
+          parameters = {
+            prompt: 'Please enter your email address:',
+            validation_regex: '^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$'
+          };
+          break;
+        case 'display_form':
+          parameters = {
+            title: 'Bug Report Form',
+            fields: [
+              {
+                name: 'title',
+                label: 'Bug Title',
+                type: 'text',
+                required: true
+              },
+              {
+                name: 'description',
+                label: 'Description',
+                type: 'textarea',
+                required: true
+              }
+            ],
+            submit_label: 'Submit Report'
+          };
+          break;
+        case 'show_auth_prompt':
+          parameters = {
+            title: 'Authentication Required',
+            message: 'Please sign in to continue',
+            provider: 'google'
+          };
+          break;
+        case 'show_confirmation_dialog':
+          parameters = {
+            title: 'Confirm Action',
+            message: 'Are you sure you want to submit this report?',
+            confirm_label: 'Yes, Submit',
+            cancel_label: 'Cancel'
+          };
+          break;
+        case 'show_progress_indicator':
+          parameters = {
+            message: 'Processing your request...',
+            progress: 0,
+            indeterminate: true
+          };
+          break;
+      }
+      
+      return {
+        instruction_type: type,
+        parameters,
+        metadata: {
+          priority,
+          sequence: Date.now(),
+          version: '1.0.0',
+          agent_id: agentId
+        }
+      };
+    }
+
+    // Queue display updater
+    function updateQueueDisplay() {
+      const queueDisplay = document.getElementById('queue-display');
+      const activeDisplay = document.getElementById('active-instruction');
+      
+      // Get queue and active instruction
+      const queue = stateManager.getQueue();
+      const active = stateManager.getActive();
+      
+      // Update active instruction display
+      if (active) {
+        const agentName = stateManager.verifier.getAgentName(active.agent_id || '');
+        const agentClass = getAgentClass(active.agent_id);
+        
+        activeDisplay.innerHTML = `
+          <div class="queue-item">
+            <div class="queue-item-header">
+              <span class="queue-item-type">${active.instruction.instruction_type}</span>
+              <span class="queue-item-status status-${active.status}">${active.status}</span>
+            </div>
+            <div>
+              <span>Agent: <span class="agent-badge ${agentClass}">${agentName}</span></span>
+            </div>
+            <div>
+              <span>Priority: ${active.instruction.metadata.priority}</span>
+            </div>
+            <pre><code>${JSON.stringify(active.instruction.parameters, null, 2)}</code></pre>
+          </div>
+        `;
+      } else {
+        activeDisplay.innerHTML = '<p>No active instruction.</p>';
+      }
+      
+      // Update queue display
+      if (queue.length > 0) {
+        const queueItems = queue.map(item => {
+          if (active && item.id === active.id) return ''; // Skip active item
+          
+          const agentName = stateManager.verifier.getAgentName(item.agent_id || '');
+          const agentClass = getAgentClass(item.agent_id);
+          
+          return `
+            <div class="queue-item">
+              <div class="queue-item-header">
+                <span class="queue-item-type">${item.instruction.instruction_type}</span>
+                <span class="queue-item-status status-${item.status}">${item.status}</span>
+              </div>
+              <div>
+                <span>Agent: <span class="agent-badge ${agentClass}">${agentName}</span></span>
+              </div>
+              <div>
+                <span>Priority: ${item.instruction.metadata.priority}</span>
+              </div>
+              ${item.supersededBy ? `<div><span class="warning">Superseded by: ${item.supersededBy}</span></div>` : ''}
+              ${item.conflictsWith ? `<div><span class="warning">Conflicts with: ${item.conflictsWith.join(', ')}</span></div>` : ''}
+            </div>
+          `;
+        }).join('');
+        
+        queueDisplay.innerHTML = queueItems;
+      } else {
+        queueDisplay.innerHTML = '<p>No instructions in queue.</p>';
+      }
+    }
+
+    // Get agent CSS class
+    function getAgentClass(agentId) {
+      switch (agentId) {
+        case 'form_collector': return 'agent-form-collector';
+        case 'email_verifier': return 'agent-email-verifier';
+        case 'ticket_poster': return 'agent-ticket-poster';
+        default: return 'agent-unknown';
+      }
+    }
+
+    // Add log entry
+    function addLogEntry(type, message, details) {
+      const logContainer = document.getElementById('event-log');
+      const timestamp = new Date().toLocaleTimeString();
+      
+      const logClass = `log-type-${type}`;
+      
+      const logHTML = `
+        <div class="log-entry ${logClass}">
+          <span class="log-time">${timestamp}</span>
+          <span class="log-message">${message}</span>
+        </div>
+      `;
+      
+      logContainer.innerHTML = logHTML + logContainer.innerHTML;
+    }
+
+    // Subscribe to state changes
+    stateManager.subscribe(active => {
+      updateQueueDisplay();
+    });
+
+    stateManager.subscribeToQueue(queue => {
+      updateQueueDisplay();
+    });
+
+    // Button events
+    document.getElementById('btn-clear').addEventListener('click', () => {
+      stateManager.clear();
+    });
+
+    document.getElementById('btn-cleanup').addEventListener('click', () => {
+      stateManager.cleanup();
+    });
+
+    // Authorized instructions
+    document.getElementById('btn-file-upload').addEventListener('click', () => {
+      stateManager.enqueue(createInstruction('show_file_upload', 'form_collector'));
+    });
+
+    document.getElementById('btn-email-request-form').addEventListener('click', () => {
+      stateManager.enqueue(createInstruction('request_email', 'form_collector'));
+    });
+
+    document.getElementById('btn-email-request-email').addEventListener('click', () => {
+      stateManager.enqueue(createInstruction('request_email', 'email_verifier'));
+    });
+
+    document.getElementById('btn-confirmation-email').addEventListener('click', () => {
+      stateManager.enqueue(createInstruction('show_confirmation_dialog', 'email_verifier'));
+    });
+
+    document.getElementById('btn-confirmation-ticket').addEventListener('click', () => {
+      stateManager.enqueue(createInstruction('show_confirmation_dialog', 'ticket_poster'));
+    });
+
+    document.getElementById('btn-progress').addEventListener('click', () => {
+      stateManager.enqueue(createInstruction('show_progress_indicator', 'ticket_poster'));
+    });
+
+    // Unauthorized instructions
+    document.getElementById('btn-unauthorized-1').addEventListener('click', () => {
+      stateManager.enqueue(createInstruction('show_auth_prompt', 'form_collector'));
+    });
+
+    document.getElementById('btn-unauthorized-2').addEventListener('click', () => {
+      stateManager.enqueue(createInstruction('show_file_upload', 'email_verifier'));
+    });
+
+    document.getElementById('btn-unauthorized-3').addEventListener('click', () => {
+      stateManager.enqueue(createInstruction('display_form', 'ticket_poster'));
+    });
+
+    document.getElementById('btn-unauthorized-4').addEventListener('click', () => {
+      stateManager.enqueue(createInstruction('show_file_upload', 'unknown_agent'));
+    });
+
+    document.getElementById('btn-unauthorized-5').addEventListener('click', () => {
+      const instruction = createInstruction('show_file_upload', 'form_collector');
+      instruction.metadata.agent_id = '';
+      stateManager.enqueue(instruction);
+    });
+
+    // Conflict resolution tests
+    document.getElementById('btn-conflict-1').addEventListener('click', () => {
+      // Form collector vs email verifier - request_email instructions
+      // Both can use this instruction type, but have different priorities
+      stateManager.enqueue(createInstruction('request_email', 'form_collector', 'normal'));
+      setTimeout(() => {
+        stateManager.enqueue(createInstruction('request_email', 'email_verifier', 'normal'));
+      }, 500);
+    });
+
+    document.getElementById('btn-conflict-2').addEventListener('click', () => {
+      // Email verifier vs ticket poster - confirmation dialog
+      // Both can use this instruction type, but ticket poster has higher priority
+      stateManager.enqueue(createInstruction('show_confirmation_dialog', 'email_verifier', 'normal'));
+      setTimeout(() => {
+        stateManager.enqueue(createInstruction('show_confirmation_dialog', 'ticket_poster', 'normal'));
+      }, 500);
+    });
+
+    document.getElementById('btn-conflict-3').addEventListener('click', () => {
+      // Same agent conflict - form collector sending multiple file upload instructions
+      // Newer one should supersede the older one
+      stateManager.enqueue(createInstruction('show_file_upload', 'form_collector', 'normal'));
+      setTimeout(() => {
+        stateManager.enqueue(createInstruction('show_file_upload', 'form_collector', 'normal'));
+      }, 500);
+    });
+
+    // Rate limit tests
+    document.getElementById('btn-rate-form').addEventListener('click', () => {
+      // Form collector has a limit of 5 instructions per minute
+      const instruction = createInstruction('show_file_upload', 'form_collector');
+      for (let i = 0; i < 7; i++) {
+        setTimeout(() => {
+          stateManager.enqueue(instruction);
+        }, i * 200);
+      }
+    });
+
+    document.getElementById('btn-rate-email').addEventListener('click', () => {
+      // Email verifier has a limit of 3 instructions per minute
+      const instruction = createInstruction('request_email', 'email_verifier');
+      for (let i = 0; i < 5; i++) {
+        setTimeout(() => {
+          stateManager.enqueue(instruction);
+        }, i * 200);
+      }
+    });
+
+    document.getElementById('btn-rate-ticket').addEventListener('click', () => {
+      // Ticket poster has a limit of 2 instructions per minute
+      const instruction = createInstruction('show_progress_indicator', 'ticket_poster');
+      for (let i = 0; i < 4; i++) {
+        setTimeout(() => {
+          stateManager.enqueue(instruction);
+        }, i * 200);
+      }
+    });
+
+    // Tab handling
+    const tabs = document.querySelectorAll('.tab');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const tabId = tab.getAttribute('data-tab');
+        
+        // Update active tab
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        
+        // Update active content
+        document.querySelectorAll('.tab-content').forEach(content => {
+          content.classList.remove('active');
+        });
+        document.querySelector(`.tab-content[data-tab-content="${tabId}"]`).classList.add('active');
+      });
+    });
+    
+    // Initial display update
+    updateQueueDisplay();
+    
+    // Add initial log message
+    addLogEntry('info', 'UI Instruction Protocol with Agent Registry integration test initialized', {});
+  </script>
+</body>
+</html>

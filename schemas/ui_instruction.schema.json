@@ -1,0 +1,156 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "UI Instruction Protocol",
+  "description": "Schema for backend-to-frontend UI instruction messages enabling dynamic agent-driven interface updates.",
+  "type": "object",
+  "required": ["instruction_type", "parameters", "metadata"],
+  "properties": {
+    "instruction_type": {
+      "type": "string",
+      "enum": [
+        "show_file_upload",
+        "request_email",
+        "display_form",
+        "show_auth_prompt",
+        "show_selection_menu",
+        "show_progress_indicator",
+        "show_confirmation_dialog"
+      ],
+      "description": "Type of UI instruction to be rendered by the frontend."
+    },
+    "parameters": {
+      "type": "object",
+      "description": "Parameters specific to the instruction type.",
+      "properties": {},
+      "additionalProperties": true
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Instruction metadata for priority, sequencing, and versioning.",
+      "properties": {
+        "priority": {
+          "type": "string",
+          "enum": ["low", "normal", "high"],
+          "default": "normal"
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Sequence number for ordering instructions."
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Schema version (e.g., '1.0.0')."
+        },
+        "agent_id": {
+          "type": "string",
+          "description": "ID of the agent issuing the instruction."
+        }
+      },
+      "required": ["priority", "version"],
+      "additionalProperties": false
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "instruction_type": { "const": "show_file_upload" } }
+      },
+      "then": {
+        "properties": {
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "max_files": { "type": "integer", "minimum": 1, "maximum": 10 },
+              "max_size_mb": { "type": "integer", "minimum": 1, "maximum": 100 },
+              "accepted_types": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "upload_url": { "type": "string", "format": "uri" }
+            },
+            "required": ["max_files", "max_size_mb", "accepted_types", "upload_url"]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+              "properties": { "instruction_type": { "const": "request_email" } }
+            },
+            "then": {
+              "properties": {
+                "parameters": {
+                  "type": "object",
+                  "properties": {
+                    "prompt": { "type": "string", "minLength": 1 },
+                    "validation_regex": { "type": "string" }
+                  },
+                  "required": ["prompt"]
+                }
+              }
+            }
+          },
+    {
+      "if": {
+        "properties": { "instruction_type": { "const": "display_form" } }
+      },
+      "then": {
+        "properties": {
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "fields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": { "type": "string" },
+                    "label": { "type": "string" },
+                    "type": { "type": "string" },
+                    "required": { "type": "boolean" }
+                  },
+                  "required": ["name", "label", "type"]
+                }
+              },
+              "submit_label": { "type": "string" }
+            },
+            "required": ["fields"]
+          }
+        }
+      }
+    }
+  ],
+  "additionalProperties": false,
+  "examples": [
+    {
+      "instruction_type": "show_file_upload",
+      "parameters": {
+        "max_files": 3,
+        "max_size_mb": 100,
+        "accepted_types": ["image/png", "image/jpeg", "video/mp4"],
+        "upload_url": "https://example.com/upload"
+      },
+      "metadata": {
+        "priority": "high",
+        "sequence": 1,
+        "version": "1.0.0",
+        "agent_id": "form_collector"
+      }
+    },
+    {
+      "instruction_type": "request_email",
+      "parameters": {
+        "prompt": "Please enter your email address.",
+        "validation_regex": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$"
+      },
+      "metadata": {
+        "priority": "normal",
+        "sequence": 2,
+        "version": "1.0.0",
+        "agent_id": "form_collector"
+      }
+    }
+  ]
+}

@@ -27,6 +27,15 @@ app.include_router(
 )
 print("[DEBUG] form_collector_chat router registered with prefix /api/form-collector.")
 
+from api.routes.agno_agent_chat import router as agno_router
+print("[DEBUG] Importing and registering agno_agent_chat router...")
+app.include_router(
+    agno_router,
+    prefix="/api/agno-agent",
+    tags=["AgnoAgent"]
+)
+print("[DEBUG] agno_agent_chat router registered with prefix /api/agno-agent.")
+
 from backend.attachment_upload_service import app as upload_app
 print("[DEBUG] Mounting attachment_upload_service app...")
 app.mount("", upload_app)

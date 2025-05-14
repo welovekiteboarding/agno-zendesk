@@ -1,6 +1,9 @@
 "use client";
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
+import { UIInstructionsContainer } from "@/protocol/uiInstructionRegistry";
+import { queueUIInstruction, registerInstructionResponseHandler } from "@/protocol/uiInstructionRegistry";
+import type { UIInstructionType } from "@/protocol/uiInstruction";
 
 interface Message {
   sender: "user" | "agent";
@@ -9,7 +12,7 @@ interface Message {
 
 const backendUrl = process.env.NEXT_PUBLIC_BACKEND || "http://localhost:8001";
 
-const ChatUI: React.FC = () => {
+const ChatUIWithRegistry: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       sender: "agent",
@@ -30,6 +33,98 @@ const ChatUI: React.FC = () => {
   // Broader: looks for any combination of "upload/attach/file/attachment"
   const isAttachmentPrompt = (msg: string) =>
     /(upload|attach).*?(file|attachment|document)/i.test(msg);
+
+  // Register response handlers for UI instructions
+  useEffect(() => {
+    const unsubscribe = registerInstructionResponseHandler(
+      'show_file_upload' as UIInstructionType,
+      (response) => {
+        console.log("File upload response:", response);
+        if (response.urls && Array.isArray(response.urls)) {
+          setPermanentKeys(response.urls);
+          setAllFilesReady(true);
+          setMessages((msgs) => [
+            ...msgs,
+            {
+              sender: "agent",
+              text: `Your ${response.files_uploaded} file(s) have been uploaded successfully. Would you like to add anything else?`,
+            },
+          ]);
+        }
+      }
+    );
+    
+    const unsubscribeEmail = registerInstructionResponseHandler(
+      'request_email' as UIInstructionType,
+      (response) => {
+        console.log("Email response:", response);
+        if (response.value) {
+          setMessages((msgs) => [
+            ...msgs,
+            {
+              sender: "user",
+              text: response.value,
+            },
+          ]);
+          // Trigger backend with the email value
+          handleEmailSubmission(response.value);
+        }
+      }
+    );
+    
+    return () => {
+      unsubscribe();
+      unsubscribeEmail();
+    };
+  }, []);
+
+  const handleEmailSubmission = async (email: string) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${backendUrl}/api/form-collector/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          session_id: "frontend-session",
+          user_message: email,
+        }),
+      });
+      if (!res.ok) throw new Error("Email submission error");
+      const data = await res.json();
+      
+      setMessages((msgs) => [
+        ...msgs,
+        { sender: "agent", text: data.assistant_message },
+      ]);
+      
+      // Check if response is asking for attachments
+      if (isAttachmentPrompt(data.assistant_message)) {
+        // Instead of manually showing UI, queue a file upload instruction
+        queueUIInstruction({
+          instruction_type: "show_file_upload",
+          parameters: {
+            max_files: 3,
+            max_size_mb: 100,
+            accepted_types: ["image/png", "image/jpeg", "video/mp4", "application/pdf", "text/plain"],
+            upload_url: `${backendUrl}/generate-presigned-url`,
+          },
+          metadata: {
+            priority: "high",
+            sequence: 1,
+            version: "1.0.0",
+            agent_id: "form_collector"
+          }
+        });
+      }
+    } catch (err) {
+      setMessages((msgs) => [
+        ...msgs,
+        { sender: "agent", text: "Sorry, something went wrong with your email submission." },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const pollForPermanent = async (tempKey: string, idx: number) => {
     setUploadStatus((prev) => {
@@ -330,14 +425,24 @@ const ChatUI: React.FC = () => {
       // Check if the new message is an attachment prompt
       const isNewAttachmentPrompt = isAttachmentPrompt(data.assistant_message);
 
-      // Always show attachment UI if it's a new attachment prompt
+      // Show file upload UI instruction if it's an attachment prompt
       if (isNewAttachmentPrompt) {
-        setAwaitingAttachments(true);
-        // Reset file states when a new attachment prompt is received
-        setSelectedFiles([]);
-        setUploadStatus([]);
-        setPermanentKeys([]);
-        setAllFilesReady(false);
+        // Queue a file upload instruction using the registry
+        queueUIInstruction({
+          instruction_type: "show_file_upload",
+          parameters: {
+            max_files: 3,
+            max_size_mb: 100,
+            accepted_types: ["image/png", "image/jpeg", "video/mp4", "application/pdf", "text/plain"],
+            upload_url: `${backendUrl}/generate-presigned-url`,
+          },
+          metadata: {
+            priority: "high",
+            sequence: 1,
+            version: "1.0.0",
+            agent_id: "form_collector"
+          }
+        });
       }
     } catch (err: any) {
       setMessages((msgs) => [
@@ -353,6 +458,24 @@ const ChatUI: React.FC = () => {
     if (!reportSubmitted) {
       const lastAgentMsg =
         messages.length > 0 ? messages[messages.length - 1].text : "";
+      
+      // If the first message contains something asking for email, queue an email request
+      if (messages.length === 1 && messages[0].sender === "agent" && 
+          /email|e-mail|email address/i.test(messages[0].text)) {
+        queueUIInstruction({
+          instruction_type: "request_email",
+          parameters: {
+            prompt: "Please enter your email address:",
+            validation_regex: "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$"
+          },
+          metadata: {
+            priority: "normal",
+            version: "1.0.0",
+            agent_id: "form_collector"
+          }
+        });
+      }
+
       // Debug log for troubleshooting
       console.log(
         "Last agent message:",
@@ -413,6 +536,9 @@ const ChatUI: React.FC = () => {
           </div>
         )}
       </div>
+      
+      {/* UI Instructions Container - This will render active instructions */}
+      <UIInstructionsContainer />
 
       {/* File upload section - shown ONLY when awaiting attachments */}
       {showUploadsSection && (
@@ -552,4 +678,4 @@ if (typeof document !== "undefined") {
   document.head.appendChild(style);
 }
 
-export default ChatUI;
+export default ChatUIWithRegistry;

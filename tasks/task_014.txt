@@ -1,56 +1,52 @@
 # Task ID: 14
-# Title: DNS & TLS Configuration for Bug Widget and API Endpoints
+# Title: S3/R2 Bucket Provisioning & IAM Configuration for Attachment-Uploader
 # Status: pending
 # Dependencies: 11
-# Priority: medium
-# Description: Configure DNS records and TLS certificates for bug-widget.yourdomain.com (Vercel) and api-bug.yourdomain.com (Render/Fly/Cloud-Run) to ensure secure communication.
+# Priority: high
+# Description: Provision cloud storage bucket (S3 or R2) and configure appropriate IAM permissions for the Attachment-Uploader microservice to securely handle file uploads.
 # Details:
-This task involves setting up proper DNS configuration and TLS certificates for two domains:
-
-1. For bug-widget.yourdomain.com (Vercel):
-   - Create a CNAME record pointing to Vercel's servers (typically cname.vercel-dns.com)
-   - Configure the domain in Vercel's dashboard
-   - Let Vercel handle the automatic TLS certificate provisioning
-
-2. For api-bug.yourdomain.com (Render/Fly/Cloud-Run):
-   - Create appropriate DNS records based on the hosting provider:
-     - For Render: CNAME to [your-service].render.com
-     - For Fly.io: CNAME to [your-app].fly.dev
-     - For Cloud Run: CNAME or ALIAS to ghs.googlehosted.com
-   - Configure the domain in the respective platform's dashboard
-   - Request and provision TLS certificates (some platforms handle this automatically)
-
-3. Documentation:
-   - Create a markdown document in the project repository detailing:
-     - DNS provider used and access instructions
-     - Record configurations (type, name, value, TTL)
-     - Certificate renewal process and expiration dates
-     - Troubleshooting steps for common issues
-
-4. Ensure both endpoints enforce HTTPS and redirect HTTP requests appropriately.
+1. Create a new bucket named 'bug-uploads-prod' in either AWS S3 or Cloudflare R2 based on the project's cloud provider.
+2. Configure bucket properties:
+   - Set appropriate region/location for optimal performance
+   - Enable versioning for data integrity
+   - Configure server-side encryption for data at rest
+   - Set up CORS policy to allow uploads from authorized domains only
+3. Implement lifecycle rules:
+   - Transition objects to cheaper storage class after 30 days
+   - Delete objects older than 90 days (if applicable to business requirements)
+   - Archive files marked with specific tags for long-term retention
+4. Create IAM credentials with least-privilege permissions:
+   - Generate dedicated access/secret keys for the Attachment-Uploader service
+   - Restrict permissions to only: s3:PutObject, s3:GetObject, s3:DeleteObject on the specific bucket
+   - Set up resource-based policies to prevent public access
+5. Document the complete setup including:
+   - Bucket configuration details
+   - IAM policy JSON
+   - Access key management procedure (rotation policy)
+   - Encryption settings
+6. Update service configuration to use the new bucket and credentials.
 
 # Test Strategy:
-1. DNS Verification:
-   - Use `dig` or `nslookup` to verify DNS records are correctly configured
-   - Example: `dig bug-widget.yourdomain.com` should show the correct CNAME
-   - Check propagation across multiple DNS servers
+1. Functional Testing:
+   - Upload a test file (>5MB) using the service credentials and verify successful storage
+   - Retrieve the uploaded file to confirm read permissions
+   - Delete a test file to verify delete permissions
+   - Attempt to list all buckets (should fail if permissions are correctly limited)
 
-2. TLS Certificate Validation:
-   - Access both endpoints via HTTPS in different browsers
-   - Verify certificate validity using browser tools (padlock icon)
-   - Use SSL checker tools (e.g., SSL Labs, https://www.ssllabs.com/ssltest/) to verify:
-     - Certificate chain is valid
-     - TLS version is current (TLS 1.2+)
-     - Strong cipher suites are used
+2. Security Testing:
+   - Attempt to access the bucket without credentials (should fail)
+   - Try accessing with incorrect/expired credentials
+   - Verify bucket is not publicly accessible
+   - Confirm encryption is working by examining object metadata
 
-3. Security Headers:
-   - Test with tools like SecurityHeaders.com to verify proper security headers
-   - Ensure HSTS is enabled where appropriate
+3. Lifecycle Testing:
+   - Upload test files with different timestamps
+   - Verify transition rules by checking storage class changes after the defined period
+   - Confirm deletion rules work by checking object expiration
 
-4. Redirect Testing:
-   - Verify HTTP to HTTPS redirects work correctly
-   - Test with curl: `curl -I http://bug-widget.yourdomain.com`
+4. Performance Testing:
+   - Measure upload/download speeds from different regions
+   - Test concurrent uploads to ensure no throttling issues
 
-5. End-to-end Testing:
-   - Verify API calls from the widget to the API endpoint work over HTTPS
-   - Test from multiple network environments to ensure global accessibility
+5. Documentation Verification:
+   - Have another team member follow the documentation to verify it's complete and accurate

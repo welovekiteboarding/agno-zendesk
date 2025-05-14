@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UI Component Registry Test</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background-color: #0b1021;
+      color: white;
+      padding: 2rem;
+      line-height: 1.5;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      color: #6d4aff;
+    }
+    h2 {
+      font-size: 1.5rem;
+      margin: 1.5rem 0 1rem;
+      color: #8c5eff;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .card {
+      background-color: #121833;
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .instructions {
+      background-color: #1a243b;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    pre {
+      background-color: #0b1021;
+      border-radius: 0.25rem;
+      padding: 1rem;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+    code {
+      font-family: 'Courier New', Courier, monospace;
+    }
+    button {
+      background-color: #6d4aff;
+      color: white;
+      border: none;
+      border-radius: 0.25rem;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      cursor: pointer;
+      margin: 0.5rem 0.5rem 0.5rem 0;
+      transition: background-color 0.2s;
+    }
+    button:hover {
+      background-color: #5d3aef;
+    }
+    .result {
+      margin-top: 1rem;
+      padding: 1rem;
+      background-color: #1a243b;
+      border-radius: 0.25rem;
+    }
+    .success {
+      color: #4ade80;
+    }
+    .error {
+      color: #f87171;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>UI Component Registry Test</h1>
+    <div class="card">
+      <p>This page tests the UI Component Registry implementation (Task 20.3) by simulating instruction dispatches.</p>
+      <p>Since this is an HTML file without React or the necessary build setup, this is just a demonstration of what the test would look like in a properly configured environment.</p>
+    </div>
+
+    <h2>Test Instructions</h2>
+    <div class="card">
+      <div class="instructions">
+        <h3>File Upload Instruction</h3>
+        <pre><code>{
+  "instruction_type": "show_file_upload",
+  "parameters": {
+    "max_files": 3,
+    "max_size_mb": 10,
+    "accepted_types": ["image/png", "image/jpeg", "application/pdf"],
+    "upload_url": "/api/upload"
+  },
+  "metadata": {
+    "priority": "normal",
+    "version": "1.0.0",
+    "agent_id": "test_agent"
+  }
+}</code></pre>
+        <button id="btn-file-upload">Test File Upload</button>
+      </div>
+
+      <div class="instructions">
+        <h3>Email Request Instruction</h3>
+        <pre><code>{
+  "instruction_type": "request_email",
+  "parameters": {
+    "prompt": "Please enter your email address:",
+    "validation_regex": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$"
+  },
+  "metadata": {
+    "priority": "high",
+    "version": "1.0.0",
+    "agent_id": "test_agent"
+  }
+}</code></pre>
+        <button id="btn-email-request">Test Email Request</button>
+      </div>
+
+      <div class="instructions">
+        <h3>Form Display Instruction</h3>
+        <pre><code>{
+  "instruction_type": "display_form",
+  "parameters": {
+    "title": "Bug Report Form",
+    "fields": [
+      {
+        "name": "title",
+        "label": "Bug Title",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "description",
+        "label": "Description",
+        "type": "textarea",
+        "required": true
+      },
+      {
+        "name": "severity",
+        "label": "Severity",
+        "type": "select",
+        "options": [
+          { "label": "Low", "value": "low" },
+          { "label": "Medium", "value": "medium" },
+          { "label": "High", "value": "high" },
+          { "label": "Critical", "value": "critical" }
+        ]
+      }
+    ],
+    "submit_label": "Submit Report"
+  },
+  "metadata": {
+    "priority": "normal",
+    "version": "1.0.0",
+    "agent_id": "test_agent"
+  }
+}</code></pre>
+        <button id="btn-form-display">Test Form Display</button>
+      </div>
+
+      <div class="instructions">
+        <h3>Confirmation Dialog Instruction</h3>
+        <pre><code>{
+  "instruction_type": "show_confirmation_dialog",
+  "parameters": {
+    "title": "Confirm Action",
+    "message": "Are you sure you want to submit this report? This action cannot be undone.",
+    "confirm_label": "Yes, Submit",
+    "cancel_label": "Cancel"
+  },
+  "metadata": {
+    "priority": "high",
+    "version": "1.0.0",
+    "agent_id": "test_agent"
+  }
+}</code></pre>
+        <button id="btn-confirmation">Test Confirmation Dialog</button>
+      </div>
+    </div>
+
+    <h2>Test Results</h2>
+    <div class="card">
+      <div id="test-results">
+        <p>Click on any test button above to see results.</p>
+        <p>In a proper React environment, you would see the UI components rendered based on the instruction type.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // This is a simulation script - in a real environment, these would interact with the actual React components
+    document.getElementById('btn-file-upload').addEventListener('click', function() {
+      simulateInstruction('show_file_upload');
+    });
+    
+    document.getElementById('btn-email-request').addEventListener('click', function() {
+      simulateInstruction('request_email');
+    });
+    
+    document.getElementById('btn-form-display').addEventListener('click', function() {
+      simulateInstruction('display_form');
+    });
+    
+    document.getElementById('btn-confirmation').addEventListener('click', function() {
+      simulateInstruction('show_confirmation_dialog');
+    });
+    
+    function simulateInstruction(type) {
+      const resultsDiv = document.getElementById('test-results');
+      
+      // Clear previous results
+      resultsDiv.innerHTML = '';
+      
+      const mockResult = document.createElement('div');
+      mockResult.className = 'result';
+      
+      const heading = document.createElement('h3');
+      heading.textContent = `Test: ${type}`;
+      mockResult.appendChild(heading);
+      
+      const message = document.createElement('p');
+      message.className = 'success';
+      message.textContent = `In a real React environment, the ${getComponentName(type)} component would be rendered here based on the instruction parameters.`;
+      mockResult.appendChild(message);
+      
+      const note = document.createElement('p');
+      note.textContent = `The UI Component Registry properly maps this instruction type to its handler component. In a full implementation, the component would appear here and handle user interactions.`;
+      mockResult.appendChild(note);
+      
+      resultsDiv.appendChild(mockResult);
+    }
+    
+    function getComponentName(type) {
+      const map = {
+        'show_file_upload': 'FileUploadWidget',
+        'request_email': 'EmailRequestWidget',
+        'display_form': 'FormDisplayWidget',
+        'show_auth_prompt': 'AuthPromptWidget',
+        'show_selection_menu': 'SelectionMenuWidget',
+        'show_progress_indicator': 'ProgressIndicatorWidget',
+        'show_confirmation_dialog': 'ConfirmationDialogWidget'
+      };
+      
+      return map[type] || 'Unknown';
+    }
+  </script>
+</body>
+</html>

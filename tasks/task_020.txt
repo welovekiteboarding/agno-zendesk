@@ -1,0 +1,111 @@
+# Task ID: 20
+# Title: Define Backend-to-Frontend UI Instruction Protocol
+# Status: done
+# Dependencies: None
+# Priority: high
+# Description: Design and document a standardized protocol for backend systems to send UI instructions to the frontend, enabling dynamic agent-driven interface updates in the universal chat component.
+# Details:
+This task involves creating a comprehensive protocol specification that allows backend systems (particularly AI agents) to dynamically control frontend UI elements. The protocol should:
+
+1. Define a structured JSON schema for UI instruction messages that includes:
+   - Instruction type (e.g., show_file_upload, request_email, display_form)
+   - Required parameters for each instruction type
+   - Optional parameters and their default values
+   - Validation rules for parameters
+   - Priority/sequence handling for multiple instructions
+
+2. Implement serialization/deserialization utilities in both backend (Python) and frontend (JavaScript/TypeScript) to ensure consistent handling of protocol messages.
+
+3. Create a registry of supported UI components that can be triggered via this protocol, including:
+   - File upload widget
+   - Email/contact form
+   - Authentication prompts
+   - Selection menus/dropdowns
+   - Progress indicators
+   - Confirmation dialogs
+
+4. Design state management approach to handle:
+   - Instruction queueing and prioritization
+   - Conflict resolution when multiple agents send competing instructions
+   - Timeout and error handling for incomplete UI interactions
+   - Resumption of interrupted flows
+
+5. Document security considerations:
+   - Input validation to prevent XSS or injection attacks
+   - Permissions model for which agents can trigger which UI elements
+   - Rate limiting to prevent UI flooding
+
+6. Integrate with the existing Agent Registry (Task #19) to register UI capabilities that each agent can utilize.
+
+The implementation should be backward compatible with existing chat interfaces while enabling new dynamic UI capabilities.
+
+# Test Strategy:
+Testing this protocol implementation should follow these steps:
+
+1. Unit Testing:
+   - Validate JSON schema enforcement with valid and invalid message examples
+   - Test serialization/deserialization in both Python and JavaScript/TypeScript
+   - Verify error handling for malformed messages
+   - Test each individual UI instruction type with various parameter combinations
+
+2. Integration Testing:
+   - Create mock backend agents that generate UI instructions
+   - Implement test harnesses that simulate various instruction sequences
+   - Verify frontend correctly renders all supported UI components
+   - Test race conditions with multiple simultaneous instructions
+
+3. End-to-End Testing:
+   - Develop test scenarios that exercise complete user journeys involving dynamic UI changes
+   - Test with actual agent implementations to verify real-world compatibility
+   - Verify proper handling of network latency and disconnections
+   - Test across different browsers and devices to ensure consistent behavior
+
+4. Security Testing:
+   - Attempt to inject malicious content via the protocol
+   - Verify permissions enforcement prevents unauthorized UI manipulation
+   - Test rate limiting functionality
+
+5. Documentation Verification:
+   - Review protocol documentation with frontend and backend developers
+   - Conduct a walkthrough with the team to ensure understanding
+   - Create example implementations for each supported UI component
+   - Verify that documentation includes troubleshooting guidance
+
+6. Performance Testing:
+   - Measure impact on message processing time
+   - Test with high volumes of UI instructions
+   - Verify UI responsiveness under load
+
+All tests should be automated where possible and integrated into the CI/CD pipeline.
+
+# Subtasks:
+## 1. Define JSON Schema for UI Instruction Protocol [done]
+### Dependencies: None
+### Description: Create a comprehensive JSON schema that defines the structure of UI instruction messages sent from backend to frontend
+### Details:
+Design a JSON schema that includes: instruction type field (string enum), required parameters object, optional parameters object, metadata fields for priority/sequencing, validation rules, and response format. Document each instruction type (show_file_upload, request_email, display_form, etc.) with its specific parameter requirements. Include schema versioning to support future extensions. The schema should be strict enough to prevent misuse but flexible enough to accommodate various UI components.
+
+## 2. Implement Protocol Serialization/Deserialization Utilities [done]
+### Dependencies: None
+### Description: Develop utility functions in both Python (backend) and TypeScript (frontend) to handle serialization, deserialization, and validation of protocol messages
+### Details:
+Create a Python module with functions to generate valid instruction messages, validate outgoing messages against the schema, and handle serialization. Implement corresponding TypeScript utilities for the frontend to parse, validate, and process incoming instruction messages. Include type definitions for TypeScript and proper error handling in both implementations. Ensure consistent behavior between backend and frontend implementations.
+
+## 3. Create UI Component Registry and Handlers [done]
+### Dependencies: None
+### Description: Develop a registry of supported UI components that can be triggered via the protocol, along with their corresponding frontend handlers
+### Details:
+Implement a registry system that maps instruction types to specific UI components. For each component, define: component name, required/optional parameters, rendering logic, user interaction handling, and response formatting. Include implementations for file upload widget, email/contact form, authentication prompts, selection menus/dropdowns, progress indicators, and confirmation dialogs. Each component should have a consistent interface for rendering, state management, and sending responses back to the backend.
+
+## 4. Implement State Management for UI Instructions [done]
+### Dependencies: None
+### Description: Design and implement a state management system to handle instruction queueing, prioritization, conflict resolution, and error handling
+### Details:
+Create a state manager that maintains the queue of pending UI instructions, handles instruction priorities, resolves conflicts between competing instructions, and manages timeouts for user interactions. Implement logic for instruction lifecycle: receipt, validation, queueing, execution, user interaction, completion/cancellation, and response handling. Design the system to handle error cases like timeout, invalid user input, and interrupted flows. Include mechanisms to persist state across page reloads if necessary.
+
+## 5. Document Security Considerations and Integration with Agent Registry [done]
+### Dependencies: None
+### Description: Document security aspects of the protocol and integrate with the Agent Registry to control which agents can use specific UI capabilities
+### Details:
+Create comprehensive documentation covering: input validation requirements to prevent XSS and injection attacks, permissions model for UI instruction authorization, rate limiting to prevent UI flooding, and best practices for secure implementation. Implement integration with the Agent Registry (from Task #19) to register and control which UI capabilities each agent can utilize. Include a verification system that checks incoming instructions against agent permissions before processing them. Document the integration API and provide examples of registering agent UI capabilities.
+

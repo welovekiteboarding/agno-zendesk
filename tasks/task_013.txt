@@ -1,52 +1,23 @@
 # Task ID: 13
-# Title: S3/R2 Bucket Provisioning & IAM Configuration for Attachment-Uploader
+# Title: Next.js Scaffold for Widget
 # Status: pending
 # Dependencies: 11
 # Priority: high
-# Description: Provision cloud storage bucket (S3 or R2) and configure appropriate IAM permissions for the Attachment-Uploader microservice to securely handle file uploads.
+# Description: Create a Next.js application in the frontend/ directory to serve as the foundation for the chat UI and provide Vercel with a build target.
 # Details:
-1. Create a new bucket named 'bug-uploads-prod' in either AWS S3 or Cloudflare R2 based on the project's cloud provider.
-2. Configure bucket properties:
-   - Set appropriate region/location for optimal performance
-   - Enable versioning for data integrity
-   - Configure server-side encryption for data at rest
-   - Set up CORS policy to allow uploads from authorized domains only
-3. Implement lifecycle rules:
-   - Transition objects to cheaper storage class after 30 days
-   - Delete objects older than 90 days (if applicable to business requirements)
-   - Archive files marked with specific tags for long-term retention
-4. Create IAM credentials with least-privilege permissions:
-   - Generate dedicated access/secret keys for the Attachment-Uploader service
-   - Restrict permissions to only: s3:PutObject, s3:GetObject, s3:DeleteObject on the specific bucket
-   - Set up resource-based policies to prevent public access
-5. Document the complete setup including:
-   - Bucket configuration details
-   - IAM policy JSON
-   - Access key management procedure (rotation policy)
-   - Encryption settings
-6. Update service configuration to use the new bucket and credentials.
+Initialize a new Next.js application in the frontend/ directory using the following command: `npx create-next-app@latest`. During setup, select the following options:
+- Use TypeScript: Yes
+- Enable ESLint: Yes
+- Use Tailwind CSS: Yes
+- Configure import aliases: Yes (use '@/' as the prefix)
+
+After initialization, ensure the project structure is clean and organized. Update the README.md file with basic information about the project, including setup instructions and development commands. Configure the next.config.js file as needed for any specific project requirements. This scaffold will allow UI development to proceed in parallel with backend work, providing a foundation for the chat interface components that will be developed later. Make sure the package.json includes appropriate scripts for development, building, and testing.
 
 # Test Strategy:
-1. Functional Testing:
-   - Upload a test file (>5MB) using the service credentials and verify successful storage
-   - Retrieve the uploaded file to confirm read permissions
-   - Delete a test file to verify delete permissions
-   - Attempt to list all buckets (should fail if permissions are correctly limited)
-
-2. Security Testing:
-   - Attempt to access the bucket without credentials (should fail)
-   - Try accessing with incorrect/expired credentials
-   - Verify bucket is not publicly accessible
-   - Confirm encryption is working by examining object metadata
-
-3. Lifecycle Testing:
-   - Upload test files with different timestamps
-   - Verify transition rules by checking storage class changes after the defined period
-   - Confirm deletion rules work by checking object expiration
-
-4. Performance Testing:
-   - Measure upload/download speeds from different regions
-   - Test concurrent uploads to ensure no throttling issues
-
-5. Documentation Verification:
-   - Have another team member follow the documentation to verify it's complete and accurate
+1. Run the development server locally using `npm run dev` or `yarn dev` and verify that the default page loads correctly at http://localhost:3000
+2. Deploy the application to Vercel by connecting the repository and configuring the build settings to target the frontend/ directory
+3. After deployment, verify that the application builds successfully without errors in the Vercel build logs
+4. Access the deployed Vercel URL and confirm that the default Next.js page renders correctly
+5. Test basic navigation within the app to ensure routing is working properly
+6. Verify that Tailwind CSS is properly configured by checking that the default styling is applied
+7. Run ESLint using `npm run lint` to ensure the code quality tools are properly configured

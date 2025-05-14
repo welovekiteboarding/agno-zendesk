@@ -1,0 +1,109 @@
+{
+  "valid_examples": [
+    {
+      "instruction_type": "show_file_upload",
+      "parameters": {
+        "max_files": 3,
+        "max_size_mb": 100,
+        "accepted_types": ["image/png", "image/jpeg", "video/mp4"],
+        "upload_url": "https://example.com/upload"
+      },
+      "metadata": {
+        "priority": "high",
+        "sequence": 1,
+        "version": "1.0.0",
+        "agent_id": "form_collector"
+      }
+    },
+    {
+      "instruction_type": "request_email",
+      "parameters": {
+        "prompt": "Please enter your email address.",
+        "validation_regex": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$"
+      },
+      "metadata": {
+        "priority": "normal",
+        "sequence": 2,
+        "version": "1.0.0",
+        "agent_id": "form_collector"
+      }
+    },
+    {
+      "instruction_type": "display_form",
+      "parameters": {
+        "fields": [
+          {
+            "name": "username",
+            "label": "Username",
+            "type": "text",
+            "required": true
+          },
+          {
+            "name": "age",
+            "label": "Age",
+            "type": "number",
+            "required": false
+          }
+        ],
+        "submit_label": "Submit"
+      },
+      "metadata": {
+        "priority": "normal",
+        "sequence": 3,
+        "version": "1.0.0",
+        "agent_id": "form_collector"
+      }
+    }
+  ],
+  "invalid_examples": [
+    {
+      "instruction_type": "show_file_upload",
+      "parameters": {
+        "max_files": 0,
+        "max_size_mb": 200,
+        "accepted_types": [],
+        "upload_url": "not-a-valid-url"
+      },
+      "metadata": {
+        "priority": "urgent",
+        "sequence": -1,
+        "version": "1",
+        "agent_id": "form_collector"
+      }
+    },
+    {
+      "instruction_type": "request_email",
+      "parameters": {
+        "prompt": ""
+      },
+      "metadata": {
+        "priority": "normal",
+        "version": "1.0.0"
+      }
+    },
+    {
+      "instruction_type": "display_form",
+      "parameters": {
+        "fields": [
+          {
+            "name": "username"
+          }
+        ]
+      },
+      "metadata": {
+        "priority": "normal",
+        "sequence": 4,
+        "version": "1.0.0"
+      }
+    },
+    {
+      "instruction_type": "unknown_instruction",
+      "parameters": {},
+      "metadata": {
+        "priority": "normal",
+        "sequence": 5,
+        "version": "1.0.0"
+      }
+    }
+  ]
+}

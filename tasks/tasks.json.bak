@@ -130,11 +130,66 @@
       "id": 3,
       "title": "Build Attachment Upload Microservice",
       "description": "Create a microservice that generates presigned S3/R2 URLs for file uploads and handles the secure storage of user-submitted attachments.",
-      "status": "pending",
+      "status": "done",
       "dependencies": [],
       "priority": "high",
       "details": "Develop a microservice that generates presigned URLs for S3/R2 storage with 15-minute validity. Implement file size validation (≤100MB) and configure the S3 bucket 'bug-uploads-prod' with appropriate permissions and a 90-day lifecycle deletion rule. Add virus scanning for uploaded files. The service should accept file metadata (name, type, size) and return a presigned URL for upload. After successful upload, files should be moved to permanent storage or prepared for Zendesk attachment.",
-      "testStrategy": "Test URL generation with various file types and sizes. Verify upload functionality with real files. Confirm virus scanning works correctly. Test URL expiration after 15 minutes. Validate that files are correctly stored and accessible after upload."
+      "testStrategy": "Test URL generation with various file types and sizes. Verify upload functionality with real files. Confirm virus scanning works correctly. Test URL expiration after 15 minutes. Validate that files are correctly stored and accessible after upload.",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Set up S3/R2 bucket configuration and permissions",
+          "description": "Configure the 'bug-uploads-prod' bucket with appropriate permissions, CORS settings, and lifecycle rules for 90-day deletion.",
+          "dependencies": [],
+          "details": "Create the S3/R2 bucket 'bug-uploads-prod' if it doesn't exist. Configure bucket policy to restrict access to the application role only. Set up CORS to allow uploads from the application domain. Implement a lifecycle rule to delete objects after 90 days. Create separate folders for temporary uploads and permanent storage.",
+          "status": "done",
+          "testStrategy": "Verify bucket creation, confirm lifecycle rules are active, test CORS configuration with a sample request, and validate permissions by attempting access with and without proper credentials."
+        },
+        {
+          "id": 2,
+          "title": "Implement presigned URL generation endpoint",
+          "description": "Create an API endpoint that accepts file metadata and returns a presigned URL with 15-minute validity for direct client uploads.",
+          "dependencies": [
+            1
+          ],
+          "details": "Develop a REST endpoint that accepts POST requests with file metadata (name, type, size). Validate the file size is ≤100MB and the file type is allowed. Generate a presigned URL using the S3/R2 SDK with 15-minute expiration. Return the URL and any required headers to the client. Store the file metadata and generated URL in a temporary database record for tracking.",
+          "status": "done",
+          "testStrategy": "Unit test the validation logic, integration test the URL generation with mock S3 service, and end-to-end test by generating a URL and confirming a file can be uploaded to it."
+        },
+        {
+          "id": 3,
+          "title": "Implement upload completion notification and virus scanning",
+          "description": "Create a mechanism to detect when uploads are complete and implement virus scanning for all uploaded files.",
+          "dependencies": [
+            2
+          ],
+          "details": "Set up S3/R2 event notifications for object creation events. Create a handler function that triggers when uploads complete. Integrate with a virus scanning service (like ClamAV) to scan uploaded files. Implement a queue system to manage scanning jobs. Update the file metadata record with scan results. Quarantine or delete infected files.",
+          "status": "done",
+          "testStrategy": "Test with sample clean files and EICAR test virus files. Verify quarantine process works correctly. Test the event notification system with mock uploads."
+        },
+        {
+          "id": 4,
+          "title": "Implement permanent storage transfer mechanism",
+          "description": "Create a process to move validated files from temporary upload location to permanent storage or prepare them for Zendesk attachment.",
+          "dependencies": [
+            3
+          ],
+          "details": "Develop a service that processes files that passed virus scanning. Move clean files from the temporary upload location to a permanent storage folder with appropriate metadata. For files destined for Zendesk, prepare them according to Zendesk's attachment requirements. Update database records with new file locations and status. Implement error handling and retries for failed transfers.",
+          "status": "done",
+          "testStrategy": "Test the transfer process with various file types and sizes. Verify metadata is preserved. Test error scenarios and recovery mechanisms. Confirm Zendesk-bound files meet the required format."
+        },
+        {
+          "id": 5,
+          "title": "Create monitoring, logging, and cleanup processes",
+          "description": "Implement comprehensive monitoring, logging, and cleanup processes for the attachment upload service.",
+          "dependencies": [
+            4
+          ],
+          "details": "Set up detailed logging for all service operations. Implement metrics collection for upload counts, sizes, success/failure rates, and scanning results. Create alerts for critical failures or security issues. Develop a scheduled cleanup process for abandoned uploads (files uploaded but not processed). Create an admin API to query upload status and manually trigger actions. Document the entire system with API specifications and operational procedures.",
+          "status": "done",
+          "testStrategy": "Verify logs capture all relevant information. Test alerts by simulating failure conditions. Confirm cleanup process correctly identifies and removes abandoned uploads. Test admin API functionality with various scenarios."
+        }
+      ]
     },
     {
       "id": 4,
@@ -260,7 +315,7 @@
       "priority": "high"
     },
     {
-      "id": 13,
+      "id": 14,
       "title": "S3/R2 Bucket Provisioning & IAM Configuration for Attachment-Uploader",
       "description": "Provision cloud storage bucket (S3 or R2) and configure appropriate IAM permissions for the Attachment-Uploader microservice to securely handle file uploads.",
       "details": "1. Create a new bucket named 'bug-uploads-prod' in either AWS S3 or Cloudflare R2 based on the project's cloud provider.\n2. Configure bucket properties:\n   - Set appropriate region/location for optimal performance\n   - Enable versioning for data integrity\n   - Configure server-side encryption for data at rest\n   - Set up CORS policy to allow uploads from authorized domains only\n3. Implement lifecycle rules:\n   - Transition objects to cheaper storage class after 30 days\n   - Delete objects older than 90 days (if applicable to business requirements)\n   - Archive files marked with specific tags for long-term retention\n4. Create IAM credentials with least-privilege permissions:\n   - Generate dedicated access/secret keys for the Attachment-Uploader service\n   - Restrict permissions to only: s3:PutObject, s3:GetObject, s3:DeleteObject on the specific bucket\n   - Set up resource-based policies to prevent public access\n5. Document the complete setup including:\n   - Bucket configuration details\n   - IAM policy JSON\n   - Access key management procedure (rotation policy)\n   - Encryption settings\n6. Update service configuration to use the new bucket and credentials.",
@@ -272,7 +327,7 @@
       "priority": "high"
     },
     {
-      "id": 14,
+      "id": 15,
       "title": "DNS & TLS Configuration for Bug Widget and API Endpoints",
       "description": "Configure DNS records and TLS certificates for bug-widget.yourdomain.com (Vercel) and api-bug.yourdomain.com (Render/Fly/Cloud-Run) to ensure secure communication.",
       "details": "This task involves setting up proper DNS configuration and TLS certificates for two domains:\n\n1. For bug-widget.yourdomain.com (Vercel):\n   - Create a CNAME record pointing to Vercel's servers (typically cname.vercel-dns.com)\n   - Configure the domain in Vercel's dashboard\n   - Let Vercel handle the automatic TLS certificate provisioning\n\n2. For api-bug.yourdomain.com (Render/Fly/Cloud-Run):\n   - Create appropriate DNS records based on the hosting provider:\n     - For Render: CNAME to [your-service].render.com\n     - For Fly.io: CNAME to [your-app].fly.dev\n     - For Cloud Run: CNAME or ALIAS to ghs.googlehosted.com\n   - Configure the domain in the respective platform's dashboard\n   - Request and provision TLS certificates (some platforms handle this automatically)\n\n3. Documentation:\n   - Create a markdown document in the project repository detailing:\n     - DNS provider used and access instructions\n     - Record configurations (type, name, value, TTL)\n     - Certificate renewal process and expiration dates\n     - Troubleshooting steps for common issues\n\n4. Ensure both endpoints enforce HTTPS and redirect HTTP requests appropriately.",
@@ -284,7 +339,7 @@
       "priority": "medium"
     },
     {
-      "id": 15,
+      "id": 16,
       "title": "Implement Monitoring & Alerting System",
       "description": "Set up comprehensive monitoring and alerting infrastructure using CloudWatch and Vercel metrics to track application health and performance across both backend and frontend systems.",
       "details": "This task involves implementing a robust monitoring and alerting system with the following components:\n\n1. CloudWatch Integration:\n   - Set up CloudWatch metrics for backend services\n   - Configure custom metrics for API response times, error rates, and resource utilization\n   - Create CloudWatch dashboards for visualizing key performance indicators\n\n2. Vercel Metrics Integration:\n   - Implement Vercel Analytics for frontend performance monitoring\n   - Track core web vitals (LCP, FID, CLS) and custom frontend metrics\n   - Set up real-time monitoring of client-side errors\n\n3. Alerting Configuration:\n   - Configure alerting thresholds with primary focus on error rates\n   - Implement pager duty or similar on-call notification system when error rate exceeds 5%\n   - Set up tiered alerting with different severity levels (warning at 2%, critical at 5%)\n   - Create different alert channels (email, SMS, Slack) based on severity\n\n4. Documentation:\n   - Document the complete monitoring architecture\n   - Create an escalation policy document detailing who gets notified and when\n   - Provide troubleshooting guides for common alert scenarios\n   - Include instructions for adding new metrics and alerts\n\nThe implementation should ensure minimal performance impact on production systems while providing comprehensive visibility into system health.",
@@ -296,7 +351,7 @@
       "priority": "medium"
     },
     {
-      "id": 16,
+      "id": 17,
       "title": "Documentation & Knowledge-Transfer",
       "description": "Prepare comprehensive documentation including DevOps runbook, API contract, and onboarding guide to facilitate knowledge transfer and quick onboarding of new team members.",
       "details": "Create three main documentation components:\n1. DevOps Runbook: Document all deployment processes, infrastructure setup, configuration management, and environment details. Include step-by-step instructions for common operations.\n2. API Contract: Document all API endpoints, request/response formats, authentication methods, error handling, and versioning strategy. Include examples for each endpoint.\n3. Onboarding Guide: Create a comprehensive guide that walks new developers through project setup, architecture overview, coding standards, workflow processes, and access requirements.\n\nAdditional requirements:\n- Document the agent pipeline configuration and execution flow\n- Include troubleshooting sections with common issues and their solutions\n- Add a glossary of project-specific terms\n- Ensure all documentation is version-controlled alongside the codebase\n- Use diagrams where appropriate to illustrate system architecture and workflows\n- Include environment setup instructions for local development\n- Document all configuration parameters and their purposes",
@@ -308,14 +363,36 @@
       "priority": "medium"
     },
     {
-      "id": 17,
-      "title": "Task #17: Standardize Python Imports to Absolute Package Paths",
+      "id": 18,
+      "title": "Standardize Python Imports to Absolute Package Paths",
       "description": "Update all Python imports across the project to use absolute package imports instead of file-relative imports to ensure compatibility with various execution environments including tests, scripts, and containerized deployments.",
       "details": "This task involves systematically refactoring all Python import statements throughout the codebase to follow a consistent absolute import pattern. The developer should:\n\n1. Identify all Python files in the project, with special focus on the cookbook/agents_from_scratch directory and other package folders.\n2. Convert relative imports (e.g., from ..utils import helper) to absolute imports (e.g., from cookbook.utils import helper).\n3. Ensure imports follow the pattern: from [root_package].[sub_package].[module] import [object].\n4. Pay special attention to circular import dependencies that might be revealed during this refactoring.\n5. Update any import-related configurations in pyproject.toml, setup.py, or other package definition files if necessary.\n6. Verify that imports work correctly when running code from different entry points (main script, test runner, etc.).\n7. Document any special cases or exceptions where absolute imports cannot be applied.\n8. Consider using tools like isort to standardize import formatting after the conversion.\n9. Update any documentation or examples that reference the import style.\n\nThis standardization will resolve issues where code works in one context (e.g., local development) but fails in others (e.g., Docker containers or CI/CD pipelines) due to Python's module resolution behavior.",
       "testStrategy": "To verify the successful completion of this task:\n\n1. Run a static analysis check to confirm all imports follow the absolute pattern:\n   - Use a custom script or grep to identify any remaining relative imports (e.g., `grep -r \"from \\.\\.\" --include=\"*.py\" .`)\n   - Verify no imports use leading dots (.) which indicate relative imports\n\n2. Execute comprehensive test coverage across different environments:\n   - Run the full test suite locally using pytest to verify tests pass with the new import style\n   - Execute tests in a Docker container to confirm imports work in containerized environments\n   - Verify functionality in any CI/CD pipeline environments (GitHub Actions, etc.)\n   - Test running scripts from different directories to ensure imports resolve correctly regardless of working directory\n\n3. Perform integration testing:\n   - Test any entry points defined in setup.py or pyproject.toml\n   - Verify that imported modules can be accessed when package is installed via pip\n   - Check that imports work correctly when running the application through any deployment scripts\n\n4. Code review:\n   - Have another developer review the changes to ensure consistency\n   - Verify that import statements follow the team's style guidelines\n   - Confirm that any circular import issues have been properly addressed\n\n5. Document any exceptions or special cases where absolute imports couldn't be applied and the workarounds implemented.",
       "status": "pending",
       "dependencies": [],
       "priority": "medium",
+      "subtasks": []
+    },
+    {
+      "id": 19,
+      "title": "Implement Agent Registry with Handoff Protocol",
+      "description": "Design and implement a centralized agent registry system with a standardized process for agent registration, discovery, and handoff trigger definition to ensure the multi-agent system is extensible and maintainable.",
+      "details": "The implementation should include:\n\n1. **Registry Core Structure**:\n   - Create a centralized `AgentRegistry` class that maintains a collection of registered agents\n   - Implement methods for agent registration, deregistration, and lookup\n   - Design a schema for agent metadata including capabilities, input/output formats, and operational constraints\n\n2. **Agent Registration Process**:\n   - Develop a standardized registration API that new agents must implement\n   - Include validation of required agent interfaces and capabilities\n   - Create a decorator or factory pattern for simplified agent registration\n\n3. **Handoff Protocol**:\n   - Define a clear schema for handoff triggers (conditions when one agent should transfer control to another)\n   - Implement trigger evaluation logic that monitors agent state and determines when handoffs should occur\n   - Create a handoff mechanism that properly transfers context and state between agents\n\n4. **Configuration System**:\n   - Design a YAML/JSON configuration format for defining agents and their relationships\n   - Implement a configuration loader that can instantiate the agent ecosystem from configuration files\n   - Support hot-reloading of configurations without system restart\n\n5. **Documentation**:\n   - Create comprehensive documentation for adding new agents\n   - Document the handoff protocol and trigger definition process\n   - Provide examples of common agent integration patterns\n\nThe implementation should follow the project's existing architectural patterns and coding standards. Ensure backward compatibility with existing agents in the system. The registry should be designed as a singleton service that can be accessed throughout the application.",
+      "testStrategy": "Testing should be comprehensive and include:\n\n1. **Unit Tests**:\n   - Test the `AgentRegistry` class methods in isolation\n   - Verify agent registration, deregistration, and lookup functionality\n   - Test trigger evaluation logic with various conditions\n   - Validate configuration loading and parsing\n\n2. **Integration Tests**:\n   - Create mock agents that implement the registration interface\n   - Test the full registration flow with multiple agents\n   - Verify handoff scenarios between different agent types\n   - Test configuration-driven agent ecosystem initialization\n\n3. **System Tests**:\n   - Deploy a test environment with multiple agents using the registry\n   - Simulate complex workflows that require multiple agent handoffs\n   - Verify that the system correctly manages agent state during handoffs\n   - Test dynamic addition and removal of agents during runtime\n\n4. **Performance Tests**:\n   - Benchmark registry lookup performance with large numbers of agents\n   - Test handoff latency under various system loads\n   - Verify memory usage patterns during extended operation\n\n5. **Documentation Verification**:\n   - Have a developer unfamiliar with the system attempt to add a new agent using only the documentation\n   - Verify that all public interfaces are properly documented\n   - Ensure examples are accurate and functional\n\nThe test suite should include both positive tests (expected behavior) and negative tests (error handling, invalid inputs). All tests should be automated and integrated into the CI/CD pipeline.",
+      "status": "pending",
+      "dependencies": [],
+      "priority": "medium",
+      "subtasks": []
+    },
+    {
+      "id": 20,
+      "title": "Define Backend-to-Frontend UI Instruction Protocol",
+      "description": "Design and document a standardized protocol for backend systems to send UI instructions to the frontend, enabling dynamic agent-driven interface updates in the universal chat component.",
+      "details": "This task involves creating a comprehensive protocol specification that allows backend systems (particularly AI agents) to dynamically control frontend UI elements. The protocol should:\n\n1. Define a structured JSON schema for UI instruction messages that includes:\n   - Instruction type (e.g., show_file_upload, request_email, display_form)\n   - Required parameters for each instruction type\n   - Optional parameters and their default values\n   - Validation rules for parameters\n   - Priority/sequence handling for multiple instructions\n\n2. Implement serialization/deserialization utilities in both backend (Python) and frontend (JavaScript/TypeScript) to ensure consistent handling of protocol messages.\n\n3. Create a registry of supported UI components that can be triggered via this protocol, including:\n   - File upload widget\n   - Email/contact form\n   - Authentication prompts\n   - Selection menus/dropdowns\n   - Progress indicators\n   - Confirmation dialogs\n\n4. Design state management approach to handle:\n   - Instruction queueing and prioritization\n   - Conflict resolution when multiple agents send competing instructions\n   - Timeout and error handling for incomplete UI interactions\n   - Resumption of interrupted flows\n\n5. Document security considerations:\n   - Input validation to prevent XSS or injection attacks\n   - Permissions model for which agents can trigger which UI elements\n   - Rate limiting to prevent UI flooding\n\n6. Integrate with the existing Agent Registry (Task #19) to register UI capabilities that each agent can utilize.\n\nThe implementation should be backward compatible with existing chat interfaces while enabling new dynamic UI capabilities.",
+      "testStrategy": "Testing this protocol implementation should follow these steps:\n\n1. Unit Testing:\n   - Validate JSON schema enforcement with valid and invalid message examples\n   - Test serialization/deserialization in both Python and JavaScript/TypeScript\n   - Verify error handling for malformed messages\n   - Test each individual UI instruction type with various parameter combinations\n\n2. Integration Testing:\n   - Create mock backend agents that generate UI instructions\n   - Implement test harnesses that simulate various instruction sequences\n   - Verify frontend correctly renders all supported UI components\n   - Test race conditions with multiple simultaneous instructions\n\n3. End-to-End Testing:\n   - Develop test scenarios that exercise complete user journeys involving dynamic UI changes\n   - Test with actual agent implementations to verify real-world compatibility\n   - Verify proper handling of network latency and disconnections\n   - Test across different browsers and devices to ensure consistent behavior\n\n4. Security Testing:\n   - Attempt to inject malicious content via the protocol\n   - Verify permissions enforcement prevents unauthorized UI manipulation\n   - Test rate limiting functionality\n\n5. Documentation Verification:\n   - Review protocol documentation with frontend and backend developers\n   - Conduct a walkthrough with the team to ensure understanding\n   - Create example implementations for each supported UI component\n   - Verify that documentation includes troubleshooting guidance\n\n6. Performance Testing:\n   - Measure impact on message processing time\n   - Test with high volumes of UI instructions\n   - Verify UI responsiveness under load\n\nAll tests should be automated where possible and integrated into the CI/CD pipeline.",
+      "status": "pending",
+      "dependencies": [],
+      "priority": "high",
       "subtasks": []
     }
   ],
