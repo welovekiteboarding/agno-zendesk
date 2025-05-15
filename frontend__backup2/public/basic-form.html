@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Basic Bug Report Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    
+    h1 {
+      color: #333;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    
+    input, textarea, select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    
+    textarea {
+      height: 100px;
+    }
+    
+    button {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    button:hover {
+      background: #45a049;
+    }
+    
+    .success {
+      background: #dff0d8;
+      color: #3c763d;
+      padding: 15px;
+      border-radius: 4px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Basic Bug Report Form</h1>
+  
+  <form id="bugReportForm">
+    <div class="form-group">
+      <label for="name">Your Name</label>
+      <input type="text" id="name" name="name" required>
+    </div>
+    
+    <div class="form-group">
+      <label for="email">Your Email</label>
+      <input type="email" id="email" name="email" required>
+    </div>
+    
+    <div class="form-group">
+      <label for="description">Bug Description</label>
+      <textarea id="description" name="description" required></textarea>
+    </div>
+    
+    <div class="form-group">
+      <label for="severity">Severity</label>
+      <select id="severity" name="severity" required>
+        <option value="">Select Severity</option>
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+        <option value="critical">Critical</option>
+      </select>
+    </div>
+    
+    <div id="resultMessage"></div>
+    
+    <button type="submit">Submit Bug Report</button>
+  </form>
+  
+  <script>
+    document.getElementById('bugReportForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const description = document.getElementById('description').value;
+      const severity = document.getElementById('severity').value;
+      
+      // Display form data
+      const resultMessage = document.getElementById('resultMessage');
+      resultMessage.innerHTML = `
+        <div class="success">
+          <h3>Form Submitted Successfully</h3>
+          <p><strong>Name:</strong> ${name}</p>
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Description:</strong> ${description}</p>
+          <p><strong>Severity:</strong> ${severity}</p>
+        </div>
+      `;
+      
+      // Reset form
+      this.reset();
+    });
+  </script>
+</body>
+</html>

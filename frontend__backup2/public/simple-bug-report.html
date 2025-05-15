@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bug Report Form</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #0b1021;
+      color: white;
+    }
+    .container {
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+    h1 {
+      font-size: 24px;
+      background: linear-gradient(to right, #6d4aff, #8c5eff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 0;
+    }
+    .back-button {
+      display: inline-block;
+      padding: 8px 16px;
+      background-color: #242d4f;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: background-color 0.2s;
+    }
+    .back-button:hover {
+      background-color: #343e60;
+    }
+    .form-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #121833;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #8c8c8c;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 8px;
+      background-color: #0f1428;
+      border: 1px solid #1e2642;
+      color: white;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    .submit-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: auto;
+      padding: 10px 24px;
+      background: linear-gradient(to right, #6d4aff, #8c5eff);
+      color: white;
+      border: none;
+      border-radius: 9999px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: opacity 0.2s;
+    }
+    .submit-button:hover {
+      opacity: 0.9;
+    }
+    .submit-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 16px;
+      background-color: #242d4f;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .button:hover {
+      background-color: #343e60;
+    }
+    .button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      margin-top: 16px;
+    }
+    .checkbox-container input {
+      width: auto;
+      margin-right: 8px;
+    }
+    .checkbox-container label {
+      margin-bottom: 0;
+      font-size: 14px;
+    }
+    .file-upload-container {
+      border: 2px dashed #1e2642;
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      transition: border-color 0.2s;
+      cursor: pointer;
+    }
+    .file-upload-container:hover {
+      border-color: #6d4aff;
+    }
+    .file-input {
+      display: none;
+    }
+    .file-list {
+      margin-top: 16px;
+      padding: 0;
+      list-style: none;
+    }
+    .file-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px;
+      margin-bottom: 8px;
+      background-color: #0f1428;
+      border-radius: 4px;
+    }
+    .file-info {
+      display: flex;
+      align-items: center;
+    }
+    .file-name {
+      margin-right: 8px;
+    }
+    .file-status {
+      font-size: 12px;
+    }
+    .status-uploading {
+      color: #ffc107;
+    }
+    .status-scanning {
+      color: #ffc107;
+    }
+    .status-ready {
+      color: #28a745;
+    }
+    .status-error {
+      color: #dc3545;
+    }
+    .remove-file {
+      color: #dc3545;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .info-message {
+      margin-top: 8px;
+      font-size: 14px;
+      color: #8c8c8c;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Bug Report Form</h1>
+      <a href="/" class="back-button">Back to Chat</a>
+    </header>
+    
+    <div class="form-container">
+      <form id="bugReportForm">
+        <!-- Reporter Information -->
+        <h3>Reporter Information</h3>
+        <div class="form-group">
+          <label for="reporterName">Your Name</label>
+          <input type="text" id="reporterName" name="reporterName" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="reporterEmail">Your Email</label>
+          <input type="email" id="reporterEmail" name="reporterEmail" required>
+        </div>
+        
+        <!-- Device Information -->
+        <h3>Device Information</h3>
+        <div class="form-group">
+          <label for="appVersion">App Version (e.g. 1.2.3 (1234))</label>
+          <input type="text" id="appVersion" name="appVersion" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="deviceOS">Device/OS (e.g. iPad Pro 11" M2, iPadOS 17.4)</label>
+          <input type="text" id="deviceOS" name="deviceOS" required>
+        </div>
+        
+        <!-- Bug Description -->
+        <h3>Bug Description</h3>
+        <div class="form-group">
+          <label for="stepsToReproduce">Steps to Reproduce (at least 3 steps)</label>
+          <textarea id="stepsToReproduce" name="stepsToReproduce" required></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="expectedResult">Expected Result</label>
+          <textarea id="expectedResult" name="expectedResult" required></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="actualResult">Actual Result</label>
+          <textarea id="actualResult" name="actualResult" required></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="severity">Severity</label>
+          <select id="severity" name="severity" required>
+            <option value="">Select Severity</option>
+            <option value="Critical">Critical</option>
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+          </select>
+        </div>
+        
+        <!-- File Attachments -->
+        <h3>Attachments (Optional)</h3>
+        <div class="file-upload-container" id="dropZone">
+          <div style="text-align: center;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#6d4aff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="12" y1="18" x2="12" y2="12"></line>
+              <line x1="9" y1="15" x2="15" y2="15"></line>
+            </svg>
+            <p class="info-message">
+              Drag & drop files here, or click anywhere in this box to select files (up to 3 files, 100 MB each)
+            </p>
+          </div>
+          <input type="file" id="fileInput" class="file-input" multiple>
+          <ul class="file-list" id="fileList"></ul>
+        </div>
+        
+        <!-- GDPR Consent -->
+        <div class="checkbox-container">
+          <input type="checkbox" id="gdprConsent" name="gdprConsent" required>
+          <label for="gdprConsent">I consent to storage of diagnostic data for troubleshooting purposes (GDPR)</label>
+        </div>
+        
+        <!-- Submit Button -->
+        <div style="margin-top: 24px; text-align: right;">
+          <button type="submit" id="submitButton" class="submit-button">
+            Submit Bug Report
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('Document loaded - Simple Bug Report Form');
+      
+      // Constants
+      const MAX_FILES = 3;
+      const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB in bytes
+      const BACKEND_URL = 'http://localhost:8001'; // Backend API URL
+      const API_URL = window.location.origin; // Frontend URL
+      
+      // Elements
+      const dropZone = document.getElementById('dropZone');
+      const fileInput = document.getElementById('fileInput');
+      const fileList = document.getElementById('fileList');
+      const submitButton = document.getElementById('submitButton');
+      const bugReportForm = document.getElementById('bugReportForm');
+      
+      // State
+      let files = [];
+      
+      // Log elements to make sure they're found
+      console.log('Elements found:', {
+        dropZone: Boolean(dropZone),
+        fileInput: Boolean(fileInput),
+        fileList: Boolean(fileList),
+        submitButton: Boolean(submitButton),
+        bugReportForm: Boolean(bugReportForm)
+      });
+      
+      // ========== FILE UPLOAD HANDLING ==========
+      
+      // When upload area is clicked, trigger file input
+      dropZone.addEventListener('click', function() {
+        fileInput.click();
+        console.log('Drop zone clicked, file input triggered');
+      });
+      
+      // When files are selected through the file input
+      fileInput.addEventListener('change', function(e) {
+        console.log('File input change event with', e.target.files.length, 'files');
+        if (e.target.files && e.target.files.length > 0) {
+          handleFiles(Array.from(e.target.files));
+        }
+        this.value = null; // Reset so same file can be selected again
+      });
+      
+      // Set up drag and drop events
+      dropZone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        dropZone.style.borderColor = '#6d4aff';
+        console.log('Drag over event');
+      });
+      
+      dropZone.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        dropZone.style.borderColor = '#1e2642';
+        console.log('Drag leave event');
+      });
+      
+      dropZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        dropZone.style.borderColor = '#1e2642';
+        console.log('Drop event with', e.dataTransfer.files.length, 'files');
+        
+        if (e.dataTransfer.files.length > 0) {
+          handleFiles(Array.from(e.dataTransfer.files));
+        }
+      });
+      
+      // Prevent browser from opening files when dropped on document
+      document.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      });
+      
+      document.addEventListener('drop', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      });
+      
+      // Handle the files
+      function handleFiles(newFiles) {
+        console.log('Files received:', newFiles);
+        
+        // Check if max files reached
+        const availableSlots = MAX_FILES - files.length;
+        if (availableSlots <= 0) {
+          alert(`Maximum ${MAX_FILES} files allowed. Please remove some files before adding more.`);
+          return;
+        }
+        
+        // Process only up to available slot count
+        const filesToAdd = newFiles.slice(0, availableSlots);
+        
+        // Check file sizes
+        for (const file of filesToAdd) {
+          if (file.size > MAX_FILE_SIZE) {
+            alert(`File ${file.name} exceeds the maximum size of 100MB.`);
+            return;
+          }
+        }
+        
+        // Add files to array and display
+        for (const file of filesToAdd) {
+          const fileId = `file-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+          
+          // Add to files array
+          files.push({
+            id: fileId,
+            file: file,
+            status: 'Uploading...',
+            s3Key: null
+          });
+          
+          // Display in list
+          const li = document.createElement('li');
+          li.className = 'file-item';
+          li.dataset.fileId = fileId;
+          
+          li.innerHTML = `
+            <div class="file-info">
+              <span class="file-name">${file.name}</span>
+              <span class="file-status status-uploading">Uploading...</span>
+            </div>
+            <button type="button" class="remove-file" data-file-id="${fileId}">&times;</button>
+          `;
+          
+          fileList.appendChild(li);
+          
+          // Add remove button event listener
+          li.querySelector('.remove-file').addEventListener('click', function() {
+            removeFile(fileId);
+          });
+          
+          // Start upload process
+          uploadFile(fileId, file);
+        }
+      }
+      
+      // Upload file to S3/R2
+      async function uploadFile(fileId, file) {
+        try {
+          console.log('Starting upload for file:', file.name);
+          
+          // Find file in array
+          const fileIndex = files.findIndex(f => f.id === fileId);
+          if (fileIndex === -1) return;
+          
+          // Prepare file metadata
+          const safeName = file.name.replace(/\s+/g, "_");
+          const meta = { 
+            name: safeName, 
+            type: file.type, 
+            size: file.size 
+          };
+          
+          // Request presigned URL
+          console.log('Requesting presigned URL for:', file.name);
+          const presignRes = await fetch(`${BACKEND_URL}/generate-presigned-url`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(meta)
+          });
+          
+          if (!presignRes.ok) {
+            throw new Error(`Failed to get presigned URL: ${presignRes.status}`);
+          }
+          
+          const { url, key } = await presignRes.json();
+          console.log('Received presigned URL for file:', file.name);
+          
+          // Upload to S3/R2
+          console.log('Uploading file to S3/R2:', file.name);
+          const uploadRes = await fetch(url, {
+            method: 'PUT',
+            body: file,
+            headers: { 'Content-Type': file.type }
+          });
+          
+          if (!uploadRes.ok) {
+            throw new Error('Failed to upload file to storage');
+          }
+          
+          // Update file status
+          files[fileIndex].status = 'Scanning...';
+          files[fileIndex].s3Key = key;
+          updateFileStatus(fileId, 'Scanning...');
+          
+          // Start polling for scan result
+          pollForScanResult(fileId, key);
+          
+        } catch (error) {
+          console.error('Upload error:', error);
+          
+          // Update file status with error
+          const fileIndex = files.findIndex(f => f.id === fileId);
+          if (fileIndex !== -1) {
+            files[fileIndex].status = `Error: ${error.message}`;
+            updateFileStatus(fileId, `Error: ${error.message}`);
+          }
+        }
+      }
+      
+      // Poll for virus scan result
+      function pollForScanResult(fileId, tempKey) {
+        console.log('Starting virus scan polling for:', tempKey);
+        
+        // Find file in array
+        const fileIndex = files.findIndex(f => f.id === fileId);
+        if (fileIndex === -1) return;
+        
+        // Update status to scanning
+        files[fileIndex].status = 'Scanning...';
+        updateFileStatus(fileId, 'Scanning...');
+        
+        let retries = 60; // 2 minutes (120 seconds at 2-second intervals)
+        const permKey = tempKey.replace('temp/', 'permanent/');
+        let pollingInterval;
+        
+        const checkStatus = async () => {
+          try {
+            // First check if file is still in temp (scanning)
+            const tempRes = await fetch(`${BACKEND_URL}/check-file-status?key=${encodeURIComponent(tempKey)}`, {
+              method: 'HEAD'
+            });
+            
+            if (tempRes.status === 200) {
+              // File is still in temp, still scanning
+              return;
+            }
+            
+            // Then check if file is in permanent (clean)
+            const permRes = await fetch(`${BACKEND_URL}/check-file-status?key=${encodeURIComponent(permKey)}`, {
+              method: 'HEAD'
+            });
+            
+            if (permRes.status === 200) {
+              // File is clean and in permanent storage
+              const fileIndex = files.findIndex(f => f.id === fileId);
+              if (fileIndex !== -1) {
+                files[fileIndex].status = 'Clean (ready)';
+                files[fileIndex].s3Key = permKey;
+                updateFileStatus(fileId, 'Clean (ready)');
+                
+                // Clear interval
+                clearInterval(pollingInterval);
+              }
+              return;
+            }
+            
+            // If not in temp or permanent after retries, mark as infected/deleted
+            if (--retries <= 0) {
+              const fileIndex = files.findIndex(f => f.id === fileId);
+              if (fileIndex !== -1) {
+                files[fileIndex].status = 'Infected (deleted)';
+                updateFileStatus(fileId, 'Infected (deleted)');
+                
+                // Clear interval
+                clearInterval(pollingInterval);
+              }
+            }
+          } catch (error) {
+            console.error('Status check error:', error);
+          }
+        };
+        
+        // Start polling
+        pollingInterval = setInterval(checkStatus, 2000);
+        checkStatus(); // First check immediately
+      }
+      
+      // Update file status in the list
+      function updateFileStatus(fileId, status) {
+        const li = fileList.querySelector(`li[data-file-id="${fileId}"]`);
+        if (li) {
+          const statusEl = li.querySelector('.file-status');
+          
+          // Update status text
+          statusEl.textContent = status;
+          
+          // Update status class
+          statusEl.classList.remove('status-uploading', 'status-scanning', 'status-ready', 'status-error');
+          
+          let statusClass = '';
+          switch (status.toLowerCase()) {
+            case 'uploading...':
+              statusClass = 'status-uploading';
+              break;
+            case 'scanning...':
+            case 'uploaded, scanning...':
+              statusClass = 'status-scanning';
+              break;
+            case 'clean (ready)':
+              statusClass = 'status-ready';
+              break;
+            default:
+              if (status.toLowerCase().includes('error') || status.toLowerCase().includes('infected')) {
+                statusClass = 'status-error';
+              }
+          }
+          
+          statusEl.classList.add(statusClass);
+        }
+      }
+      
+      // Remove file from list and state
+      function removeFile(fileId) {
+        // Remove from files array
+        files = files.filter(f => f.id !== fileId);
+        
+        // Remove from DOM
+        const li = fileList.querySelector(`li[data-file-id="${fileId}"]`);
+        if (li) {
+          li.remove();
+        }
+      }
+      
+      // Format file size in KB, MB, etc.
+      function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+      }
+      
+      // ========== FORM SUBMISSION ==========
+      
+      // Handle form submission
+      bugReportForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        console.log('Form submitted');
+        
+        // Get form data
+        const formData = {
+          reporterName: document.getElementById('reporterName').value,
+          reporterEmail: document.getElementById('reporterEmail').value,
+          appVersion: document.getElementById('appVersion').value,
+          deviceOS: document.getElementById('deviceOS').value,
+          stepsToReproduce: document.getElementById('stepsToReproduce').value,
+          expectedResult: document.getElementById('expectedResult').value,
+          actualResult: document.getElementById('actualResult').value,
+          severity: document.getElementById('severity').value,
+          gdprConsent: document.getElementById('gdprConsent').checked
+        };
+        
+        // Validate required fields
+        const requiredFields = [
+          'reporterName', 'reporterEmail', 'appVersion', 'deviceOS',
+          'stepsToReproduce', 'expectedResult', 'actualResult', 'severity'
+        ];
+        
+        for (const field of requiredFields) {
+          if (!formData[field]) {
+            alert('Please fill in all required fields');
+            return;
+          }
+        }
+        
+        if (!formData.gdprConsent) {
+          alert('Please provide GDPR consent');
+          return;
+        }
+        
+        // Check if files are still processing
+        const processingFiles = files.filter(f => 
+          f.status === 'Uploading...' || 
+          f.status === 'Scanning...' || 
+          f.status.includes('Uploaded')
+        );
+        
+        if (processingFiles.length > 0) {
+          alert('Please wait for all files to finish uploading and scanning');
+          return;
+        }
+        
+        // Get valid file keys (files that passed virus scan)
+        const fileKeys = files
+          .filter(f => f.status === 'Clean (ready)')
+          .map(f => f.s3Key);
+        
+        // Disable submit button
+        submitButton.disabled = true;
+        submitButton.innerHTML = 'Submitting...';
+        
+        console.log('Form data:', formData);
+        console.log('File keys for submission:', fileKeys);
+        
+        // Submit to backend 
+        submitToBackend(formData, fileKeys);
+      });
+      
+      // Submit form data to backend
+      async function submitToBackend(formData, fileKeys) {
+        try {
+          // Prepare submission data
+          const submissionData = {
+            session_id: `direct-bug-form-${Date.now()}`,
+            user_message: 'Submit bug report',
+            meta: {
+              form_data: formData,
+              attachments: fileKeys,
+              submit: true,
+              agent_type: 'bug_report'
+            }
+          };
+          
+          console.log('Submitting bug report data:', submissionData);
+          
+          // Make the submission
+          const response = await fetch(`${BACKEND_URL}/api/form-collector/chat`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Agent-Type': 'bug_report',
+              'X-Submit-Action': 'true'
+            },
+            body: JSON.stringify(submissionData)
+          });
+          
+          if (!response.ok) {
+            throw new Error(`Submission failed: ${response.status} ${response.statusText}`);
+          }
+          
+          const responseData = await response.json();
+          console.log('Submission successful:', responseData);
+          
+          // Show success message
+          // Show success UI
+          bugReportForm.innerHTML = `
+            <div style="text-align: center; padding: 20px;">
+              <div style="background-color: #28a745; color: white; border-radius: 50%; width: 60px; height: 60px; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+              <h2 style="color: #28a745; margin-bottom: 16px;">Bug Report Submitted Successfully!</h2>
+              <div style="background-color: rgba(40, 167, 69, 0.1); border-radius: 8px; padding: 16px; margin-bottom: 20px; text-align: left;">
+                <p><strong>Thank you for your feedback.</strong> Your report has been received.</p>
+                <p>A confirmation has been sent to <strong>${formData.reporterEmail}</strong>.</p>
+                <p><strong>Reference ID:</strong> ${responseData.reference_id || responseData.ticket_id || 'N/A'}</p>
+                <p><strong>Attachments:</strong> ${fileKeys.length > 0 ? fileKeys.length + ' file(s)' : 'None'}</p>
+              </div>
+              <a href="/" class="back-button">Return to Home</a>
+            </div>
+          `;
+        } catch (error) {
+          console.error('Submission error:', error);
+          alert(`Error submitting report: ${error.message}\nPlease try again later.`);
+          
+          // Re-enable submit button
+          submitButton.disabled = false;
+          submitButton.innerHTML = 'Submit Bug Report';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

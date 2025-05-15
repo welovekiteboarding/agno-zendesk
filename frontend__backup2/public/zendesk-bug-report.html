@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zendesk Bug Report Form</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #0b1021;
+      color: white;
+    }
+    
+    .container {
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+    
+    h1 {
+      font-size: 24px;
+      background: linear-gradient(to right, #6d4aff, #8c5eff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 0;
+    }
+    
+    .back-button {
+      display: inline-block;
+      padding: 8px 16px;
+      background-color: #242d4f;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: background-color 0.2s;
+    }
+    
+    .back-button:hover {
+      background-color: #343e60;
+    }
+    
+    .form-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #121833;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .form-group {
+      margin-bottom: 16px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #8c8c8c;
+    }
+    
+    input, textarea, select {
+      width: 100%;
+      padding: 8px;
+      background-color: #0f1428;
+      border: 1px solid #1e2642;
+      color: white;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    
+    .submit-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: auto;
+      padding: 10px 24px;
+      background: linear-gradient(to right, #6d4aff, #8c5eff);
+      color: white;
+      border: none;
+      border-radius: 9999px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: opacity 0.2s;
+    }
+    
+    .submit-button:hover {
+      opacity: 0.9;
+    }
+    
+    .submit-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      margin-top: 16px;
+    }
+    
+    .checkbox-container input {
+      width: auto;
+      margin-right: 8px;
+    }
+    
+    .checkbox-container label {
+      margin-bottom: 0;
+      font-size: 14px;
+    }
+    
+    .section-title {
+      margin-top: 24px;
+      margin-bottom: 16px;
+      color: #6d4aff;
+    }
+    
+    .result-message {
+      margin-top: 20px;
+    }
+    
+    .success-message {
+      background-color: rgba(40, 167, 69, 0.1);
+      border-radius: 8px;
+      padding: 16px;
+      color: #28a745;
+    }
+    
+    .error-message {
+      background-color: rgba(220, 53, 69, 0.1);
+      border-radius: 8px;
+      padding: 16px;
+      color: #dc3545;
+    }
+    
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 10px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Bug Report Form</h1>
+      <a href="/" class="back-button">Back to Chat</a>
+    </header>
+    
+    <div class="form-container">
+      <form id="bugReportForm">
+        <!-- Reporter Information -->
+        <h3 class="section-title">Reporter Information</h3>
+        <div class="form-group">
+          <label for="reporterName">Your Name</label>
+          <input type="text" id="reporterName" name="reporterName" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="reporterEmail">Your Email</label>
+          <input type="email" id="reporterEmail" name="reporterEmail" required>
+        </div>
+        
+        <!-- Device Information -->
+        <h3 class="section-title">Device Information</h3>
+        <div class="form-group">
+          <label for="appVersion">App Version (e.g. 1.2.3 (1234))</label>
+          <input type="text" id="appVersion" name="appVersion" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="deviceOS">Device/OS (e.g. iPad Pro 11" M2, iPadOS 17.4)</label>
+          <input type="text" id="deviceOS" name="deviceOS" required>
+        </div>
+        
+        <!-- Bug Description -->
+        <h3 class="section-title">Bug Description</h3>
+        <div class="form-group">
+          <label for="stepsToReproduce">Steps to Reproduce (at least 3 steps)</label>
+          <textarea id="stepsToReproduce" name="stepsToReproduce" required></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="expectedResult">Expected Result</label>
+          <textarea id="expectedResult" name="expectedResult" required></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="actualResult">Actual Result</label>
+          <textarea id="actualResult" name="actualResult" required></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="severity">Severity</label>
+          <select id="severity" name="severity" required>
+            <option value="">Select Severity</option>
+            <option value="Critical">Critical</option>
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+          </select>
+        </div>
+        
+        <!-- GDPR Consent -->
+        <div class="checkbox-container">
+          <input type="checkbox" id="gdprConsent" name="gdprConsent" required>
+          <label for="gdprConsent">I consent to storage of diagnostic data for troubleshooting purposes (GDPR)</label>
+        </div>
+        
+        <div id="resultMessage" class="result-message"></div>
+        
+        <!-- Submit Button -->
+        <div style="margin-top: 24px; text-align: right;">
+          <button type="submit" id="submitButton" class="submit-button">
+            Submit Bug Report
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('Document loaded - Zendesk Bug Report Form');
+      
+      const bugReportForm = document.getElementById('bugReportForm');
+      const submitButton = document.getElementById('submitButton');
+      const resultMessage = document.getElementById('resultMessage');
+      
+      // Form submission handler
+      bugReportForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Get form data
+        const formData = {
+          reporterName: document.getElementById('reporterName').value,
+          reporterEmail: document.getElementById('reporterEmail').value,
+          appVersion: document.getElementById('appVersion').value,
+          deviceOS: document.getElementById('deviceOS').value,
+          stepsToReproduce: document.getElementById('stepsToReproduce').value,
+          expectedResult: document.getElementById('expectedResult').value,
+          actualResult: document.getElementById('actualResult').value,
+          severity: document.getElementById('severity').value,
+          gdprConsent: document.getElementById('gdprConsent').checked
+        };
+        
+        // Validate required fields
+        const requiredFields = [
+          'reporterName', 'reporterEmail', 'appVersion', 'deviceOS',
+          'stepsToReproduce', 'expectedResult', 'actualResult', 'severity'
+        ];
+        
+        for (const field of requiredFields) {
+          if (!formData[field]) {
+            resultMessage.innerHTML = `
+              <div class="error-message">
+                <p>Please fill in all required fields.</p>
+              </div>
+            `;
+            return;
+          }
+        }
+        
+        if (!formData.gdprConsent) {
+          resultMessage.innerHTML = `
+            <div class="error-message">
+              <p>Please provide GDPR consent.</p>
+            </div>
+          `;
+          return;
+        }
+        
+        // Show loading state
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<span class="loading"></span> Submitting...';
+        resultMessage.innerHTML = '';
+        
+        try {
+          console.log('Submitting bug report to Zendesk:', formData);
+          
+          // Submit to Zendesk API endpoint
+          const response = await fetch('/api/zendesk/create-ticket', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ formData })
+          });
+          
+          // Handle response
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Failed to create ticket: ${response.status} ${response.statusText}. ${errorText}`);
+          }
+          
+          const responseData = await response.json();
+          console.log('Response from Zendesk:', responseData);
+          
+          // Show success message
+          bugReportForm.innerHTML = `
+            <div style="text-align: center; padding: 20px;">
+              <div style="background-color: #28a745; color: white; border-radius: 50%; width: 60px; height: 60px; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+              <h2 style="color: #28a745; margin-bottom: 16px;">Bug Report Submitted Successfully!</h2>
+              <div style="background-color: rgba(40, 167, 69, 0.1); border-radius: 8px; padding: 16px; margin-bottom: 20px; text-align: left;">
+                <p><strong>Thank you for your feedback.</strong> Your report has been submitted to our support team via Zendesk.</p>
+                <p><strong>Ticket Details:</strong></p>
+                <ul style="list-style-type: none; padding-left: 0;">
+                  <li><strong>Ticket ID:</strong> ${responseData.ticket_id || 'N/A'}</li>
+                  <li><strong>Submitted by:</strong> ${formData.reporterName}</li>
+                  <li><strong>Severity:</strong> ${formData.severity}</li>
+                </ul>
+                <p style="margin-top: 16px;">Our support team has been notified and will investigate this issue. You'll receive email updates at <strong>${formData.reporterEmail}</strong> as we work on your report.</p>
+              </div>
+              <a href="/" class="back-button">Return to Home</a>
+            </div>
+          `;
+          
+        } catch (error) {
+          console.error('Error submitting to Zendesk:', error);
+          
+          // Reset button state
+          submitButton.disabled = false;
+          submitButton.innerHTML = 'Submit Bug Report';
+          
+          // Show error message
+          resultMessage.innerHTML = `
+            <div class="error-message">
+              <p><strong>Error submitting bug report:</strong> ${error.message}</p>
+              <p>Please try again later or contact support directly.</p>
+            </div>
+          `;
+        }
+      });
+    });
+  </script>
+</body>
+</html>

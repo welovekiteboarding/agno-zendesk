@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zendesk Bug Report Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    
+    h1 {
+      color: #333;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    
+    input, textarea, select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    
+    textarea {
+      height: 100px;
+    }
+    
+    button {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    button:hover {
+      background: #45a049;
+    }
+    
+    button:disabled {
+      background: #cccccc;
+      cursor: not-allowed;
+    }
+    
+    .success {
+      background: #dff0d8;
+      color: #3c763d;
+      padding: 15px;
+      border-radius: 4px;
+      margin-top: 20px;
+    }
+    
+    .error {
+      background: #f2dede;
+      color: #a94442;
+      padding: 15px;
+      border-radius: 4px;
+      margin-top: 20px;
+    }
+    
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 10px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <h1>Zendesk Bug Report Form</h1>
+  
+  <form id="bugReportForm">
+    <div class="form-group">
+      <label for="name">Your Name</label>
+      <input type="text" id="name" name="name" required>
+    </div>
+    
+    <div class="form-group">
+      <label for="email">Your Email</label>
+      <input type="email" id="email" name="email" required>
+    </div>
+    
+    <div class="form-group">
+      <label for="description">Bug Description</label>
+      <textarea id="description" name="description" required></textarea>
+    </div>
+    
+    <div class="form-group">
+      <label for="severity">Severity</label>
+      <select id="severity" name="severity" required>
+        <option value="">Select Severity</option>
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+        <option value="critical">Critical</option>
+      </select>
+    </div>
+    
+    <div id="resultMessage"></div>
+    
+    <button type="submit" id="submitButton">Submit Bug Report</button>
+  </form>
+  
+  <script>
+    // Form submission handler
+    document.getElementById('bugReportForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const submitButton = document.getElementById('submitButton');
+      const resultMessage = document.getElementById('resultMessage');
+      
+      // Get form data
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const description = document.getElementById('description').value;
+      const severity = document.getElementById('severity').value;
+      
+      // Validate form
+      if (!name || !email || !description || !severity) {
+        resultMessage.innerHTML = `
+          <div class="error">
+            <p>Please fill in all required fields.</p>
+          </div>
+        `;
+        return;
+      }
+      
+      // Show loading state
+      submitButton.disabled = true;
+      submitButton.innerHTML = '<span class="loading"></span> Submitting...';
+      
+      try {
+        // Prepare data for Zendesk
+        const formData = {
+          name: name,
+          email: email,
+          description: description,
+          severity: severity
+        };
+        
+        // Submit to Zendesk API endpoint
+        console.log('Submitting to Zendesk:', formData);
+        
+        const response = await fetch('/api/zendesk/create-ticket', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            formData: {
+              reporterName: name,
+              reporterEmail: email,
+              stepsToReproduce: '',
+              expectedResult: '',
+              actualResult: description,
+              severity: severity
+            }
+          })
+        });
+        
+        // Handle response
+        if (!response.ok) {
+          throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
+        }
+        
+        const responseData = await response.json();
+        console.log('Response from Zendesk:', responseData);
+        
+        // Show success message
+        resultMessage.innerHTML = `
+          <div class="success">
+            <h3>Bug Report Submitted Successfully!</h3>
+            <p>Your bug report has been submitted to our support team via Zendesk.</p>
+            <p><strong>Ticket ID:</strong> ${responseData.ticket_id || 'N/A'}</p>
+            <p>Thank you for helping improve our product!</p>
+          </div>
+        `;
+        
+        // Reset form
+        this.reset();
+        
+      } catch (error) {
+        console.error('Error submitting to Zendesk:', error);
+        
+        // Show error message
+        resultMessage.innerHTML = `
+          <div class="error">
+            <h3>Error Submitting Bug Report</h3>
+            <p>${error.message}</p>
+            <p>Please try again later or contact support directly.</p>
+          </div>
+        `;
+      } finally {
+        // Reset button state
+        submitButton.disabled = false;
+        submitButton.innerHTML = 'Submit Bug Report';
+      }
+    });
+  </script>
+</body>
+</html>
