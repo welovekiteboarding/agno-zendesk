@@ -1,0 +1,168 @@
+<\!DOCTYPE html>
+<html>
+  <head>
+    <title>Clear Chat History</title>
+    <style>
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 2rem;
+        background-color: #0b1021;
+        color: white;
+      }
+      h1 {
+        color: #6d4aff;
+      }
+      button {
+        background: linear-gradient(to right, #6d4aff, #8c5eff);
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 20px;
+        font-size: 16px;
+        cursor: pointer;
+        margin-top: 1rem;
+      }
+      .result {
+        margin-top: 1rem;
+        padding: 1rem;
+        background-color: #121833;
+        border-radius: 8px;
+        display: none;
+      }
+      ul {
+        list-style-type: none;
+        padding-left: 0;
+      }
+      li {
+        margin-bottom: 0.5rem;
+        display: flex;
+        justify-content: space-between;
+      }
+      .key {
+        font-weight: bold;
+        color: #8c5eff;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Clear Chat History</h1>
+    <p>
+      Use this utility to clear persisted chat history and state from
+      localStorage.
+    </p>
+
+    <button id="showStorageBtn">Show Current Storage</button>
+    <button id="clearAllBtn">Clear All Chat Data</button>
+    <button id="clearSelectiveBtn">Clear Selected Items</button>
+
+    <div id="storageResult" class="result">
+      <h2>Current localStorage Items</h2>
+      <ul id="storageList"></ul>
+    </div>
+
+    <div id="clearResult" class="result">
+      <h2>Clear Result</h2>
+      <p id="clearMessage"></p>
+    </div>
+
+    <script>
+      document
+        .getElementById("showStorageBtn")
+        .addEventListener("click", function () {
+          const storageList = document.getElementById("storageList");
+          storageList.innerHTML = "";
+          const result = document.getElementById("storageResult");
+
+          // Find all chat-related items
+          let chatItems = 0;
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (
+              key &&
+              (key.includes("chat") ||
+                key.includes("agno") ||
+                key.includes("ui_"))
+            ) {
+              chatItems++;
+              const value = localStorage.getItem(key);
+              const li = document.createElement("li");
+
+              const keySpan = document.createElement("span");
+              keySpan.textContent = key;
+              keySpan.className = "key";
+              li.appendChild(keySpan);
+
+              const checkbox = document.createElement("input");
+              checkbox.type = "checkbox";
+              checkbox.value = key;
+              checkbox.checked = true;
+              checkbox.className = "storage-item";
+              li.appendChild(checkbox);
+
+              storageList.appendChild(li);
+            }
+          }
+
+          if (chatItems === 0) {
+            storageList.innerHTML =
+              "<li>No chat-related items found in localStorage</li>";
+          }
+
+          result.style.display = "block";
+        });
+
+      document
+        .getElementById("clearAllBtn")
+        .addEventListener("click", function () {
+          let count = 0;
+          const clearResult = document.getElementById("clearResult");
+          const clearMessage = document.getElementById("clearMessage");
+
+          // Clear all chat-related items
+          for (let i = localStorage.length - 1; i >= 0; i--) {
+            const key = localStorage.key(i);
+            if (
+              key &&
+              (key.includes("chat") ||
+                key.includes("agno") ||
+                key.includes("ui_"))
+            ) {
+              localStorage.removeItem(key);
+              count++;
+            }
+          }
+
+          clearMessage.textContent = `Cleared ${count} items from localStorage. Please refresh the chat page to see the changes.`;
+          clearResult.style.display = "block";
+        });
+
+      document
+        .getElementById("clearSelectiveBtn")
+        .addEventListener("click", function () {
+          const checkboxes = document.querySelectorAll(".storage-item:checked");
+          const clearResult = document.getElementById("clearResult");
+          const clearMessage = document.getElementById("clearMessage");
+
+          let count = 0;
+          checkboxes.forEach((checkbox) => {
+            localStorage.removeItem(checkbox.value);
+            count++;
+          });
+
+          clearMessage.textContent = `Cleared ${count} selected items from localStorage. Please refresh the chat page to see the changes.`;
+          clearResult.style.display = "block";
+
+          // Update the storage display
+          document.getElementById("showStorageBtn").click();
+        });
+    </script>
+  </body>
+</html>

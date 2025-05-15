@@ -1,4 +1,9 @@
 "use client";
+/**
+ * @deprecated This component is deprecated and will be removed in a future version.
+ * Please use UnifiedChatUI from '@/components/features/UnifiedChatUI' instead.
+ * See documentation in /docs/UNIFIED_CHAT_INTERFACE.md for migration details.
+ */
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { UIInstructionsContainer } from "@/protocol/uiInstructionRegistry";
@@ -12,6 +17,9 @@ interface Message {
 
 const backendUrl = process.env.NEXT_PUBLIC_BACKEND || "http://localhost:8001";
 
+/**
+ * @deprecated Please use UnifiedChatUI component instead.
+ */
 const ChatUIWithRegistry: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
     {

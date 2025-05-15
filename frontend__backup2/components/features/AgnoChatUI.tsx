@@ -1,4 +1,9 @@
 "use client";
+/**
+ * @deprecated This component is deprecated and will be removed in a future version.
+ * Please use UnifiedChatUI from '@/components/features/UnifiedChatUI' instead.
+ * See documentation in /docs/UNIFIED_CHAT_INTERFACE.md for migration details.
+ */
 import React, { useState, useRef, useEffect } from "react";
 
 interface Message {
@@ -10,6 +15,9 @@ const backendUrl =
   process.env.NEXT_PUBLIC_AGNO_BACKEND ||
   "http://localhost:8001/api/agno-agent/chat";
 
+/**
+ * @deprecated Please use UnifiedChatUI component instead.
+ */
 const AgnoChatUI: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
     {

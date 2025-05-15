@@ -13,15 +13,7 @@ export default function Home() {
         </div>
       </header>
       
-      {/* Added prominent Bug Report button */}
-      <div className="absolute top-4 right-4 z-10">
-        <a 
-          href="/bug-report.html" 
-          className="px-4 py-2 bg-[#242d4f] hover:bg-[#343e60] text-white rounded-md transition-colors"
-        >
-          Bug Report Form
-        </a>
-      </div>
+      {/* Removed the header button */}
 
       <main className="flex-1 w-full max-w-5xl p-4">
         <UnifiedChatUI

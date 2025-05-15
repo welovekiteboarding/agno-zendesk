@@ -97,3 +97,8 @@ Here are the key changes in 1-3 concise bullet points:
 - The bug report form now has more detailed and helpful prompts for the user, such as providing instructions on where to find the app version and device information.
 - The file upload functionality has been enhanced, including a drag-and-drop area, file size validation, and better error handling.
 - The submission process has been updated to use the Zendesk API for creating tickets, with support for attaching the user's files to the ticket.
+Here are the key changes summarized in 1-3 concise bullet points:
+
+- Added a new `Link` component import from `next/link` to the `agno-chat/page.tsx` file.
+- Added a new "Bug Report Form" button in the top-right corner of the `agno-chat/page.tsx` file, which links to the `/bug-report` page.
+- Implemented a new `/bug-report/page.js` file that displays a bug report form with a dynamic import of the `BugReportForm` component, error handling, and a fallback UI.

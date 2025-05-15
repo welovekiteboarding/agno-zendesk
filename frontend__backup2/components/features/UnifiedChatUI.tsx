@@ -1213,16 +1213,13 @@ const UnifiedChatUI: React.FC<UnifiedChatUIProps> = ({
             Send
           </button>
 
-          {/* Submit button - ALWAYS here when it should be visible */}
-          {showSubmitButton && (
-            <button
-              className="bg-gradient-to-r from-[#124a2c] to-[#1a6e40] hover:opacity-90 transition-opacity text-white rounded-full px-5 py-2 font-bold disabled:opacity-50"
-              disabled={loading}
-              onClick={submitReport}
-            >
-              Submit Report
-            </button>
-          )}
+          {/* Bug Report Form button */}
+          <a
+            href="/zendesk-bug-report.html"
+            className="bg-[#242d4f] hover:bg-[#343e60] transition-colors text-white rounded-full px-5 py-2 font-medium"
+          >
+            Bug Report Form
+          </a>
         </form>
       </div>
     </div>

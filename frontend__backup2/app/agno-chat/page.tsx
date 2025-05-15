@@ -1,4 +1,5 @@
 import UnifiedChatUI from '@/components/features/UnifiedChatUI';
+import Link from 'next/link';
 
 export default function AgnoChatPage() {
   return (
@@ -11,6 +12,16 @@ export default function AgnoChatPage() {
           Specialized assistant for complex queries
         </div>
       </header>
+      
+      {/* Bug Report Button */}
+      <div className="absolute top-4 right-4 z-10">
+        <Link 
+          href="/bug-report" 
+          className="px-4 py-2 bg-[#242d4f] hover:bg-[#343e60] text-white rounded-md transition-colors"
+        >
+          Bug Report Form
+        </Link>
+      </div>
       
       <main className="flex-1 w-full max-w-5xl p-4">
         <UnifiedChatUI 
