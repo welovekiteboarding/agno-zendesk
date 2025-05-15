@@ -81,17 +81,17 @@ class FormCollectorAgent:
     def get_field_prompt(self, field_name: str) -> str:
         """Get the appropriate prompt for a field."""
         prompts = {
-            'reporterName': "Hi! I can help you submit a bug report. What is your name?",
-            'reporterEmail': "Please provide your email address.",
-            'appVersion': "Please provide the exact app version in the format: 8.0.0 (1234)",
-            'deviceOS': "Please provide your device model and OS version (e.g., iPad Pro 11\" M2, iPadOS 17.4)",
+            'reporterName': "I'm the bug reporting assistant. To get started with your report, what is your name?",
+            'reporterEmail': "Thanks! Please provide your email address so we can follow up if needed.",
+            'appVersion': "Now I need the exact app version in the format: 8.0.0 (1234). You can find this in the app by going to Help > scroll to the bottom.",
+            'deviceOS': "What device and OS are you using? (e.g., iPad Pro 11\" M2, iPadOS 17.4)",
             'stepsToReproduce': "Please provide the steps to reproduce the bug (at least 3 steps):",
-            'expectedResult': "What was the expected result?",
-            'actualResult': "What was the actual result?",
-            'severity': "How severe is this bug? (Critical/High/Medium/Low)",
-            'hasAttachments': "Do you have any files to upload? (yes/no)",
+            'expectedResult': "What was the expected result when you performed these steps?",
+            'actualResult': "What was the actual result that occurred instead?",
+            'severity': "How would you rate the severity of this bug? (Critical/High/Medium/Low)",
+            'hasAttachments': "Would you like to upload any screenshots or files to help explain the issue? (yes/no)",
             'attachments': "Please upload your attachments now.",
-            'gdprConsent': "Do you consent to storing diagnostic data? (yes/no)"
+            'gdprConsent': "Last question: Do you consent to storing diagnostic data for troubleshooting? (yes/no)"
         }
         return prompts.get(field_name, f"Please provide {field_name}")
 
@@ -101,8 +101,8 @@ class FormCollectorAgent:
             return "Great! I have all the required information. Is there anything else you'd like to add?"
 
         # Special handling for initial greeting
-        if current_field == 'reporterName' and message.lower() in ['hi', 'hello', 'hey']:
-            return self.get_field_prompt('reporterName')
+        if current_field == 'reporterName' and message.lower() in ['hi', 'hello', 'hey', 'bug', 'report a bug']:
+            return "Welcome to the bug reporting system. I'll guide you through submitting a detailed bug report. " + self.get_field_prompt('reporterName')
 
         # Special handling for hasAttachments
         if current_field == 'hasAttachments':

@@ -28,7 +28,7 @@ async function handleCreateTicket(request: NextRequest) {
     // Parse request body
     const requestData = await request.json();
     console.log('[DEBUG] Zendesk create-ticket request data:', JSON.stringify(requestData));
-    const { formData, attachments } = requestData;
+    const { formData, uploadTokens } = requestData;
 
     // Validate required form fields
     if (!formData) {
@@ -51,11 +51,32 @@ async function handleCreateTicket(request: NextRequest) {
         { status: 400 }
       );
     }
+    
+    // Validate email format
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(formData.reporterEmail.trim())) {
+      console.log('[DEBUG] Invalid email format:', formData.reporterEmail);
+      return NextResponse.json(
+        { error: 'Invalid email format. Please provide a valid email address.' },
+        { status: 400 }
+      );
+    }
 
     // Convert form data to Zendesk ticket format
     console.log('[DEBUG] Converting form data to Zendesk ticket format');
-    const ticketData = convertFormDataToTicket(formData);
-    console.log('[DEBUG] Generated ticket data:', JSON.stringify(ticketData));
+    let ticketData = convertFormDataToTicket(formData);
+    
+    // Add upload tokens to the ticket if they exist
+    if (uploadTokens && uploadTokens.length > 0) {
+      console.log('[DEBUG] Adding file upload tokens to ticket:', uploadTokens);
+      // Make sure the ticket has a comment object
+      if (ticketData.ticket && ticketData.ticket.comment) {
+        // Add the upload tokens to the comment
+        ticketData.ticket.comment.uploads = uploadTokens;
+      }
+    }
+    
+    console.log('[DEBUG] Final ticket data:', JSON.stringify(ticketData));
 
     // Create the ticket
     const zendeskApiUrl = getZendeskApiUrl('tickets');
@@ -79,8 +100,17 @@ async function handleCreateTicket(request: NextRequest) {
     if (!createTicketResponse.ok) {
       const errorText = await createTicketResponse.text();
       console.error('[DEBUG] Zendesk API error:', errorText);
+      
+      // Try to parse error response for better error message
+      try {
+        const errorJson = JSON.parse(errorText);
+        console.error('[DEBUG] Parsed Zendesk API error:', JSON.stringify(errorJson, null, 2));
+      } catch (e) {
+        console.error('[DEBUG] Could not parse error response as JSON');
+      }
+      
       return NextResponse.json(
-        { error: `Failed to create ticket: ${createTicketResponse.statusText}` },
+        { error: `Failed to create ticket: ${createTicketResponse.statusText}`, details: errorText },
         { status: createTicketResponse.status }
       );
     }
@@ -89,11 +119,9 @@ async function handleCreateTicket(request: NextRequest) {
     console.log('[DEBUG] Zendesk ticket created successfully:', ticketResult);
     const ticketId = ticketResult.ticket?.id;
 
-    // If there are attachments, upload them to the ticket
-    if (attachments && attachments.length > 0 && ticketId) {
-      console.log('[DEBUG] Attachments found for ticket:', attachments);
-      // Skip attachments handling for now - we'll implement this in the next step
-      console.log(`Will upload ${attachments.length} attachments to ticket ${ticketId}`);
+    // Log information about the uploaded files if any
+    if (uploadTokens && uploadTokens.length > 0 && ticketId) {
+      console.log(`[DEBUG] Successfully created ticket ${ticketId} with ${uploadTokens.length} file attachments`);
     }
 
     // Return success response with ticket ID
@@ -136,28 +164,28 @@ ${formData.expectedResult}
 Actual Result:
 ${formData.actualResult}
 
-Severity: ${formData.severity}
-
 GDPR Consent: ${formData.gdprConsent ? 'Provided' : 'Not provided'}
 `;
 
   // Create the ticket object
   return {
     ticket: {
-      subject: `Bug Report: ${formData.actualResult.substring(0, 50)}...`,
+      subject: `Bug Report: ${formData.deviceOS} - ${formData.appVersion}`,
       comment: {
         body: description,
         // If there are attachments, they will be added separately
       },
-      priority: mapSeverityToPriority(formData.severity),
+      priority: zendeskConfig.defaultPriority,
       type: zendeskConfig.defaultType,
       source: zendeskConfig.defaultSource,
+      // Add tags to categorize the ticket
+      tags: ["ss8beta", "bug-report"],
       // Add group ID if configured
       ...(zendeskConfig.groupId && { group_id: parseInt(zendeskConfig.groupId) }),
-      // Add reporter as the requester
+      // Add reporter as the requester with trimmed email
       requester: {
-        name: formData.reporterName,
-        email: formData.reporterEmail
+        name: formData.reporterName.trim(),
+        email: formData.reporterEmail.trim()
       },
       // Custom fields could be added here
       custom_fields: [
@@ -171,12 +199,8 @@ GDPR Consent: ${formData.gdprConsent ? 'Provided' : 'Not provided'}
 // Map severity from the form to Zendesk priority
 function mapSeverityToPriority(severity: string): string {
   switch (severity.toLowerCase()) {
-    case 'critical':
-      return 'urgent';
     case 'high':
       return 'high';
-    case 'medium':
-      return 'normal';
     case 'low':
       return 'low';
     default:

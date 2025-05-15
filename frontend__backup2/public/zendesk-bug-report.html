@@ -3,27 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Zendesk Bug Report Form</title>
+  <title>SimCur Bug Report Form</title>
   <style>
-    body {
+    html, body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
       margin: 0;
       padding: 0;
       background-color: #0b1021;
       color: white;
+      height: 100%;
+      width: 100%;
+      overflow-x: hidden;
     }
     
     .container {
-      padding: 20px;
-      max-width: 800px;
-      margin: 0 auto;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
+      margin: 0;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
     }
     
     header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 40px;
+      padding: 20px;
+      background-color: #0f1428;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
     
     h1 {
@@ -36,12 +45,15 @@
     
     .back-button {
       display: inline-block;
-      padding: 8px 16px;
+      padding: 8px 20px;
       background-color: #242d4f;
       color: white;
       text-decoration: none;
-      border-radius: 8px;
+      border-radius: 9999px; /* Oval edges like the Bug Report Form button */
       transition: background-color 0.2s;
+      font-weight: 500; /* medium font weight */
+      font-size: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     }
     
     .back-button:hover {
@@ -49,12 +61,12 @@
     }
     
     .form-container {
-      max-width: 600px;
-      margin: 0 auto;
+      flex: 1;
+      width: 100%;
+      padding: 32px;
       background-color: #121833;
-      padding: 24px;
-      border-radius: 12px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      box-sizing: border-box;
+      overflow-y: auto;
     }
     
     .form-group {
@@ -78,8 +90,10 @@
     }
     
     textarea {
-      min-height: 100px;
+      min-height: 150px;
       resize: vertical;
+      font-size: 16px;
+      line-height: 1.5;
     }
     
     .submit-button {
@@ -121,6 +135,77 @@
     .checkbox-container label {
       margin-bottom: 0;
       font-size: 14px;
+    }
+    
+    /* File upload styles */
+    .file-upload-container {
+      border: 2px dashed #1e2642;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 16px 0;
+      transition: border-color 0.2s;
+      cursor: pointer;
+      text-align: center;
+    }
+    
+    .file-upload-container:hover {
+      border-color: #6d4aff;
+    }
+    
+    .file-upload-container svg {
+      margin-bottom: 10px;
+    }
+    
+    .file-input {
+      display: none;
+    }
+    
+    .file-list {
+      margin-top: 16px;
+      padding: 0;
+      list-style: none;
+    }
+    
+    .file-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      margin-bottom: 8px;
+      background-color: #0f1428;
+      border-radius: 4px;
+    }
+    
+    .file-name {
+      flex-grow: 1;
+      margin-right: 8px;
+      word-break: break-all;
+    }
+    
+    .file-size {
+      color: #8c8c8c;
+      font-size: 12px;
+      white-space: nowrap;
+      margin-right: 16px;
+    }
+    
+    .remove-button {
+      background: none;
+      border: none;
+      color: #dc3545;
+      cursor: pointer;
+      font-size: 16px;
+      padding: 4px 8px;
+    }
+    
+    .upload-icon {
+      display: block;
+      margin: 0 auto 10px;
+    }
+    
+    .dropzone-text {
+      color: #8c8c8c;
+      margin-bottom: 0;
     }
     
     .section-title {
@@ -166,78 +251,102 @@
 <body>
   <div class="container">
     <header>
-      <h1>Bug Report Form</h1>
-      <a href="/" class="back-button">Back to Chat</a>
+      <h1>SimCur Bug Report Form</h1>
+      <a href="/" class="back-button" style="padding: 8px 20px;">Back to Chat</a>
     </header>
     
     <div class="form-container">
       <form id="bugReportForm">
-        <!-- Reporter Information -->
-        <h3 class="section-title">Reporter Information</h3>
-        <div class="form-group">
-          <label for="reporterName">Your Name</label>
-          <input type="text" id="reporterName" name="reporterName" required>
-        </div>
-        
-        <div class="form-group">
-          <label for="reporterEmail">Your Email</label>
-          <input type="email" id="reporterEmail" name="reporterEmail" required>
-        </div>
-        
-        <!-- Device Information -->
-        <h3 class="section-title">Device Information</h3>
-        <div class="form-group">
-          <label for="appVersion">App Version (e.g. 1.2.3 (1234))</label>
-          <input type="text" id="appVersion" name="appVersion" required>
-        </div>
-        
-        <div class="form-group">
-          <label for="deviceOS">Device/OS (e.g. iPad Pro 11" M2, iPadOS 17.4)</label>
-          <input type="text" id="deviceOS" name="deviceOS" required>
-        </div>
-        
-        <!-- Bug Description -->
-        <h3 class="section-title">Bug Description</h3>
-        <div class="form-group">
-          <label for="stepsToReproduce">Steps to Reproduce (at least 3 steps)</label>
-          <textarea id="stepsToReproduce" name="stepsToReproduce" required></textarea>
-        </div>
-        
-        <div class="form-group">
-          <label for="expectedResult">Expected Result</label>
-          <textarea id="expectedResult" name="expectedResult" required></textarea>
-        </div>
-        
-        <div class="form-group">
-          <label for="actualResult">Actual Result</label>
-          <textarea id="actualResult" name="actualResult" required></textarea>
-        </div>
-        
-        <div class="form-group">
-          <label for="severity">Severity</label>
-          <select id="severity" name="severity" required>
-            <option value="">Select Severity</option>
-            <option value="Critical">Critical</option>
-            <option value="High">High</option>
-            <option value="Medium">Medium</option>
-            <option value="Low">Low</option>
-          </select>
-        </div>
-        
-        <!-- GDPR Consent -->
-        <div class="checkbox-container">
-          <input type="checkbox" id="gdprConsent" name="gdprConsent" required>
-          <label for="gdprConsent">I consent to storage of diagnostic data for troubleshooting purposes (GDPR)</label>
-        </div>
-        
-        <div id="resultMessage" class="result-message"></div>
-        
-        <!-- Submit Button -->
-        <div style="margin-top: 24px; text-align: right;">
-          <button type="submit" id="submitButton" class="submit-button">
-            Submit Bug Report
-          </button>
-        </div>
+        <div style="max-width: 1400px; margin: 0 auto;">
+          <div style="display: flex; flex-wrap: wrap; gap: 24px;">
+            <!-- Left column -->
+            <div style="flex: 1; min-width: 300px;">
+              <!-- Reporter Information -->
+              <h3 class="section-title">Reporter Information</h3>
+              <div class="form-group">
+                <label for="reporterName">Your Name</label>
+                <input type="text" id="reporterName" name="reporterName" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="reporterEmail">Your Email</label>
+                <input type="email" id="reporterEmail" name="reporterEmail" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" title="Please enter a valid email address (e.g., name@example.com)" required>
+              </div>
+              
+              <!-- Device Information -->
+              <h3 class="section-title">Device Information</h3>
+              <div class="form-group">
+                <label for="appVersion">App Version (e.g. 8.0.0 (1234)) See Help > scroll to the bottom</label>
+                <input type="text" id="appVersion" name="appVersion" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="deviceOS">Device/OS (e.g. iPad Pro 11" M2, iPadOS 17.4)</label>
+                <input type="text" id="deviceOS" name="deviceOS" required>
+              </div>
+              
+              <!-- Severity option removed -->
+              
+              <!-- Attachments moved here -->
+              <h3 class="section-title">Attachments (Optional)</h3>
+              <div class="file-upload-container" id="dropZone">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#6d4aff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="upload-icon">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="17 8 12 3 7 8"></polyline>
+                  <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                <p class="dropzone-text">Drag and drop files here, or click to select files</p>
+                <p class="dropzone-text" style="font-size: 12px; margin-top: 5px;">(Max 3 files, 50MB each)</p>
+                <input type="file" id="fileInput" class="file-input" multiple>
+              </div>
+              <ul class="file-list" id="fileList"></ul>
+            </div>
+            
+            <!-- Right column -->
+            <div style="flex: 1; min-width: 300px;">
+              <!-- Bug Description -->
+              <h3 class="section-title">Bug Description</h3>
+              <div class="form-group">
+                <label for="stepsToReproduce">Steps to Reproduce (at least 3 steps)</label>
+                <textarea id="stepsToReproduce" name="stepsToReproduce" required></textarea>
+              </div>
+              
+              <div class="form-group">
+                <label for="expectedResult">Expected Result</label>
+                <textarea id="expectedResult" name="expectedResult" required></textarea>
+              </div>
+              
+              <div class="form-group">
+                <label for="actualResult">Actual Result</label>
+                <textarea id="actualResult" name="actualResult" required></textarea>
+              </div>
+              
+              <!-- GDPR Consent and Submit moved up here -->
+              <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 16px;">
+                <!-- Information about how reports are used -->
+                <div style="margin-bottom: 16px;">
+                  <p style="margin: 0; color: #8c8c8c; line-height: 1.5;">
+                    Your report and associated email address are submitted directly to Simulation Curriculum Support and used to create an internal ticket for developer review. We may contact you to request more information. Thank you.
+                  </p>
+                </div>
+                
+                <!-- GDPR Consent -->
+                <div class="checkbox-container">
+                  <input type="checkbox" id="gdprConsent" name="gdprConsent" required>
+                  <label for="gdprConsent">I consent to storage of diagnostic data for troubleshooting purposes (GDPR)</label>
+                </div>
+                
+                <div id="resultMessage" class="result-message"></div>
+                
+                <!-- Submit Button -->
+                <div style="text-align: right;">
+                  <button type="submit" id="submitButton" class="submit-button">
+                    Submit Bug Report
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
       </form>
     </div>
   </div>
@@ -249,28 +358,230 @@
       const bugReportForm = document.getElementById('bugReportForm');
       const submitButton = document.getElementById('submitButton');
       const resultMessage = document.getElementById('resultMessage');
+      const dropZone = document.getElementById('dropZone');
+      const fileInput = document.getElementById('fileInput');
+      const fileList = document.getElementById('fileList');
+      
+      // Constants
+      const MAX_FILES = 3;
+      const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB in bytes
+      
+      // File storage
+      let files = [];
+      let fileTokens = [];
+      
+      // File upload handling
+      function initFileUpload() {
+        // When upload area is clicked, trigger file input
+        dropZone.addEventListener('click', function() {
+          fileInput.click();
+        });
+        
+        // When files are selected through the file input
+        fileInput.addEventListener('change', function(e) {
+          if (e.target.files && e.target.files.length > 0) {
+            handleFiles(Array.from(e.target.files));
+          }
+          this.value = null; // Reset so same file can be selected again
+        });
+        
+        // Set up drag and drop events
+        dropZone.addEventListener('dragover', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          dropZone.style.borderColor = '#6d4aff';
+        });
+        
+        dropZone.addEventListener('dragleave', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          dropZone.style.borderColor = '#1e2642';
+        });
+        
+        dropZone.addEventListener('drop', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          dropZone.style.borderColor = '#1e2642';
+          
+          if (e.dataTransfer.files.length > 0) {
+            handleFiles(Array.from(e.dataTransfer.files));
+          }
+        });
+        
+        // Prevent browser from opening files when dropped on document
+        document.addEventListener('dragover', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+        });
+        
+        document.addEventListener('drop', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+        });
+      }
+      
+      // Process the selected files
+      function handleFiles(newFiles) {
+        // Check if max files reached
+        if (files.length >= MAX_FILES) {
+          alert(`Maximum ${MAX_FILES} files allowed. Please remove some files before adding more.`);
+          return;
+        }
+        
+        // Limit to max number of files
+        const remainingSlots = MAX_FILES - files.length;
+        const filesToProcess = newFiles.slice(0, remainingSlots);
+        
+        // Check file sizes
+        for (const file of filesToProcess) {
+          if (file.size > MAX_FILE_SIZE) {
+            alert(`File ${file.name} exceeds the maximum size of 50MB.`);
+            return;
+          }
+          
+          // Add to files array
+          const fileId = Date.now() + '-' + Math.random().toString(36).substring(2, 9);
+          files.push({
+            id: fileId,
+            file: file,
+            token: null
+          });
+          
+          // Add to UI
+          addFileToList(fileId, file);
+          
+          // Upload to Zendesk
+          uploadFileToZendesk(fileId, file);
+        }
+      }
+      
+      // Add file to the UI list
+      function addFileToList(fileId, file) {
+        const li = document.createElement('li');
+        li.className = 'file-item';
+        li.dataset.fileId = fileId;
+        
+        li.innerHTML = `
+          <span class="file-name">${file.name}</span>
+          <span class="file-size">${formatFileSize(file.size)}</span>
+          <button type="button" class="remove-button" data-file-id="${fileId}">&times;</button>
+        `;
+        
+        fileList.appendChild(li);
+        
+        // Add remove button handler
+        li.querySelector('.remove-button').addEventListener('click', function() {
+          removeFile(fileId);
+        });
+      }
+      
+      // Remove file from list and state
+      function removeFile(fileId) {
+        // Remove from files array
+        files = files.filter(f => f.id !== fileId);
+        
+        // Remove from file tokens if it was uploaded
+        fileTokens = fileTokens.filter(t => t.fileId !== fileId);
+        
+        // Remove from DOM
+        const li = fileList.querySelector(`li[data-file-id="${fileId}"]`);
+        if (li) {
+          li.remove();
+        }
+      }
+      
+      // Format file size for display
+      function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+      }
+      
+      // Upload file to Zendesk
+      async function uploadFileToZendesk(fileId, file) {
+        try {
+          const fileItem = document.querySelector(`li[data-file-id="${fileId}"]`);
+          fileItem.querySelector('.file-size').textContent = 'Uploading...';
+          
+          // Create form data for file upload
+          const formData = new FormData();
+          formData.append('file', file);
+          formData.append('filename', file.name);
+          
+          // Upload to Zendesk API proxy
+          const response = await fetch('/api/zendesk/upload-attachment', {
+            method: 'POST',
+            body: formData
+          });
+          
+          if (!response.ok) {
+            throw new Error(`Upload failed: ${response.status} ${response.statusText}`);
+          }
+          
+          const result = await response.json();
+          console.log('File uploaded successfully:', result);
+          
+          // Store the token for later use
+          const index = files.findIndex(f => f.id === fileId);
+          if (index !== -1) {
+            files[index].token = result.token;
+            fileTokens.push({
+              fileId: fileId,
+              token: result.token
+            });
+          }
+          
+          // Update UI
+          fileItem.querySelector('.file-size').textContent = `${formatFileSize(file.size)} ✓`;
+          fileItem.style.borderLeft = '3px solid #28a745';
+          
+        } catch (error) {
+          console.error('Error uploading file:', error);
+          
+          // Update UI to show error
+          const fileItem = document.querySelector(`li[data-file-id="${fileId}"]`);
+          fileItem.querySelector('.file-size').textContent = 'Upload failed';
+          fileItem.style.borderLeft = '3px solid #dc3545';
+        }
+      }
+      
+      // Initialize file upload
+      initFileUpload();
       
       // Form submission handler
       bugReportForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         
-        // Get form data
+        // Get form data with trim to remove whitespace
         const formData = {
-          reporterName: document.getElementById('reporterName').value,
-          reporterEmail: document.getElementById('reporterEmail').value,
-          appVersion: document.getElementById('appVersion').value,
-          deviceOS: document.getElementById('deviceOS').value,
-          stepsToReproduce: document.getElementById('stepsToReproduce').value,
-          expectedResult: document.getElementById('expectedResult').value,
-          actualResult: document.getElementById('actualResult').value,
-          severity: document.getElementById('severity').value,
+          reporterName: document.getElementById('reporterName').value.trim(),
+          reporterEmail: document.getElementById('reporterEmail').value.trim(), // Trim whitespace from email
+          appVersion: document.getElementById('appVersion').value.trim(),
+          deviceOS: document.getElementById('deviceOS').value.trim(),
+          stepsToReproduce: document.getElementById('stepsToReproduce').value.trim(),
+          expectedResult: document.getElementById('expectedResult').value.trim(),
+          actualResult: document.getElementById('actualResult').value.trim(),
+          severity: "Medium", // Set a default severity since the field was removed
           gdprConsent: document.getElementById('gdprConsent').checked
         };
+        
+        // Additional email validation
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(formData.reporterEmail)) {
+          resultMessage.innerHTML = `
+            <div class="error-message">
+              <p>Please provide a valid email address (e.g., name@example.com).</p>
+            </div>
+          `;
+          return;
+        }
         
         // Validate required fields
         const requiredFields = [
           'reporterName', 'reporterEmail', 'appVersion', 'deviceOS',
-          'stepsToReproduce', 'expectedResult', 'actualResult', 'severity'
+          'stepsToReproduce', 'expectedResult', 'actualResult'
         ];
         
         for (const field of requiredFields) {
@@ -301,13 +612,19 @@
         try {
           console.log('Submitting bug report to Zendesk:', formData);
           
+          // Get file upload tokens
+          const uploadTokens = fileTokens.map(t => t.token).filter(Boolean);
+          
           // Submit to Zendesk API endpoint
           const response = await fetch('/api/zendesk/create-ticket', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ formData })
+            body: JSON.stringify({ 
+              formData,
+              uploadTokens
+            })
           });
           
           // Handle response
@@ -334,11 +651,11 @@
                 <ul style="list-style-type: none; padding-left: 0;">
                   <li><strong>Ticket ID:</strong> ${responseData.ticket_id || 'N/A'}</li>
                   <li><strong>Submitted by:</strong> ${formData.reporterName}</li>
-                  <li><strong>Severity:</strong> ${formData.severity}</li>
+                  <li><strong>Attachments:</strong> ${uploadTokens.length > 0 ? `${uploadTokens.length} file(s) attached` : 'None'}</li>
                 </ul>
                 <p style="margin-top: 16px;">Our support team has been notified and will investigate this issue. You'll receive email updates at <strong>${formData.reporterEmail}</strong> as we work on your report.</p>
               </div>
-              <a href="/" class="back-button">Return to Home</a>
+              <a href="/" class="back-button" style="border-radius: 9999px; display: inline-block; padding: 8px 20px; font-weight: 500; font-size: 16px;">Return to Home</a>
             </div>
           `;
           
@@ -353,7 +670,8 @@
           resultMessage.innerHTML = `
             <div class="error-message">
               <p><strong>Error submitting bug report:</strong> ${error.message}</p>
-              <p>Please try again later or contact support directly.</p>
+              <p>This could be due to invalid input data or a temporary issue. Please double-check your information and try again.</p>
+              <p>If the issue persists, please contact support directly.</p>
             </div>
           `;
         }

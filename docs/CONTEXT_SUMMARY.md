@@ -92,3 +92,8 @@ Here are the key changes in 1-3 concise bullet points:
   - `create-ticket/route.ts`: Handles the creation of Zendesk tickets from the bug report form data.
   - `create-ticket/attach/route.ts`: Handles the attachment of files to the Zendesk ticket.
   - `uploa
+Here are the key changes in 1-3 concise bullet points:
+
+- The bug report form now has more detailed and helpful prompts for the user, such as providing instructions on where to find the app version and device information.
+- The file upload functionality has been enhanced, including a drag-and-drop area, file size validation, and better error handling.
+- The submission process has been updated to use the Zendesk API for creating tickets, with support for attaching the user's files to the ticket.

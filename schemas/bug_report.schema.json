@@ -25,7 +25,7 @@
     },
     "appVersion": {
       "type": "string",
-      "description": "App version/build (e.g., 1.2.3 (1234))",
+      "description": "App version/build (e.g., 8.0.0 (1234)) - can be found in Help > scroll to bottom",
       "pattern": "^\\d+\\.\\d+\\.\\d+\\s\\(\\d+\\)$"
     },
     "deviceOS": {
