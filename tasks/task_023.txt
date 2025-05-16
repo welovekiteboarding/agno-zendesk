@@ -1,0 +1,131 @@
+# Task ID: 23
+# Title: Implement AstraDB RAG Integration for Zendesk Support
+# Status: done
+# Dependencies: 21
+# Priority: high
+# Description: Develop a Retrieval-Augmented Generation solution using AstraDB to provide a knowledge base for the Agno agent in the Zendesk support interface.
+# Details:
+This task involves creating a complete RAG pipeline integrated with AstraDB and the existing Agno agent system in Zendesk. Key components include:
+
+1. **AstraDB Connection Setup**:
+   - Configure secure connection to AstraDB using appropriate authentication credentials
+   - Implement connection pooling for efficient database access
+   - Create error handling for connection failures with appropriate fallbacks
+
+2. **Vector Search Implementation**:
+   - Implement text embedding functionality using an appropriate embedding model (e.g., OpenAI embeddings)
+   - Create vector search queries with configurable similarity thresholds
+   - Implement caching for frequently accessed vector searches to improve performance
+
+3. **Agno Agent Integration**:
+   - Extend the existing Agno agent to query the RAG system before generating responses
+   - Implement a context window management system to include retrieved information
+   - Create a confidence scoring mechanism to determine when to use retrieved information
+
+4. **Document Loading Pipeline**:
+   - Build a document processing pipeline that can ingest various formats (PDF, DOCX, HTML, etc.)
+   - Implement chunking strategies for optimal retrieval performance
+   - Create metadata extraction for improved search relevance
+   - Develop an indexing system for newly added documents
+
+5. **Interface with Unified Chat**:
+   - Ensure the RAG system integrates with the unified chat interface from Task 21
+   - Add UI elements to display source documents when information is retrieved
+   - Implement feedback mechanisms to improve retrieval quality over time
+
+# Test Strategy:
+Testing for this RAG integration should be thorough and cover multiple aspects of the system:
+
+1. **Unit Tests**:
+   - Test AstraDB connection handling with mocked responses
+   - Verify embedding generation functions correctly process text inputs
+   - Test document chunking logic with various document types and sizes
+   - Validate vector search functions return expected results for known queries
+
+2. **Integration Tests**:
+   - Test end-to-end document processing pipeline with sample documents
+   - Verify correct storage and retrieval of embedded documents in AstraDB
+   - Test integration with the Agno agent using simulated queries
+   - Validate the system handles connection failures gracefully
+
+3. **Performance Tests**:
+   - Measure response time for various query complexities
+   - Test system under load with concurrent requests
+   - Verify caching mechanisms improve performance for repeated queries
+
+4. **Functional Tests**:
+   - Create a test set of common support questions and verify retrieval accuracy
+   - Test with edge cases like very short queries or ambiguous questions
+   - Verify source attribution is correct for retrieved information
+   - Test with multilingual content if applicable
+
+5. **User Acceptance Testing**:
+   - Have support staff test the system with real-world scenarios
+   - Collect metrics on retrieval relevance and accuracy
+   - Validate that the UI elements for displaying sources are intuitive and helpful
+
+# Subtasks:
+## 1. Implement AstraDB Connection and Document Loading Pipeline [done]
+### Dependencies: None
+### Description: Set up the AstraDB connection infrastructure and create a document processing pipeline that can ingest, chunk, and store documents in the vector database.
+### Details:
+Implementation steps:
+1. Configure AstraDB client with authentication credentials using environment variables for security
+2. Implement connection pooling mechanism with configurable pool size and timeout settings
+3. Create robust error handling for connection failures with exponential backoff retry logic
+4. Develop document loaders for multiple formats (PDF, DOCX, HTML) using appropriate libraries
+5. Implement text chunking strategies with configurable chunk size and overlap parameters
+6. Create metadata extraction functions to capture document source, date, and section information
+7. Build an indexing system that tracks document versions and update timestamps
+8. Implement a batch processing mechanism for efficient document ingestion
+
+Testing approach:
+- Unit tests for connection handling with mocked AstraDB responses
+- Integration tests with a test AstraDB instance
+- Test document loading with various file formats and sizes
+- Verify chunking strategies with different document types
+- Measure indexing performance with large document sets
+
+## 2. Develop Vector Search and Embedding Functionality [done]
+### Dependencies: 23.1
+### Description: Implement text embedding generation and vector search capabilities, including caching mechanisms for performance optimization.
+### Details:
+Implementation steps:
+1. Integrate an embedding model (OpenAI embeddings) with appropriate dimension settings
+2. Create a vector embedding generation service with batching capabilities for efficiency
+3. Implement vector search queries with configurable similarity thresholds and result limits
+4. Develop a caching layer for frequently accessed embeddings using Redis or an in-memory solution
+5. Create cache invalidation strategies based on time and usage patterns
+6. Implement logging for search performance metrics and hit/miss ratios
+7. Build relevance scoring functions to rank search results
+8. Create fallback strategies for when vector search returns low confidence results
+
+Testing approach:
+- Unit tests for embedding generation with sample texts
+- Performance tests for caching mechanisms with simulated high-load scenarios
+- Integration tests for vector search with pre-populated test data
+- Accuracy tests comparing search results against expected outcomes
+- Benchmark tests for response times under various load conditions
+
+## 3. Integrate RAG System with Agno Agent and Zendesk Interface [done]
+### Dependencies: 23.1, 23.2
+### Description: Connect the RAG system to the existing Agno agent and Zendesk unified chat interface, including UI elements for displaying retrieved information.
+### Details:
+Implementation steps:
+1. Extend the Agno agent to query the RAG system before generating responses
+2. Implement a context window management system to include retrieved information within token limits
+3. Create a confidence scoring mechanism to determine when to use retrieved vs. generated information
+4. Integrate with the unified chat interface from Task 21
+5. Add UI components to display source documents and reference links when information is retrieved
+6. Implement user feedback collection (thumbs up/down) on retrieval quality
+7. Create an analytics dashboard for monitoring RAG system performance
+8. Develop A/B testing capability to compare different retrieval strategies
+
+Testing approach:
+- Unit tests for agent-RAG integration logic
+- Integration tests with the full Zendesk environment
+- UI tests for source document display functionality
+- User acceptance testing with support team members
+- End-to-end tests simulating complete customer support scenarios
+- Performance testing under production-like conditions
+

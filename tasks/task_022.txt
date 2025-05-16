@@ -1,7 +1,7 @@
 # Task ID: 22
 # Title: Implement Zendesk Ticket Creation for Bug Report Form
 # Status: pending
-# Dependencies: [21]
+# Dependencies: 21
 # Priority: high
 # Description: Create a Zendesk integration specifically for the static Bug Report Form (bug-report.html) to convert form submissions into Zendesk tickets.
 # Details:
@@ -76,15 +76,8 @@ Create a server-side proxy endpoint that securely handles Zendesk authentication
 - Implement request validation
 - Create detailed error logging
 
-### Test Strategy:
-- Test authentication with valid and invalid credentials
-- Verify proper error handling for authentication failures
-- Test rate limiting functionality
-- Check security headers and CORS configuration
-- Verify secure credential handling
-
 ## 2. Add File Upload to Zendesk Functionality [pending]
-### Dependencies: [1]
+### Dependencies: 22.1
 ### Description: Extend the existing file upload in the Bug Report Form to prepare files for Zendesk attachments
 ### Details:
 Modify the bug-report.html file upload functionality to:
@@ -96,15 +89,8 @@ Modify the bug-report.html file upload functionality to:
 - Maintain the existing user experience
 - Ensure all tokens are properly stored for ticket creation
 
-### Test Strategy:
-- Test file uploads with various file types and sizes
-- Verify proper handling of upload failures
-- Test token retrieval and storage
-- Confirm UI updates correctly during multi-stage upload
-- Validate end-to-end upload process
-
 ## 3. Implement Ticket Creation from Form Data [pending]
-### Dependencies: [1, 2]
+### Dependencies: 22.1, 22.2
 ### Description: Create functionality to submit form data as a Zendesk ticket
 ### Details:
 Update the bug-report.html submit functionality to:
@@ -117,15 +103,8 @@ Update the bug-report.html submit functionality to:
 - Handle the response and provide user feedback
 - Save the ticket ID and URL for confirmation
 
-### Test Strategy:
-- Test with various form data combinations
-- Verify field mapping is correctly applied
-- Test with and without attachments
-- Confirm error handling for API failures
-- Validate created tickets in Zendesk match expected format
-
 ## 4. Create Ticket Confirmation UI [pending]
-### Dependencies: [3]
+### Dependencies: 22.3
 ### Description: Enhance the Bug Report Form to show successful ticket creation details
 ### Details:
 Update the submission success screen to:
@@ -137,15 +116,8 @@ Update the submission success screen to:
 - Show appropriate branding and styling
 - Ensure mobile-friendly layout
 
-### Test Strategy:
-- Test UI appearance after successful submission
-- Verify ticket links work correctly
-- Test on various devices and screen sizes
-- Check for proper handling of long text values
-- Validate the user experience flow
-
 ## 5. Add Error Handling and Recovery [pending]
-### Dependencies: [3, 4]
+### Dependencies: 22.3, 22.4
 ### Description: Implement robust error handling and recovery for the Zendesk integration
 ### Details:
 Enhance the Bug Report Form with:
@@ -157,9 +129,3 @@ Enhance the Bug Report Form with:
 - Detailed client-side error logging
 - Optional error reporting to administrators
 
-### Test Strategy:
-- Test with simulated API failures
-- Verify appropriate error messages
-- Test retry functionality
-- Check that form data is preserved
-- Validate the user experience during error scenarios

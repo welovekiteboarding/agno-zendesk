@@ -1,0 +1,74 @@
+# Task ID: 24
+# Title: Multi-Database RAG Architecture with Intelligent Routing
+# Status: in-progress
+# Dependencies: None
+# Priority: high
+# Description: Create a sophisticated multi-database RAG architecture with intelligent routing for the Agno agent. The system will integrate with 5 different AstraDB collections, with the agent using reasoning capabilities to determine which database(s) to query based on the user's question.
+# Details:
+
+
+# Test Strategy:
+
+
+# Subtasks:
+## 1. Fix AstraDB Connector and Create Base Multi-Database Architecture [pending]
+### Dependencies: None
+### Description: Fix the AstraDB connector parameter issue and implement the foundational multi-database architecture that can connect to all 5 AstraDB collections.
+### Details:
+Implementation details:
+1. Debug and fix the AstraDB connector parameter issue by examining the current error logs and ensuring proper authentication parameters are being passed.
+2. Create a unified connector class that can handle connections to multiple AstraDB collections (General, SkySafari, Starry Night, Celestron, and User Queries).
+3. Implement a configuration system that stores connection details for each collection.
+4. Create a basic routing mechanism that can query a specific collection based on an explicit collection name parameter.
+5. Test the connector with each collection individually to ensure proper connection and data retrieval.
+6. Implement error handling for connection failures and query timeouts.
+
+Testing approach:
+- Unit test the connector with mock AstraDB responses
+- Integration test with actual AstraDB collections
+- Test error handling by simulating connection failures
+
+## 2. Implement Domain Classification and Intelligent Routing Logic [pending]
+### Dependencies: 24.1
+### Description: Develop the domain classification system in the Leader Agent to analyze user queries and determine which specialized collections to query, with appropriate routing logic.
+### Details:
+Implementation details:
+1. Design and implement a domain classifier that can categorize user queries into relevant domains (astronomy software, telescope hardware, general astronomy knowledge, etc.).
+2. Train or fine-tune the classifier on a dataset of sample queries labeled with appropriate domains.
+3. Integrate the classifier with the Leader Agent's reasoning system.
+4. Implement routing logic that maps classified domains to specific AstraDB collections:
+   - SkySafari queries → SkySafari collection
+   - Starry Night queries → Starry Night collection
+   - Telescope hardware queries → Celestron collection
+   - General astronomy → General collection
+   - User history → User Queries collection
+5. Add logic for multi-collection querying when a question spans multiple domains.
+6. Implement query transformation to optimize retrieval for each specific collection.
+
+Testing approach:
+- Test classification accuracy on a validation set of queries
+- End-to-end testing with sample user questions
+- Evaluate routing decisions against expected collection choices
+
+## 3. Implement Post-Retrieval Processing and Clarification Mechanism [pending]
+### Dependencies: 24.1, 24.2
+### Description: Add post-retrieval filtering, relevance scoring, and an optional clarification mechanism for ambiguous queries to improve response quality.
+### Details:
+Implementation details:
+1. Implement post-retrieval filtering to remove irrelevant or low-quality results based on semantic similarity and content analysis.
+2. Develop a domain relevance scoring system that ranks retrieved documents based on their relevance to the identified domain.
+3. Create a clarification mechanism that triggers when:
+   - The domain classification confidence is below a threshold
+   - The query could belong to multiple domains with similar confidence
+   - Initial retrieval results have low relevance scores
+4. Design clarification prompts that ask users specific questions to disambiguate their intent.
+5. Implement a feedback loop where clarification responses refine the domain classification and query routing.
+6. Update the documentation to reflect the complete intelligent routing architecture including all components and their interactions.
+7. Create visualization diagrams of the data flow through the system.
+
+Testing approach:
+- Test filtering effectiveness by measuring precision/recall on test queries
+- User testing of the clarification mechanism with ambiguous queries
+- End-to-end testing of the complete RAG system with various query types
+- Performance testing to ensure response times remain acceptable
+

@@ -1,0 +1,144 @@
+# Task ID: 25
+# Title: Implement Agent-Driven Multi-Database RAG Architecture with Agno Native Capabilities
+# Status: pending
+# Dependencies: 26
+# Priority: high
+# Description: Develop a sophisticated RAG implementation that utilizes Agno's agent capabilities (planners, leaders, reflection, research) to intelligently route queries across 5 AstraDB collections and synthesize comprehensive responses.
+# Details:
+This task requires implementing a multi-database RAG architecture leveraging Agno's existing agent frameworks and patterns from cookbook examples. The architecture should:
+
+1. Use Agno's planner capabilities to analyze incoming user queries and determine which of the 5 AstraDB collections are most relevant to address the query
+2. Implement leader agent patterns to orchestrate the retrieval operations across the selected databases
+3. Utilize reflection capabilities to evaluate the quality and relevance of retrieved information
+4. Employ research agent patterns to synthesize information from multiple sources into coherent responses
+5. Follow the existing code structures and patterns in the Agno cookbook examples rather than creating new frameworks
+6. Implement a routing mechanism that considers:
+   - Query intent classification
+   - Semantic similarity to collection content domains
+   - Historical performance of collections for similar queries
+7. Create a result synthesis component that:
+   - Removes redundant information from multiple collections
+   - Resolves conflicting information with appropriate reasoning
+   - Structures responses based on information relevance and completeness
+8. Implement appropriate error handling and fallback strategies when specific collections are unavailable
+9. Add telemetry to track which collections are being used for different query types to enable future optimization
+
+The implementation should be modular enough to allow adding or removing collections without significant code changes.
+
+# Test Strategy:
+Testing should verify the effectiveness of the multi-database RAG architecture through these methods:
+
+1. Unit Tests:
+   - Test the query analysis component with various query types to ensure correct database selection
+   - Verify the routing logic correctly identifies which collections to query based on different inputs
+   - Test the synthesis component with known conflicting information to ensure proper resolution
+
+2. Integration Tests:
+   - Create a test suite with 25+ diverse queries spanning topics covered by all 5 collections
+   - Verify that appropriate collections are queried for each test case
+   - Measure response synthesis quality through automated metrics (coherence, relevance, factuality)
+
+3. Performance Tests:
+   - Measure latency for different query patterns (single collection vs. multi-collection queries)
+   - Test system under load to ensure performance degradation is graceful
+   - Verify resource usage remains within acceptable bounds during peak operations
+
+4. Simulation Tests:
+   - Simulate collection unavailability to verify fallback mechanisms work correctly
+   - Test with deliberately ambiguous queries to verify the system makes reasonable collection choices
+
+5. Validation Metrics:
+   - Track correct collection selection rate (compared to human-labeled ground truth)
+   - Measure information completeness in synthesized responses
+   - Calculate redundancy and conflict resolution effectiveness
+
+All tests should include specific examples covering each of the 5 collections to ensure comprehensive coverage.
+
+# Subtasks:
+## 1. Set Up Multi-Database AstraDB Configuration and Query Analysis System [pending]
+### Dependencies: None
+### Description: Configure the 5 AstraDB collections and implement the query analysis system that will determine which collections to query based on intent classification and semantic similarity.
+### Details:
+Implementation steps:
+1. Configure connection settings for all 5 AstraDB collections following Agno cookbook patterns
+2. Implement a configuration manager to store and retrieve collection metadata (domain focus, query types handled, etc.)
+3. Create a query intent classifier using Agno's planner agent capabilities that:
+   - Analyzes incoming user queries
+   - Classifies query intent into predefined categories
+   - Maps intents to relevant collections
+4. Implement a semantic similarity module that:
+   - Embeds user queries using the same embedding model as the collections
+   - Calculates similarity scores between the query and each collection's domain description
+   - Ranks collections by relevance score
+5. Develop a collection selection algorithm that combines intent classification and similarity scores
+6. Create unit tests for each component:
+   - Test connection to all collections
+   - Verify intent classification with sample queries
+   - Validate semantic similarity scoring
+   - Ensure collection selection works for various query types
+7. Implement logging for query analysis decisions to support future telemetry
+
+## 2. Implement Leader Agent for Multi-Database Retrieval Orchestration [pending]
+### Dependencies: 25.1
+### Description: Create a leader agent that orchestrates the retrieval operations across the selected databases, including handling concurrent queries, error handling, and fallback strategies.
+### Details:
+Implementation steps:
+1. Extend Agno's leader agent pattern to create a RAGLeaderAgent class that:
+   - Takes the collection selection output from subtask 1
+   - Orchestrates parallel retrieval operations across selected collections
+   - Manages timeouts and concurrency
+2. Implement collection-specific retrieval agents that:
+   - Connect to their assigned AstraDB collection
+   - Execute semantic searches with appropriate parameters
+   - Format retrieved documents consistently
+3. Create an error handling and fallback system that:
+   - Detects when collections are unavailable or return errors
+   - Implements retry logic with backoff
+   - Falls back to alternative collections when primary ones fail
+   - Logs errors for monitoring
+4. Develop a retrieval results collector that:
+   - Aggregates results from all queried collections
+   - Normalizes document formats from different sources
+   - Applies initial deduplication
+5. Implement a reflection agent that evaluates retrieved results for:
+   - Relevance to the original query
+   - Coverage of different aspects of the query
+   - Identification of information gaps
+6. Create unit and integration tests that:
+   - Verify parallel retrieval works correctly
+   - Test error handling with simulated failures
+   - Validate the reflection agent's evaluation
+7. Add telemetry to track retrieval performance per collection
+
+## 3. Develop Response Synthesis and Telemetry System [pending]
+### Dependencies: 25.1, 25.2
+### Description: Create a research agent that synthesizes information from multiple collections into coherent responses, resolves conflicts, and implements telemetry for tracking system performance.
+### Details:
+Implementation steps:
+1. Implement a ResearchAgent class based on Agno patterns that:
+   - Takes aggregated retrieval results from the leader agent
+   - Analyzes information for redundancies and conflicts
+   - Synthesizes a comprehensive response
+2. Create an information synthesis module that:
+   - Removes duplicate information across collection results
+   - Identifies and resolves conflicting information with reasoning
+   - Structures information by relevance and completeness
+   - Cites sources appropriately
+3. Implement a response generator that:
+   - Formats the synthesized information into a coherent response
+   - Adapts to different response formats based on query intent
+   - Handles cases where information is incomplete
+4. Develop a comprehensive telemetry system that tracks:
+   - Which collections were queried for each request
+   - Retrieval performance metrics per collection
+   - Synthesis quality metrics
+   - End-to-end processing time
+5. Create a feedback mechanism to store query-collection-performance data for future optimization
+6. Implement an integration layer that connects the entire system to Agno's existing agent infrastructure
+7. Develop end-to-end tests that:
+   - Verify the complete flow from query to response
+   - Test with various query types across different domains
+   - Validate telemetry data collection
+   - Ensure the system degrades gracefully with partial collection failures
+8. Create documentation for the overall architecture and component interactions
+

@@ -448,7 +448,10 @@
       "details": "This task involves creating a unified chat interface that brings together all the different components and functionality that are currently spread across multiple implementations. The goal is to have a single, cohesive chat experience that incorporates:\n\n1. **Unified Component Architecture**:\n   - Create a new `UnifiedChatUI` component that combines the best features of existing implementations\n   - Ensure proper integration with the Agent Registry for agent management and handoffs\n   - Configure the component to work correctly with the UI Instruction Protocol\n   - Support all required UI components including file uploads, forms, and dynamic elements\n\n2. **Routing and Navigation**:\n   - Update the application routing to use the unified component as the primary interface\n   - Implement redirects from legacy test URLs to the main chat interface\n   - Ensure deep linking and URL parameter support for testing specific features\n\n3. **Integration Testing**:\n   - Test the complete conversation flow from initial greeting to form submission\n   - Verify agent handoffs function correctly within the unified interface\n   - Ensure file uploads, scanning, and submission work properly\n   - Test with various input scenarios to validate robustness\n\n4. **Documentation and Cleanup**:\n   - Document the unified architecture and component interaction\n   - Remove or deprecate redundant components and code\n   - Update any references or documentation to reflect the new unified approach\n\nThe implementation should provide a seamless user experience while maintaining all the functionality that was previously spread across different components. It should leverage the Agent Registry for conversation management and the UI Instruction Protocol for dynamic interface updates.",
       "testStrategy": "Testing should be comprehensive to ensure the unified interface works correctly in all scenarios:\n\n1. **Component Integration Testing**:\n   - Verify the UnifiedChatUI correctly integrates with the Agent Registry\n   - Test UI Instruction handling for all supported component types\n   - Ensure state management correctly handles instruction sequences and priorities\n\n2. **Conversation Flow Testing**:\n   - Test complete conversation flows from initial greeting to submission\n   - Verify agent handoffs work correctly (Agno → Form Collector)\n   - Test error recovery and resumption of interrupted conversations\n\n3. **File Upload Testing**:\n   - Verify file upload UI appears at the appropriate time in the conversation\n   - Test file uploads with various file types and sizes\n   - Confirm scanning status updates correctly\n   - Verify submission with attachments works properly\n\n4. **Routing and Navigation Testing**:\n   - Test all routes to ensure they lead to the unified interface\n   - Verify redirects from legacy test URLs work correctly\n   - Test deep linking with URL parameters for specific features\n\n5. **Performance Testing**:\n   - Measure component render performance\n   - Test with long conversations to ensure responsiveness\n   - Verify memory usage remains stable during extended use\n\n6. **Cross-browser Testing**:\n   - Test on multiple browsers (Chrome, Firefox, Safari)\n   - Verify on mobile devices and responsive layouts\n\nDocument all testing with screenshots and validation steps to demonstrate the functionality works as expected across all scenarios.",
       "status": "done",
-      "dependencies": [19, 20],
+      "dependencies": [
+        19,
+        20
+      ],
       "priority": "high",
       "subtasks": [
         {
@@ -464,7 +467,9 @@
           "id": 2,
           "title": "Implement API Integration for Agno Chat",
           "description": "Connect the UnifiedChatUI component to the Agno chat backend API and ensure proper communication",
-          "dependencies": [1],
+          "dependencies": [
+            1
+          ],
           "details": "Implement the API integration layer for the UnifiedChatUI component, ensuring proper communication with the backend services:\n- Configure API endpoints for the Agno chat service\n- Implement proper session management and conversation state preservation\n- Handle authentication and security requirements\n- Add error handling for API failures with retry logic\n- Implement proper response parsing and state updates\n- Ensure file upload API integration works correctly\n- Add logging for debugging and monitoring",
           "status": "done",
           "testStrategy": "- Test API communication with mock endpoints\n- Verify proper handling of successful and failed API calls\n- Test session persistence across page reloads\n- Confirm error handling and retry logic functions correctly"
@@ -473,7 +478,9 @@
           "id": 3,
           "title": "Update Routing and Navigation",
           "description": "Update application routing to use the unified component as the primary interface and implement redirects",
-          "dependencies": [1],
+          "dependencies": [
+            1
+          ],
           "details": "Update the application's routing configuration to use the new UnifiedChatUI component as the primary interface:\n- Modify app/page.tsx to use the UnifiedChatUI component\n- Add redirects from /agno-chat and /chat-with-registry to the main route\n- Implement URL parameter support for debug mode and testing\n- Update any navigation components to point to the unified interface\n- Ensure proper handling of direct URL access\n- Add route guards if needed for authentication\n- Support deep linking for specific conversation states",
           "status": "done",
           "testStrategy": "- Test all routes to verify they correctly lead to the unified interface\n- Verify redirects work as expected\n- Test URL parameter handling\n- Confirm direct URL access works properly\n- Verify route transitions preserve state appropriately"
@@ -482,7 +489,11 @@
           "id": 4,
           "title": "Implement Comprehensive Testing Suite",
           "description": "Create a comprehensive testing suite for the unified chat interface to ensure functionality across various scenarios",
-          "dependencies": [1, 2, 3],
+          "dependencies": [
+            1,
+            2,
+            3
+          ],
           "details": "Develop a comprehensive testing suite to validate the unified chat interface:\n- Create test scenarios for complete conversation flows\n- Implement tests for agent handoffs and context preservation\n- Add tests for file upload functionality\n- Create tests for error conditions and recovery\n- Implement cross-browser testing setup\n- Add accessibility testing\n- Test performance under various conditions\n- Include security testing for inputs and API calls",
           "status": "pending",
           "testStrategy": "- Run automated test suite covering all functionality\n- Perform manual testing for complex user flows\n- Test across multiple browsers and devices\n- Conduct performance testing with large conversations\n- Verify accessibility compliance with WCAG standards"
@@ -491,7 +502,12 @@
           "id": 5,
           "title": "Documentation and Cleanup",
           "description": "Document the unified architecture and clean up redundant code",
-          "dependencies": [1, 2, 3, 4],
+          "dependencies": [
+            1,
+            2,
+            3,
+            4
+          ],
           "details": "Document the unified chat architecture and remove redundant code:\n- Create comprehensive documentation of the UnifiedChatUI architecture\n- Document the component hierarchy and interaction patterns\n- Create a guide for extending the unified interface\n- Remove or deprecate redundant components and code\n- Update import references to use the new unified component\n- Clean up any duplicate functionality\n- Add inline code documentation\n- Update existing documentation to reference the unified approach",
           "status": "pending",
           "testStrategy": "- Review documentation with team members\n- Verify documentation accuracy by having a developer follow the guides\n- Confirm that removal of redundant code doesn't break functionality\n- Ensure all references to old components are updated"
@@ -503,7 +519,9 @@
       "title": "Implement Zendesk Ticket Creation for Bug Report Form",
       "description": "Create a Zendesk integration specifically for the static Bug Report Form (bug-report.html) to convert form submissions into Zendesk tickets.",
       "status": "pending",
-      "dependencies": [21],
+      "dependencies": [
+        21
+      ],
       "priority": "high",
       "details": "This task involves implementing Zendesk ticket creation functionality specifically for the static Bug Report Form (bug-report.html). When a user fills out and submits the standalone form, it should create a properly formatted ticket in Zendesk with any attachments. Note that this implementation is focused only on the static form, NOT the conversational Form Collector Agent.\n\n1. **Zendesk API Integration**:\n   - Create a JavaScript-based Zendesk client for authentication and API operations\n   - Implement client-side file upload functionality with token management\n   - Implement ticket creation with proper error handling\n   - Support mapping of form fields to Zendesk ticket fields\n\n2. **Ticket Formatting and Assignment**:\n   - Format bug report form content into proper Zendesk ticket structure\n   - Add appropriate ticket routing based on form values\n   - Add relevant tags based on report content\n   - Ensure all required Zendesk fields are properly populated\n\n3. **Error Handling and User Experience**:\n   - Implement proper error handling for API failures\n   - Add retry logic for transient failures\n   - Provide clear user feedback during the submission process\n   - Create a seamless submission experience\n\n4. **User Feedback and Confirmation**:\n   - Return ticket ID and URL to the user after successful submission\n   - Display a confirmation screen with ticket details\n   - Provide appropriate error messages for failed submissions\n   - Include a link to view the created ticket in Zendesk\n\nThe implementation should maintain the current user-friendly design of the Bug Report Form while adding robust Zendesk ticket creation capabilities. This integration applies ONLY to the static Bug Report Form at this time, not the conversational Form Collector agent.",
       "testStrategy": "Testing should be comprehensive to ensure the Zendesk integration works correctly in all scenarios:\n\n1. **API Integration Testing**:\n   - Test authentication with both valid and invalid credentials\n   - Verify file upload functionality with various file types and sizes\n   - Test ticket creation with various combinations of fields and attachments\n   - Verify error handling for API failures, rate limiting, and network issues\n\n2. **Ticket Content Testing**:\n   - Verify markdown formatting is applied correctly\n   - Test that all form fields are properly mapped to Zendesk fields\n   - Confirm custom field handling works as expected\n   - Validate that attachments are properly included in tickets\n\n3. **Assignment Logic Testing**:\n   - Test ticket routing to the correct agents/groups\n   - Verify fallback mechanisms work when primary assignments fail\n   - Confirm that assignment rotation works properly\n   - Test edge cases with invalid or missing assignees\n\n4. **End-to-End Testing**:\n   - Complete full flows from form submission to ticket creation\n   - Verify user feedback and confirmation screens\n   - Test with real Zendesk instances in staging environments\n   - Validate ticket appearance in Zendesk UI matches expectations\n\nDocument all test cases and include automated tests where possible to ensure ongoing compatibility as the codebase evolves.",
@@ -521,7 +539,9 @@
           "id": 2,
           "title": "Add File Upload to Zendesk Functionality",
           "description": "Extend the existing file upload in the Bug Report Form to prepare files for Zendesk attachments",
-          "dependencies": [1],
+          "dependencies": [
+            1
+          ],
           "details": "Modify the bug-report.html file upload functionality to:\n- Use the existing file upload UI and S3/R2 storage\n- Add a second stage to upload clean files from S3/R2 to Zendesk\n- Get attachment tokens from Zendesk API\n- Track upload status for both stages (virus scan and Zendesk)\n- Handle failures at either stage gracefully\n- Maintain the existing user experience\n- Ensure all tokens are properly stored for ticket creation",
           "status": "pending",
           "testStrategy": "- Test file uploads with various file types and sizes\n- Verify proper handling of upload failures\n- Test token retrieval and storage\n- Confirm UI updates correctly during multi-stage upload\n- Validate end-to-end upload process"
@@ -530,7 +550,10 @@
           "id": 3,
           "title": "Implement Ticket Creation from Form Data",
           "description": "Create functionality to submit form data as a Zendesk ticket",
-          "dependencies": [1, 2],
+          "dependencies": [
+            1,
+            2
+          ],
           "details": "Update the bug-report.html submit functionality to:\n- Format form data into proper Zendesk ticket structure\n- Map form fields to appropriate Zendesk ticket fields\n- Include file attachment tokens from the upload process\n- Set appropriate ticket attributes (priority, type, tags)\n- Add basic routing based on severity or other fields\n- Make the API call through the secure proxy endpoint\n- Handle the response and provide user feedback\n- Save the ticket ID and URL for confirmation",
           "status": "pending",
           "testStrategy": "- Test with various form data combinations\n- Verify field mapping is correctly applied\n- Test with and without attachments\n- Confirm error handling for API failures\n- Validate created tickets in Zendesk match expected format"
@@ -539,7 +562,9 @@
           "id": 4,
           "title": "Create Ticket Confirmation UI",
           "description": "Enhance the Bug Report Form to show successful ticket creation details",
-          "dependencies": [3],
+          "dependencies": [
+            3
+          ],
           "details": "Update the submission success screen to:\n- Display the Zendesk ticket ID\n- Show a direct link to the created ticket\n- Provide a summary of the submitted information\n- Offer options to create another report or return to main page\n- Include any relevant next steps for the user\n- Show appropriate branding and styling\n- Ensure mobile-friendly layout",
           "status": "pending",
           "testStrategy": "- Test UI appearance after successful submission\n- Verify ticket links work correctly\n- Test on various devices and screen sizes\n- Check for proper handling of long text values\n- Validate the user experience flow"
@@ -548,12 +573,249 @@
           "id": 5,
           "title": "Add Error Handling and Recovery",
           "description": "Implement robust error handling and recovery for the Zendesk integration",
-          "dependencies": [3, 4],
+          "dependencies": [
+            3,
+            4
+          ],
           "details": "Enhance the Bug Report Form with:\n- Specific error messages for different failure scenarios\n- Retry capability for transient errors\n- Form data preservation when errors occur\n- Clear guidance to users when failures happen\n- Fallback submission method for persistent failures\n- Detailed client-side error logging\n- Optional error reporting to administrators",
           "status": "pending",
           "testStrategy": "- Test with simulated API failures\n- Verify appropriate error messages\n- Test retry functionality\n- Check that form data is preserved\n- Validate the user experience during error scenarios"
         }
       ]
+    },
+    {
+      "id": 23,
+      "title": "Implement AstraDB RAG Integration for Zendesk Support",
+      "description": "Develop a Retrieval-Augmented Generation solution using AstraDB to provide a knowledge base for the Agno agent in the Zendesk support interface.",
+      "details": "This task involves creating a complete RAG pipeline integrated with AstraDB and the existing Agno agent system in Zendesk. Key components include:\n\n1. **AstraDB Connection Setup**:\n   - Configure secure connection to AstraDB using appropriate authentication credentials\n   - Implement connection pooling for efficient database access\n   - Create error handling for connection failures with appropriate fallbacks\n\n2. **Vector Search Implementation**:\n   - Implement text embedding functionality using an appropriate embedding model (e.g., OpenAI embeddings)\n   - Create vector search queries with configurable similarity thresholds\n   - Implement caching for frequently accessed vector searches to improve performance\n\n3. **Agno Agent Integration**:\n   - Extend the existing Agno agent to query the RAG system before generating responses\n   - Implement a context window management system to include retrieved information\n   - Create a confidence scoring mechanism to determine when to use retrieved information\n\n4. **Document Loading Pipeline**:\n   - Build a document processing pipeline that can ingest various formats (PDF, DOCX, HTML, etc.)\n   - Implement chunking strategies for optimal retrieval performance\n   - Create metadata extraction for improved search relevance\n   - Develop an indexing system for newly added documents\n\n5. **Interface with Unified Chat**:\n   - Ensure the RAG system integrates with the unified chat interface from Task 21\n   - Add UI elements to display source documents when information is retrieved\n   - Implement feedback mechanisms to improve retrieval quality over time",
+      "testStrategy": "Testing for this RAG integration should be thorough and cover multiple aspects of the system:\n\n1. **Unit Tests**:\n   - Test AstraDB connection handling with mocked responses\n   - Verify embedding generation functions correctly process text inputs\n   - Test document chunking logic with various document types and sizes\n   - Validate vector search functions return expected results for known queries\n\n2. **Integration Tests**:\n   - Test end-to-end document processing pipeline with sample documents\n   - Verify correct storage and retrieval of embedded documents in AstraDB\n   - Test integration with the Agno agent using simulated queries\n   - Validate the system handles connection failures gracefully\n\n3. **Performance Tests**:\n   - Measure response time for various query complexities\n   - Test system under load with concurrent requests\n   - Verify caching mechanisms improve performance for repeated queries\n\n4. **Functional Tests**:\n   - Create a test set of common support questions and verify retrieval accuracy\n   - Test with edge cases like very short queries or ambiguous questions\n   - Verify source attribution is correct for retrieved information\n   - Test with multilingual content if applicable\n\n5. **User Acceptance Testing**:\n   - Have support staff test the system with real-world scenarios\n   - Collect metrics on retrieval relevance and accuracy\n   - Validate that the UI elements for displaying sources are intuitive and helpful",
+      "status": "done",
+      "dependencies": [
+        21
+      ],
+      "priority": "high",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Implement AstraDB Connection and Document Loading Pipeline",
+          "description": "Set up the AstraDB connection infrastructure and create a document processing pipeline that can ingest, chunk, and store documents in the vector database.",
+          "dependencies": [],
+          "details": "Implementation steps:\n1. Configure AstraDB client with authentication credentials using environment variables for security\n2. Implement connection pooling mechanism with configurable pool size and timeout settings\n3. Create robust error handling for connection failures with exponential backoff retry logic\n4. Develop document loaders for multiple formats (PDF, DOCX, HTML) using appropriate libraries\n5. Implement text chunking strategies with configurable chunk size and overlap parameters\n6. Create metadata extraction functions to capture document source, date, and section information\n7. Build an indexing system that tracks document versions and update timestamps\n8. Implement a batch processing mechanism for efficient document ingestion\n\nTesting approach:\n- Unit tests for connection handling with mocked AstraDB responses\n- Integration tests with a test AstraDB instance\n- Test document loading with various file formats and sizes\n- Verify chunking strategies with different document types\n- Measure indexing performance with large document sets",
+          "status": "done",
+          "parentTaskId": 23
+        },
+        {
+          "id": 2,
+          "title": "Develop Vector Search and Embedding Functionality",
+          "description": "Implement text embedding generation and vector search capabilities, including caching mechanisms for performance optimization.",
+          "dependencies": [
+            1
+          ],
+          "details": "Implementation steps:\n1. Integrate an embedding model (OpenAI embeddings) with appropriate dimension settings\n2. Create a vector embedding generation service with batching capabilities for efficiency\n3. Implement vector search queries with configurable similarity thresholds and result limits\n4. Develop a caching layer for frequently accessed embeddings using Redis or an in-memory solution\n5. Create cache invalidation strategies based on time and usage patterns\n6. Implement logging for search performance metrics and hit/miss ratios\n7. Build relevance scoring functions to rank search results\n8. Create fallback strategies for when vector search returns low confidence results\n\nTesting approach:\n- Unit tests for embedding generation with sample texts\n- Performance tests for caching mechanisms with simulated high-load scenarios\n- Integration tests for vector search with pre-populated test data\n- Accuracy tests comparing search results against expected outcomes\n- Benchmark tests for response times under various load conditions",
+          "status": "done",
+          "parentTaskId": 23
+        },
+        {
+          "id": 3,
+          "title": "Integrate RAG System with Agno Agent and Zendesk Interface",
+          "description": "Connect the RAG system to the existing Agno agent and Zendesk unified chat interface, including UI elements for displaying retrieved information.",
+          "dependencies": [
+            1,
+            2
+          ],
+          "details": "Implementation steps:\n1. Extend the Agno agent to query the RAG system before generating responses\n2. Implement a context window management system to include retrieved information within token limits\n3. Create a confidence scoring mechanism to determine when to use retrieved vs. generated information\n4. Integrate with the unified chat interface from Task 21\n5. Add UI components to display source documents and reference links when information is retrieved\n6. Implement user feedback collection (thumbs up/down) on retrieval quality\n7. Create an analytics dashboard for monitoring RAG system performance\n8. Develop A/B testing capability to compare different retrieval strategies\n\nTesting approach:\n- Unit tests for agent-RAG integration logic\n- Integration tests with the full Zendesk environment\n- UI tests for source document display functionality\n- User acceptance testing with support team members\n- End-to-end tests simulating complete customer support scenarios\n- Performance testing under production-like conditions",
+          "status": "done",
+          "parentTaskId": 23
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "title": "Multi-Database RAG Architecture with Intelligent Routing",
+      "description": "Create a sophisticated multi-database RAG architecture with intelligent routing for the Agno agent. The system will integrate with 5 different AstraDB collections, with the agent using reasoning capabilities to determine which database(s) to query based on the user's question.",
+      "details": "",
+      "testStrategy": "",
+      "status": "in-progress",
+      "dependencies": [],
+      "priority": "high",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Fix AstraDB Connector and Create Base Multi-Database Architecture",
+          "description": "Fix the AstraDB connector parameter issue and implement the foundational multi-database architecture that can connect to all 5 AstraDB collections.",
+          "dependencies": [],
+          "details": "Implementation details:\n1. Debug and fix the AstraDB connector parameter issue by examining the current error logs and ensuring proper authentication parameters are being passed.\n2. Create a unified connector class that can handle connections to multiple AstraDB collections (General, SkySafari, Starry Night, Celestron, and User Queries).\n3. Implement a configuration system that stores connection details for each collection.\n4. Create a basic routing mechanism that can query a specific collection based on an explicit collection name parameter.\n5. Test the connector with each collection individually to ensure proper connection and data retrieval.\n6. Implement error handling for connection failures and query timeouts.\n\nTesting approach:\n- Unit test the connector with mock AstraDB responses\n- Integration test with actual AstraDB collections\n- Test error handling by simulating connection failures",
+          "status": "pending",
+          "parentTaskId": 24
+        },
+        {
+          "id": 2,
+          "title": "Implement Domain Classification and Intelligent Routing Logic",
+          "description": "Develop the domain classification system in the Leader Agent to analyze user queries and determine which specialized collections to query, with appropriate routing logic.",
+          "dependencies": [
+            1
+          ],
+          "details": "Implementation details:\n1. Design and implement a domain classifier that can categorize user queries into relevant domains (astronomy software, telescope hardware, general astronomy knowledge, etc.).\n2. Train or fine-tune the classifier on a dataset of sample queries labeled with appropriate domains.\n3. Integrate the classifier with the Leader Agent's reasoning system.\n4. Implement routing logic that maps classified domains to specific AstraDB collections:\n   - SkySafari queries → SkySafari collection\n   - Starry Night queries → Starry Night collection\n   - Telescope hardware queries → Celestron collection\n   - General astronomy → General collection\n   - User history → User Queries collection\n5. Add logic for multi-collection querying when a question spans multiple domains.\n6. Implement query transformation to optimize retrieval for each specific collection.\n\nTesting approach:\n- Test classification accuracy on a validation set of queries\n- End-to-end testing with sample user questions\n- Evaluate routing decisions against expected collection choices",
+          "status": "pending",
+          "parentTaskId": 24
+        },
+        {
+          "id": 3,
+          "title": "Implement Post-Retrieval Processing and Clarification Mechanism",
+          "description": "Add post-retrieval filtering, relevance scoring, and an optional clarification mechanism for ambiguous queries to improve response quality.",
+          "dependencies": [
+            1,
+            2
+          ],
+          "details": "Implementation details:\n1. Implement post-retrieval filtering to remove irrelevant or low-quality results based on semantic similarity and content analysis.\n2. Develop a domain relevance scoring system that ranks retrieved documents based on their relevance to the identified domain.\n3. Create a clarification mechanism that triggers when:\n   - The domain classification confidence is below a threshold\n   - The query could belong to multiple domains with similar confidence\n   - Initial retrieval results have low relevance scores\n4. Design clarification prompts that ask users specific questions to disambiguate their intent.\n5. Implement a feedback loop where clarification responses refine the domain classification and query routing.\n6. Update the documentation to reflect the complete intelligent routing architecture including all components and their interactions.\n7. Create visualization diagrams of the data flow through the system.\n\nTesting approach:\n- Test filtering effectiveness by measuring precision/recall on test queries\n- User testing of the clarification mechanism with ambiguous queries\n- End-to-end testing of the complete RAG system with various query types\n- Performance testing to ensure response times remain acceptable",
+          "status": "pending",
+          "parentTaskId": 24
+        }
+      ]
+    },
+    {
+      "id": 25,
+      "title": "Implement Agent-Driven Multi-Database RAG Architecture with Agno Native Capabilities",
+      "description": "Develop a sophisticated RAG implementation that utilizes Agno's agent capabilities (planners, leaders, reflection, research) to intelligently route queries across 5 AstraDB collections and synthesize comprehensive responses.",
+      "details": "This task requires implementing a multi-database RAG architecture leveraging Agno's existing agent frameworks and patterns from cookbook examples. The architecture should:\n\n1. Use Agno's planner capabilities to analyze incoming user queries and determine which of the 5 AstraDB collections are most relevant to address the query\n2. Implement leader agent patterns to orchestrate the retrieval operations across the selected databases\n3. Utilize reflection capabilities to evaluate the quality and relevance of retrieved information\n4. Employ research agent patterns to synthesize information from multiple sources into coherent responses\n5. Follow the existing code structures and patterns in the Agno cookbook examples rather than creating new frameworks\n6. Implement a routing mechanism that considers:\n   - Query intent classification\n   - Semantic similarity to collection content domains\n   - Historical performance of collections for similar queries\n7. Create a result synthesis component that:\n   - Removes redundant information from multiple collections\n   - Resolves conflicting information with appropriate reasoning\n   - Structures responses based on information relevance and completeness\n8. Implement appropriate error handling and fallback strategies when specific collections are unavailable\n9. Add telemetry to track which collections are being used for different query types to enable future optimization\n\nThe implementation should be modular enough to allow adding or removing collections without significant code changes.",
+      "testStrategy": "Testing should verify the effectiveness of the multi-database RAG architecture through these methods:\n\n1. Unit Tests:\n   - Test the query analysis component with various query types to ensure correct database selection\n   - Verify the routing logic correctly identifies which collections to query based on different inputs\n   - Test the synthesis component with known conflicting information to ensure proper resolution\n\n2. Integration Tests:\n   - Create a test suite with 25+ diverse queries spanning topics covered by all 5 collections\n   - Verify that appropriate collections are queried for each test case\n   - Measure response synthesis quality through automated metrics (coherence, relevance, factuality)\n\n3. Performance Tests:\n   - Measure latency for different query patterns (single collection vs. multi-collection queries)\n   - Test system under load to ensure performance degradation is graceful\n   - Verify resource usage remains within acceptable bounds during peak operations\n\n4. Simulation Tests:\n   - Simulate collection unavailability to verify fallback mechanisms work correctly\n   - Test with deliberately ambiguous queries to verify the system makes reasonable collection choices\n\n5. Validation Metrics:\n   - Track correct collection selection rate (compared to human-labeled ground truth)\n   - Measure information completeness in synthesized responses\n   - Calculate redundancy and conflict resolution effectiveness\n\nAll tests should include specific examples covering each of the 5 collections to ensure comprehensive coverage.",
+      "status": "pending",
+      "dependencies": [
+        "26"
+      ],
+      "priority": "high",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Set Up Multi-Database AstraDB Configuration and Query Analysis System",
+          "description": "Configure the 5 AstraDB collections and implement the query analysis system that will determine which collections to query based on intent classification and semantic similarity.",
+          "dependencies": [],
+          "details": "Implementation steps:\n1. Configure connection settings for all 5 AstraDB collections following Agno cookbook patterns\n2. Implement a configuration manager to store and retrieve collection metadata (domain focus, query types handled, etc.)\n3. Create a query intent classifier using Agno's planner agent capabilities that:\n   - Analyzes incoming user queries\n   - Classifies query intent into predefined categories\n   - Maps intents to relevant collections\n4. Implement a semantic similarity module that:\n   - Embeds user queries using the same embedding model as the collections\n   - Calculates similarity scores between the query and each collection's domain description\n   - Ranks collections by relevance score\n5. Develop a collection selection algorithm that combines intent classification and similarity scores\n6. Create unit tests for each component:\n   - Test connection to all collections\n   - Verify intent classification with sample queries\n   - Validate semantic similarity scoring\n   - Ensure collection selection works for various query types\n7. Implement logging for query analysis decisions to support future telemetry",
+          "status": "pending",
+          "parentTaskId": 25
+        },
+        {
+          "id": 2,
+          "title": "Implement Leader Agent for Multi-Database Retrieval Orchestration",
+          "description": "Create a leader agent that orchestrates the retrieval operations across the selected databases, including handling concurrent queries, error handling, and fallback strategies.",
+          "dependencies": [
+            1
+          ],
+          "details": "Implementation steps:\n1. Extend Agno's leader agent pattern to create a RAGLeaderAgent class that:\n   - Takes the collection selection output from subtask 1\n   - Orchestrates parallel retrieval operations across selected collections\n   - Manages timeouts and concurrency\n2. Implement collection-specific retrieval agents that:\n   - Connect to their assigned AstraDB collection\n   - Execute semantic searches with appropriate parameters\n   - Format retrieved documents consistently\n3. Create an error handling and fallback system that:\n   - Detects when collections are unavailable or return errors\n   - Implements retry logic with backoff\n   - Falls back to alternative collections when primary ones fail\n   - Logs errors for monitoring\n4. Develop a retrieval results collector that:\n   - Aggregates results from all queried collections\n   - Normalizes document formats from different sources\n   - Applies initial deduplication\n5. Implement a reflection agent that evaluates retrieved results for:\n   - Relevance to the original query\n   - Coverage of different aspects of the query\n   - Identification of information gaps\n6. Create unit and integration tests that:\n   - Verify parallel retrieval works correctly\n   - Test error handling with simulated failures\n   - Validate the reflection agent's evaluation\n7. Add telemetry to track retrieval performance per collection",
+          "status": "pending",
+          "parentTaskId": 25
+        },
+        {
+          "id": 3,
+          "title": "Develop Response Synthesis and Telemetry System",
+          "description": "Create a research agent that synthesizes information from multiple collections into coherent responses, resolves conflicts, and implements telemetry for tracking system performance.",
+          "dependencies": [
+            1,
+            2
+          ],
+          "details": "Implementation steps:\n1. Implement a ResearchAgent class based on Agno patterns that:\n   - Takes aggregated retrieval results from the leader agent\n   - Analyzes information for redundancies and conflicts\n   - Synthesizes a comprehensive response\n2. Create an information synthesis module that:\n   - Removes duplicate information across collection results\n   - Identifies and resolves conflicting information with reasoning\n   - Structures information by relevance and completeness\n   - Cites sources appropriately\n3. Implement a response generator that:\n   - Formats the synthesized information into a coherent response\n   - Adapts to different response formats based on query intent\n   - Handles cases where information is incomplete\n4. Develop a comprehensive telemetry system that tracks:\n   - Which collections were queried for each request\n   - Retrieval performance metrics per collection\n   - Synthesis quality metrics\n   - End-to-end processing time\n5. Create a feedback mechanism to store query-collection-performance data for future optimization\n6. Implement an integration layer that connects the entire system to Agno's existing agent infrastructure\n7. Develop end-to-end tests that:\n   - Verify the complete flow from query to response\n   - Test with various query types across different domains\n   - Validate telemetry data collection\n   - Ensure the system degrades gracefully with partial collection failures\n8. Create documentation for the overall architecture and component interactions",
+          "status": "pending",
+          "parentTaskId": 25
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "title": "Design Expandable Multi-Agent Architecture with Specialized Roles",
+      "description": "Create a sophisticated, extensible multi-agent architecture with specialized agent roles (Planner, Leader, Reflection, Research, Synthesis, Summarization) that initially focuses on multi-database RAG but can be expanded to include more specialized agents and tools. The system should employ a modular design where agents can be added, removed, or reconfigured with minimal code changes.",
+      "details": "",
+      "testStrategy": "",
+      "status": "done",
+      "dependencies": [],
+      "priority": "high",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Design Core Multi-Agent Framework with Orchestration Layer",
+          "description": "Create the foundational architecture for a modular multi-agent system, including the central orchestration mechanism, agent registry, and communication protocols that will enable specialized agents to interact effectively.",
+          "dependencies": [],
+          "details": "Implementation steps:\n1. Design the Agent interface with standardized input/output contracts that all specialized agents must implement\n2. Create an AgentRegistry class that handles dynamic registration, discovery, and instantiation of agents\n3. Develop the Orchestrator class that coordinates agent interactions and workflow execution\n4. Implement a MessageBus for standardized communication between agents with support for different message types\n5. Design a WorkflowManager to handle the sequencing and routing of tasks between agents\n6. Create a StateManager to maintain shared context across multi-agent workflows\n7. Build a basic configuration system that allows for easy agent configuration\n8. Implement error handling and recovery mechanisms\n\nTesting approach:\n- Unit test each component (Registry, Orchestrator, MessageBus) in isolation\n- Create mock agents to test the communication protocols\n- Test dynamic agent loading/unloading scenarios\n- Verify state persistence across agent handoffs",
+          "status": "done",
+          "parentTaskId": 26
+        },
+        {
+          "id": 2,
+          "title": "Implement Specialized Agent Roles with Role-Specific Interfaces",
+          "description": "Develop the specialized agent implementations for core roles (Planner, Leader, Reflection, Research, Synthesis, Summarization) with well-defined interfaces that allow for future extension and customization.",
+          "dependencies": [
+            1
+          ],
+          "details": "Implementation steps:\n1. Define role-specific interfaces extending the base Agent interface for each specialized role:\n   - PlannerAgent: Task decomposition and strategy formulation\n   - LeaderAgent: Coordination and decision-making\n   - ReflectionAgent: Quality assessment and improvement suggestions\n   - ResearchAgent: Information retrieval and analysis\n   - SynthesisAgent: Combining information from multiple sources\n   - SummarizationAgent: Condensing information for clarity\n2. Implement abstract base classes for each role with common functionality\n3. Create concrete implementations of each agent type with role-specific logic\n4. Design tool integration interfaces for each agent type (e.g., RAG tools for ResearchAgent)\n5. Implement agent-specific prompt templates and response parsers\n6. Create specialized configuration schemas for each agent type\n7. Add role-specific metrics collection for performance evaluation\n\nTesting approach:\n- Unit test each agent type with sample inputs and expected outputs\n- Test agent configuration variations\n- Verify proper implementation of role-specific interfaces\n- Test agent response to various edge cases and failure modes",
+          "status": "done",
+          "parentTaskId": 26
+        },
+        {
+          "id": 3,
+          "title": "Build Workflow Designer and Integration Layer",
+          "description": "Create a workflow design system that enables flexible agent composition patterns, tool integration, and seamless expansion of the architecture to include new agent types and capabilities.",
+          "dependencies": [
+            1,
+            2
+          ],
+          "details": "Implementation steps:\n1. Design a WorkflowDefinition schema that supports various agent interaction patterns (sequential, parallel, conditional)\n2. Implement a WorkflowDesigner interface for creating and modifying multi-agent workflows\n3. Create a ToolIntegrationLayer that allows agents to access external tools and APIs\n4. Develop adapters for integrating with existing Agno infrastructure\n5. Implement a monitoring and telemetry system to track workflow execution\n6. Create an evaluation framework to assess workflow performance\n7. Build a plugin system for adding new agent types and tools\n8. Develop comprehensive documentation including:\n   - Architecture overview and design principles\n   - Guidelines for creating new agent types\n   - Workflow composition patterns and best practices\n   - Extension and customization examples\n9. Create sample workflows demonstrating RAG capabilities across multiple databases\n\nTesting approach:\n- Test complex workflows with multiple agent interactions\n- Verify tool integration with mock external services\n- Validate workflow execution metrics and monitoring\n- Test the addition of new agent types at runtime\n- Perform end-to-end testing of sample workflows",
+          "status": "done",
+          "parentTaskId": 26
+        }
+      ]
+    },
+    {
+      "id": 27,
+      "title": "Implement Mandatory Database Citations for RAG Responses",
+      "description": "Add mandatory citation functionality to the Agno-Zendesk RAG system, ensuring that all information provided in responses is properly attributed to its source database context, with citation identifiers, relevance indicators, and strict citation policies. This will significantly improve transparency, reduce hallucinations, and enhance response quality.",
+      "details": "",
+      "testStrategy": "",
+      "status": "pending",
+      "dependencies": [],
+      "priority": "high",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Implement Context Preparation with Citation Generation",
+          "description": "Create a function that processes retrieved database contexts and generates unique citation identifiers for each context chunk, including metadata about the source document and relevance scores.",
+          "dependencies": [],
+          "details": "Implementation steps:\n1. Design a citation data structure to store source information (document ID, page/section, timestamp, etc.)\n2. Create a function `prepare_context_with_citations(contexts)` that:\n   - Assigns unique identifiers to each context chunk\n   - Extracts metadata from source documents\n   - Calculates relevance scores for each chunk\n   - Formats citations in a standardized format\n3. Implement a citation index that maps citation IDs to full source information\n4. Create unit tests to verify citation generation with various document types\n5. Add logging to track citation generation process\n\nTesting approach:\n- Write unit tests to verify citation structure and uniqueness\n- Test with different document formats to ensure consistent citation generation\n- Verify that all metadata is correctly extracted and preserved",
+          "status": "pending",
+          "parentTaskId": 27
+        },
+        {
+          "id": 2,
+          "title": "Modify System Prompts and Implement Citation Enforcement",
+          "description": "Update the system prompts to require citations for all factual claims, and implement validation logic to ensure the model properly uses the citation format in responses.",
+          "dependencies": [
+            1
+          ],
+          "details": "Implementation steps:\n1. Modify the system prompt template to include:\n   - Clear instructions on citation requirements\n   - Examples of properly cited responses\n   - Format specifications for inline citations\n2. Implement a `validate_citations(response, context_citations)` function that:\n   - Checks if all factual claims have citations\n   - Verifies citations reference valid context chunks\n   - Ensures citation format consistency\n3. Create a citation policy configuration that defines citation requirements based on content type\n4. Implement error handling for missing citations with fallback strategies\n5. Add a post-processing step to format citations consistently\n\nTesting approach:\n- Test system prompt with different LLM models to ensure they follow citation instructions\n- Create test cases with various factual densities to verify citation coverage\n- Validate that the enforcement mechanism correctly identifies uncited claims",
+          "status": "pending",
+          "parentTaskId": 27
+        },
+        {
+          "id": 3,
+          "title": "Integrate Citation System with Response Generation and Formatting",
+          "description": "Integrate the citation system with the response generation pipeline, including formatting citations in the final output and implementing a hybrid search strategy for improved context quality.",
+          "dependencies": [
+            1,
+            2
+          ],
+          "details": "Implementation steps:\n1. Implement a hybrid search strategy that:\n   - Combines semantic and keyword search for better context quality\n   - Prioritizes authoritative sources\n   - Ranks contexts by relevance for better citation quality\n2. Modify the response generation pipeline to:\n   - Pass citation metadata to the LLM\n   - Validate citations in generated responses\n   - Reject and regenerate responses with inadequate citations\n3. Implement citation formatting options:\n   - Inline citations (e.g., [1], [2])\n   - Footnote style citations\n   - Hyperlinked citations for digital interfaces\n4. Create an API endpoint that returns both the response and structured citation metadata\n5. Implement integration with the Agno agent system to support citations\n\nTesting approach:\n- End-to-end tests with various query types to verify citation coverage\n- Evaluate citation accuracy by comparing with ground truth sources\n- Test response formatting across different output formats (markdown, HTML, plain text)\n- Measure impact on response quality and hallucination reduction",
+          "status": "pending",
+          "parentTaskId": 27
+        }
+      ]
+    },
+    {
+      "id": 28,
+      "title": "Implement Intelligent Multi-Database Routing for Domain-Specific RAG",
+      "description": "Add intelligent database selection capabilities to the multi-agent system, enabling it to properly select relevant databases based on domain context, specifically handling distinct content areas like SkySafari, Starry Night, and Celestron telescopes. The system should either intelligently select relevant databases upfront or filter/consolidate results from multiple databases post-retrieval.",
+      "details": "",
+      "testStrategy": "",
+      "status": "pending",
+      "dependencies": [],
+      "priority": "high"
     }
   ],
   "metadata": {

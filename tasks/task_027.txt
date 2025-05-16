@@ -1,0 +1,81 @@
+# Task ID: 27
+# Title: Implement Mandatory Database Citations for RAG Responses
+# Status: pending
+# Dependencies: None
+# Priority: high
+# Description: Add mandatory citation functionality to the Agno-Zendesk RAG system, ensuring that all information provided in responses is properly attributed to its source database context, with citation identifiers, relevance indicators, and strict citation policies. This will significantly improve transparency, reduce hallucinations, and enhance response quality.
+# Details:
+
+
+# Test Strategy:
+
+
+# Subtasks:
+## 1. Implement Context Preparation with Citation Generation [pending]
+### Dependencies: None
+### Description: Create a function that processes retrieved database contexts and generates unique citation identifiers for each context chunk, including metadata about the source document and relevance scores.
+### Details:
+Implementation steps:
+1. Design a citation data structure to store source information (document ID, page/section, timestamp, etc.)
+2. Create a function `prepare_context_with_citations(contexts)` that:
+   - Assigns unique identifiers to each context chunk
+   - Extracts metadata from source documents
+   - Calculates relevance scores for each chunk
+   - Formats citations in a standardized format
+3. Implement a citation index that maps citation IDs to full source information
+4. Create unit tests to verify citation generation with various document types
+5. Add logging to track citation generation process
+
+Testing approach:
+- Write unit tests to verify citation structure and uniqueness
+- Test with different document formats to ensure consistent citation generation
+- Verify that all metadata is correctly extracted and preserved
+
+## 2. Modify System Prompts and Implement Citation Enforcement [pending]
+### Dependencies: 27.1
+### Description: Update the system prompts to require citations for all factual claims, and implement validation logic to ensure the model properly uses the citation format in responses.
+### Details:
+Implementation steps:
+1. Modify the system prompt template to include:
+   - Clear instructions on citation requirements
+   - Examples of properly cited responses
+   - Format specifications for inline citations
+2. Implement a `validate_citations(response, context_citations)` function that:
+   - Checks if all factual claims have citations
+   - Verifies citations reference valid context chunks
+   - Ensures citation format consistency
+3. Create a citation policy configuration that defines citation requirements based on content type
+4. Implement error handling for missing citations with fallback strategies
+5. Add a post-processing step to format citations consistently
+
+Testing approach:
+- Test system prompt with different LLM models to ensure they follow citation instructions
+- Create test cases with various factual densities to verify citation coverage
+- Validate that the enforcement mechanism correctly identifies uncited claims
+
+## 3. Integrate Citation System with Response Generation and Formatting [pending]
+### Dependencies: 27.1, 27.2
+### Description: Integrate the citation system with the response generation pipeline, including formatting citations in the final output and implementing a hybrid search strategy for improved context quality.
+### Details:
+Implementation steps:
+1. Implement a hybrid search strategy that:
+   - Combines semantic and keyword search for better context quality
+   - Prioritizes authoritative sources
+   - Ranks contexts by relevance for better citation quality
+2. Modify the response generation pipeline to:
+   - Pass citation metadata to the LLM
+   - Validate citations in generated responses
+   - Reject and regenerate responses with inadequate citations
+3. Implement citation formatting options:
+   - Inline citations (e.g., [1], [2])
+   - Footnote style citations
+   - Hyperlinked citations for digital interfaces
+4. Create an API endpoint that returns both the response and structured citation metadata
+5. Implement integration with the Agno agent system to support citations
+
+Testing approach:
+- End-to-end tests with various query types to verify citation coverage
+- Evaluate citation accuracy by comparing with ground truth sources
+- Test response formatting across different output formats (markdown, HTML, plain text)
+- Measure impact on response quality and hallucination reduction
+

@@ -107,3 +107,13 @@ Here are the key changes summarized in 1-3 concise bullet points:
 - Added a new `agno_zendesk` package with a `multi_agent` subpackage containing the core components of the multi-agent system
 - Implemented specialized agents like `LeaderAgent`, `ReasoningAgent`, `SynthesisAgent`, and `ReflectionAgent` to handle different responsibilities in the multi-agent workflow
 - Introduced a citation enforcement system in the `SynthesisAgent` to ensure responses are backed by citations from the knowledge base, preventing hallucinations and improving factual accuracy
+Here are the key changes summarized in 1-3 concise bullet points:
+
+- Added a new file `astradb_rag.py` that provides the integration between the existing Agno API server and AstraDB for Retrieval Augmented Generation (RAG)
+- Implemented functionality to generate embeddings using OpenAI, search AstraDB for relevant documents, and format the search results
+- Patched the Agno agent's chat route to include the RAG functionality, enhancing the agent's responses with relevant information from the AstraDB knowledge base
+The code changes can be summarized as follows:
+
+- The `DEFAULT_ASTRA_DB_API_ENDPOINT` and `DEFAULT_ASTRA_DB_TOKEN` variables in `bug_reporting_assistant.py` have been changed to use environment variables `ASTRA_ENDPOINT` and `ASTRA_TOKEN` respectively, with default values provided.
+- Similar changes have been made in `example.py`, `load_documents.py`, and `rag_agent.py` to use the environment variables for the Astra DB API endpoint and token.
+- In the `ASTRADB_RAG_IMPLEMENTATION.md` file, the example values for `
