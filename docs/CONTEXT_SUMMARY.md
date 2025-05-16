@@ -102,3 +102,8 @@ Here are the key changes summarized in 1-3 concise bullet points:
 - Added a new `Link` component import from `next/link` to the `agno-chat/page.tsx` file.
 - Added a new "Bug Report Form" button in the top-right corner of the `agno-chat/page.tsx` file, which links to the `/bug-report` page.
 - Implemented a new `/bug-report/page.js` file that displays a bug report form with a dynamic import of the `BugReportForm` component, error handling, and a fallback UI.
+Here are the key changes summarized in 1-3 concise bullet points:
+
+- Added a new `agno_zendesk` package with a `multi_agent` subpackage containing the core components of the multi-agent system
+- Implemented specialized agents like `LeaderAgent`, `ReasoningAgent`, `SynthesisAgent`, and `ReflectionAgent` to handle different responsibilities in the multi-agent workflow
+- Introduced a citation enforcement system in the `SynthesisAgent` to ensure responses are backed by citations from the knowledge base, preventing hallucinations and improving factual accuracy
